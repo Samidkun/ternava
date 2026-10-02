@@ -7,6 +7,7 @@ use App\Http\Controllers\FarmController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\FlockController;
 use App\Http\Controllers\HealthController;
+use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\SyncController;
@@ -84,5 +85,13 @@ Route::prefix('v1')->group(function () {
         Route::get('/task-runs/{id}', [TaskController::class, 'showRun'])->name('task_runs.show');
         Route::post('/task-runs/{id}/results', [TaskController::class, 'storeResult'])->name('task_runs.results.store');
         Route::get('/task-runs/{id}/results', [TaskController::class, 'listResults'])->name('task_runs.results.index');
+
+        // Incident endpoints
+        Route::get('/incidents', [IncidentController::class, 'index'])->name('incidents.index');
+        Route::post('/incidents', [IncidentController::class, 'store'])->name('incidents.store');
+        Route::get('/incidents/{id}', [IncidentController::class, 'show'])->name('incidents.show');
+        Route::post('/incidents/{id}/assignment', [IncidentController::class, 'assign'])->name('incidents.assign');
+        Route::post('/incidents/{id}/actions', [IncidentController::class, 'storeAction'])->name('incidents.actions.store');
+        Route::get('/incidents/{id}/actions', [IncidentController::class, 'listActions'])->name('incidents.actions.index');
     });
 });

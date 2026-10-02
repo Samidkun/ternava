@@ -214,6 +214,50 @@ class Scenario
     }
 
     /**
+     * Persist a closed incident for the given farm scenario.
+     *
+     * @param  array<string, mixed>  $f
+     */
+    public static function closedIncident(array $f): object
+    {
+        $id = (string) str()->uuid();
+
+        DB::table('incidents')->insert([
+            'id' => $id,
+            'farm_id' => $f['farm_id'],
+            'cage_id' => $f['cage']['id'],
+            'flock_id' => $f['flock']['id'],
+            'source_daily_record_id' => null,
+            'observed_at' => now(),
+            'observation' => 'Temuan lama yang sudah ditutup',
+            'attention' => 'routine',
+            'assignee_id' => $f['operator']->id,
+            'status' => 'closed',
+            'version' => 3,
+            'recorded_by' => $f['owner']->id,
+            'accepted_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return (object) ['id' => $id, 'version' => 3, 'status' => 'closed'];
+    }
+
+    /**
+     * An action payload for an incident.
+     *
+     * @return array<string, mixed>
+     */
+    public static function action(object $incident): array
+    {
+        return [
+            'id' => (string) str()->uuid(),
+            'base_version' => (int) $incident->version,
+            'notes' => 'Menutup temuan',
+            'status' => 'closed',
+        ];
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public static function secondOwnerRow(User $owner): array
