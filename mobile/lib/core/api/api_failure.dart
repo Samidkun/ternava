@@ -1,4 +1,4 @@
-typedef JsonObject = Map<String, Object?>;
+import 'generated/types.dart';
 
 class ApiFailure implements Exception {
   final String code;

@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'api_failure.dart';
-
-typedef JsonObject = Map<String, Object?>;
+import 'generated/types.dart';
 
 class ApiClient {
   final String baseUrl;
