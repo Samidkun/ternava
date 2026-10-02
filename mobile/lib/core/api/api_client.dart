@@ -69,6 +69,13 @@ class ApiClient {
     'uploadAttachment': (method: 'POST', path: '/api/v1/attachments'),
     'listAttachments': (method: 'GET', path: '/api/v1/attachments'),
     'downloadAttachment': (method: 'GET', path: '/api/v1/attachments/{id}/download'),
+    'dashboard': (method: 'GET', path: '/api/v1/dashboard'),
+    'operationsReport': (method: 'GET', path: '/api/v1/reports/operations'),
+    'exportReport': (method: 'GET', path: '/api/v1/reports/operations.csv'),
+    'listInbox': (method: 'GET', path: '/api/v1/inbox'),
+    'readInbox': (method: 'POST', path: '/api/v1/inbox/{id}/read'),
+    'registerPushDevice': (method: 'POST', path: '/api/v1/push-devices'),
+    'unregisterPushDevice': (method: 'DELETE', path: '/api/v1/push-devices/{id}'),
   };
 
   Future<JsonObject> request(
