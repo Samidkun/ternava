@@ -14,12 +14,7 @@ class PhotoRejected implements Exception {
   String toString() => 'PhotoRejected: $message';
 }
 
-enum PhotoState {
-  waitingForParent,
-  uploading,
-  uploaded,
-  failed,
-}
+enum PhotoState { waitingForParent, uploading, uploaded, failed }
 
 class QueuedPhoto {
   final String operationId;
@@ -105,9 +100,7 @@ class PhotoRepository {
   }
 
   Future<List<QueuedPhoto>> pending() async {
-    return _queue.values
-        .where((p) => p.state != PhotoState.uploaded)
-        .toList()
+    return _queue.values.where((p) => p.state != PhotoState.uploaded).toList()
       ..sort((a, b) => a.operationId.compareTo(b.operationId));
   }
 
@@ -118,6 +111,5 @@ class PhotoRepository {
     }
   }
 
-  static String _hash(Uint8List bytes) =>
-      sha256.convert(bytes).toString();
+  static String _hash(Uint8List bytes) => sha256.convert(bytes).toString();
 }

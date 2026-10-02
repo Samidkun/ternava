@@ -20,3 +20,6 @@ backend/storage/app/private/*
 __pycache__/
 *.pyc
 work/
+
+# T45: release artifacts / SBOMs
+build/

@@ -111,7 +111,7 @@ class GalleryApiClient extends ApiClient {
   GalleryStateMode mode;
 
   GalleryApiClient({this.mode = GalleryStateMode.normal})
-      : super(baseUrl: 'http://localhost');
+    : super(baseUrl: 'http://localhost');
 
   @override
   Future<JsonObject> request(
@@ -166,10 +166,7 @@ class GalleryApiClient extends ApiClient {
           'data': {
             'token': 'token-test',
             'must_change_password': false,
-            'actor': {
-              'id': 'operator-budi',
-              'farm_id': 'farm-test-01',
-            },
+            'actor': {'id': 'operator-budi', 'farm_id': 'farm-test-01'},
           },
         };
       case 'dashboard':
@@ -210,7 +207,9 @@ class GalleryApiClient extends ApiClient {
           },
         };
       case 'exportReport':
-        return {'data': {'download_url': 'https://example.invalid/report.csv'}};
+        return {
+          'data': {'download_url': 'https://example.invalid/report.csv'},
+        };
       case 'listInbox':
         return {'data': <JsonObject>[]};
       case 'listMember':
@@ -247,7 +246,9 @@ class GalleryTransport implements Transport, SyncTransport {
       );
     }
     businessEffects += 1;
-    return {'data': {'id': payload['id'] ?? 'gen-1'}};
+    return {
+      'data': {'id': payload['id'] ?? 'gen-1'},
+    };
   }
 
   @override
@@ -280,11 +281,12 @@ class ScreenGallery {
     final changes = <Map<String, dynamic>>[];
     for (var i = 0; i < rows.length; i++) {
       final row = rows[i];
-      final id = (row['id'] ??
-              row['feed_type_id'] ??
-              row['cage_id'] ??
-              '$resourceType-$i')
-          .toString();
+      final id =
+          (row['id'] ??
+                  row['feed_type_id'] ??
+                  row['cage_id'] ??
+                  '$resourceType-$i')
+              .toString();
       changes.add(<String, dynamic>{
         'resource_type': resourceType,
         'resource_id': id,
@@ -305,7 +307,9 @@ class ScreenGallery {
     final mode = galleryModeFor(state);
     final api = GalleryApiClient(mode: mode);
     final loginApi = GalleryApiClient(
-      mode: mode == GalleryStateMode.restricted ? GalleryStateMode.normal : mode,
+      mode: mode == GalleryStateMode.restricted
+          ? GalleryStateMode.normal
+          : mode,
     );
 
     final screen = _build(screenId, state, mode, api, loginApi);
@@ -314,12 +318,12 @@ class ScreenGallery {
       home: screen,
       routes: {
         '/login': (_) => LoginScreen(
-              viewModel: LoginViewModel(
-                apiClient: loginApi,
-                coordinator: coordinator,
-                store: store,
-              ),
-            ),
+          viewModel: LoginViewModel(
+            apiClient: loginApi,
+            coordinator: coordinator,
+            store: store,
+          ),
+        ),
       },
     );
   }

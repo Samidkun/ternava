@@ -91,10 +91,7 @@ void main() {
 
       // Within 24 hours and monotonic clock advancing -> can write
       final validTime = issuedAt.add(const Duration(hours: 5));
-      expect(
-        lease.canWrite(validTime, const Duration(seconds: 18100)),
-        true,
-      );
+      expect(lease.canWrite(validTime, const Duration(seconds: 18100)), true);
 
       // Past 24 hours -> cannot write
       final expiredTime = issuedAt.add(const Duration(hours: 25));

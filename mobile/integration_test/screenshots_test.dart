@@ -22,7 +22,13 @@ void main() {
     await s.loginAsOperator();
     await s.enqueueDaily();
 
-    for (final id in ['login', 'today', 'daily-form', 'sync-center', 'account']) {
+    for (final id in [
+      'login',
+      'today',
+      'daily-form',
+      'sync-center',
+      'account',
+    ]) {
       await tester.pumpWidget(s.appAt(id));
       await tester.pump(const Duration(milliseconds: 300));
       await binding.takeScreenshot('t42-$id');

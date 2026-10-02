@@ -27,7 +27,10 @@ class RejectingTransport implements Transport {
 
   @override
   Future<JsonObject> send(
-      String operationId, JsonObject payload, String idempotencyKey) async {
+    String operationId,
+    JsonObject payload,
+    String idempotencyKey,
+  ) async {
     final rejection = _nextRejection;
     if (rejection != null) {
       _nextRejection = null;
@@ -52,18 +55,20 @@ void main() {
       );
 
       // Operator records a daily entry offline
-      await outbox.enqueue(outbox_lib.Intent(
-        id: 'intent-1',
-        resourceId: 'daily-1',
-        operationId: 'createDaily',
-        payload: const {
-          'id': 'daily-1',
-          'flock_id': 'flock-1',
-          'business_date': '2026-10-01',
-          'feed_kg': '12.50',
-          'eggs_count': 320,
-        },
-      ));
+      await outbox.enqueue(
+        outbox_lib.Intent(
+          id: 'intent-1',
+          resourceId: 'daily-1',
+          operationId: 'createDaily',
+          payload: const {
+            'id': 'daily-1',
+            'flock_id': 'flock-1',
+            'business_date': '2026-10-01',
+            'feed_kg': '12.50',
+            'eggs_count': 320,
+          },
+        ),
+      );
 
       // Server rejects with 422 INSUFFICIENT_STOCK
       transport.rejectNext('INSUFFICIENT_STOCK', 422);

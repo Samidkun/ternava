@@ -21,7 +21,10 @@ class CageTransport implements Transport {
 
   @override
   Future<JsonObject> send(
-      String operationId, JsonObject payload, String idempotencyKey) async {
+    String operationId,
+    JsonObject payload,
+    String idempotencyKey,
+  ) async {
     lastBody = payload;
     lastKey = idempotencyKey;
     final t = throwNext;
@@ -52,7 +55,9 @@ class CageApiClient extends ApiClient {
       throwNext = null;
       throw t;
     }
-    return {'data': {'id': 'cage-1', ...?body}};
+    return {
+      'data': {'id': 'cage-1', ...?body},
+    };
   }
 }
 
@@ -79,7 +84,7 @@ void main() {
             'value': {
               'id': 'c-revoked',
               'code': 'K-99',
-              'name': 'Kandang Lama'
+              'name': 'Kandang Lama',
             },
           },
         ],
@@ -105,10 +110,13 @@ void main() {
       expect(find.textContaining('K-99'), findsNothing);
     });
 
-    testWidgets('duplikat kode menampilkan pemulihan pada field',
-        (tester) async {
+    testWidgets('duplikat kode menampilkan pemulihan pada field', (
+      tester,
+    ) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final transport = CageTransport();
       final worker = SyncWorker(
@@ -122,7 +130,7 @@ void main() {
         message: 'Kode kandang sudah dipakai.',
         status: 422,
         fields: {
-          'code': ['Kode kandang sudah dipakai.']
+          'code': ['Kode kandang sudah dipakai.'],
         },
       );
 

@@ -23,12 +23,15 @@ class FlockListViewModel extends ChangeNotifier {
 
     try {
       final all = await cache.list('flock');
-      _flocks = all.where((f) {
-        final s = f['status'] as String? ?? 'active';
-        return s == status;
-      }).toList()
-        ..sort((a, b) => (b['start_date'] as String? ?? '')
-            .compareTo(a['start_date'] as String? ?? ''));
+      _flocks =
+          all.where((f) {
+            final s = f['status'] as String? ?? 'active';
+            return s == status;
+          }).toList()..sort(
+            (a, b) => (b['start_date'] as String? ?? '').compareTo(
+              a['start_date'] as String? ?? '',
+            ),
+          );
     } finally {
       _isLoading = false;
       notifyListeners();

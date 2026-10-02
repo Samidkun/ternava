@@ -52,15 +52,15 @@ class InboxItemView {
   }
 
   factory InboxItemView.fromJson(JsonObject json) => InboxItemView(
-        id: json['id'] as String? ?? '',
-        version: (json['version'] as num?)?.toInt() ?? 1,
-        kind: json['kind'] as String? ?? 'incident',
-        title: json['title'] as String? ?? '',
-        body: json['body'] as String? ?? '',
-        resourceType: json['resource_type'] as String? ?? 'incident',
-        resourceId: json['resource_id'] as String? ?? '',
-        readAt: json['read_at'] as String?,
-      );
+    id: json['id'] as String? ?? '',
+    version: (json['version'] as num?)?.toInt() ?? 1,
+    kind: json['kind'] as String? ?? 'incident',
+    title: json['title'] as String? ?? '',
+    body: json['body'] as String? ?? '',
+    resourceType: json['resource_type'] as String? ?? 'incident',
+    resourceId: json['resource_id'] as String? ?? '',
+    readAt: json['read_at'] as String?,
+  );
 }
 
 class InboxViewModel extends ChangeNotifier {

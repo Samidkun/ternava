@@ -97,8 +97,6 @@ class CacheRepository {
   Future<List<JsonObject>> listAssignedCages({Set<String>? assignedIds}) async {
     final all = await list('cage');
     if (assignedIds == null) return all;
-    return all
-        .where((c) => assignedIds.contains(c['id'] as String?))
-        .toList();
+    return all.where((c) => assignedIds.contains(c['id'] as String?)).toList();
   }
 }

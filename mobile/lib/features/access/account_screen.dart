@@ -6,10 +6,7 @@ import 'account_view_model.dart';
 class AccountScreen extends StatefulWidget {
   final AccountViewModel viewModel;
 
-  const AccountScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const AccountScreen({super.key, required this.viewModel});
 
   @override
   State<AccountScreen> createState() => _AccountScreenState();
@@ -92,7 +89,9 @@ class _AccountScreenState extends State<AccountScreen> {
                 label: const Text(
                   'Keluar Akun',
                   style: TextStyle(
-                      color: TernavaTheme.error, fontWeight: FontWeight.bold),
+                    color: TernavaTheme.error,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 onPressed: () async {
                   final confirmed = await showDialog<bool>(
@@ -100,7 +99,8 @@ class _AccountScreenState extends State<AccountScreen> {
                     builder: (ctx) => AlertDialog(
                       title: const Text('Keluar dari aplikasi?'),
                       content: const Text(
-                          'Partisi lokal akan dikunci. Pastikan catatan offline Anda telah tersinkronisasi.'),
+                        'Partisi lokal akan dikunci. Pastikan catatan offline Anda telah tersinkronisasi.',
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(ctx).pop(false),
@@ -108,8 +108,10 @@ class _AccountScreenState extends State<AccountScreen> {
                         ),
                         TextButton(
                           onPressed: () => Navigator.of(ctx).pop(true),
-                          child: const Text('Keluar',
-                              style: TextStyle(color: TernavaTheme.error)),
+                          child: const Text(
+                            'Keluar',
+                            style: TextStyle(color: TernavaTheme.error),
+                          ),
                         ),
                       ],
                     ),

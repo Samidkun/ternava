@@ -7,10 +7,7 @@ import 'today_view_model.dart';
 class TodayScreen extends StatefulWidget {
   final TodayViewModel viewModel;
 
-  const TodayScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const TodayScreen({super.key, required this.viewModel});
 
   @override
   State<TodayScreen> createState() => _TodayScreenState();
@@ -100,7 +97,9 @@ class _TodayScreenState extends State<TodayScreen> {
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -115,7 +114,8 @@ class _TodayScreenState extends State<TodayScreen> {
                             Text(
                               'Kode: ${cage.code}',
                               style: const TextStyle(
-                                  color: TernavaTheme.textMuted),
+                                color: TernavaTheme.textMuted,
+                              ),
                             ),
                             const SizedBox(height: 8),
                             Row(
@@ -123,13 +123,17 @@ class _TodayScreenState extends State<TodayScreen> {
                                 Flexible(
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 4),
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: cage.hasRecordedToday
-                                          ? TernavaTheme.success
-                                              .withValues(alpha: 0.1)
-                                          : TernavaTheme.warning
-                                              .withValues(alpha: 0.1),
+                                          ? TernavaTheme.success.withValues(
+                                              alpha: 0.1,
+                                            )
+                                          : TernavaTheme.warning.withValues(
+                                              alpha: 0.1,
+                                            ),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
@@ -147,8 +151,10 @@ class _TodayScreenState extends State<TodayScreen> {
                                   ),
                                 ),
                                 const Spacer(),
-                                const Icon(Icons.chevron_right,
-                                    color: TernavaTheme.textMuted),
+                                const Icon(
+                                  Icons.chevron_right,
+                                  color: TernavaTheme.textMuted,
+                                ),
                               ],
                             ),
                           ],

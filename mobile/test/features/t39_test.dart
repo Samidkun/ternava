@@ -199,8 +199,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final missingCage = vm.dashboard!.cages
-          .firstWhere((c) => c.recordState == 'missing');
+      final missingCage = vm.dashboard!.cages.firstWhere(
+        (c) => c.recordState == 'missing',
+      );
       expect(missingCage.eggsCount, isNull);
       expect(find.text('Belum dicatat'), findsWidgets);
     });

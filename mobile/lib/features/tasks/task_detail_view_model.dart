@@ -34,8 +34,7 @@ class TaskDetailViewModel extends ChangeNotifier {
 
   /// A task is finished once a completed result was recorded, or the
   /// template run was cancelled. Finished tasks are read-only.
-  bool get isReadOnly =>
-      _runStatus == 'completed' || _runStatus == 'cancelled';
+  bool get isReadOnly => _runStatus == 'completed' || _runStatus == 'cancelled';
 
   String get title => (_run?['title'] as String?) ?? '';
   String get sop => (_run?['sop'] as String?) ?? '';
@@ -43,7 +42,10 @@ class TaskDetailViewModel extends ChangeNotifier {
   List<JsonObject> get checklistItems {
     final raw = _run?['checklist_items'];
     if (raw is List) {
-      return raw.whereType<Map<String, dynamic>>().map((e) => e.cast<String, Object?>()).toList();
+      return raw
+          .whereType<Map<String, dynamic>>()
+          .map((e) => e.cast<String, Object?>())
+          .toList();
     }
     return const [];
   }

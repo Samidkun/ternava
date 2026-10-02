@@ -48,11 +48,7 @@ class FarmSetupViewModel extends ChangeNotifier {
     final payload = Map<String, Object?>.from(input);
 
     try {
-      await apiClient.request(
-        'updateFarm',
-        body: payload,
-        idempotencyKey: key,
-      );
+      await apiClient.request('updateFarm', body: payload, idempotencyKey: key);
       _isComplete = true;
       _persistKey = null;
       return true;

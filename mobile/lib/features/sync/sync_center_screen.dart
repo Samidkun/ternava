@@ -7,10 +7,7 @@ import 'sync_center_view_model.dart';
 class SyncCenterScreen extends StatefulWidget {
   final SyncCenterViewModel viewModel;
 
-  const SyncCenterScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const SyncCenterScreen({super.key, required this.viewModel});
 
   @override
   State<SyncCenterScreen> createState() => _SyncCenterScreenState();
@@ -133,7 +130,9 @@ class _SyncCenterScreenState extends State<SyncCenterScreen> {
                             margin: const EdgeInsets.only(bottom: 10),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
-                              side: const BorderSide(color: TernavaTheme.border),
+                              side: const BorderSide(
+                                color: TernavaTheme.border,
+                              ),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(14),
@@ -153,12 +152,15 @@ class _SyncCenterScreenState extends State<SyncCenterScreen> {
                                       ),
                                       Container(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 4),
+                                          horizontal: 10,
+                                          vertical: 4,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: _stateColor(item.state)
                                               .withValues(alpha: 0.1),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
                                         child: Text(
                                           _stateLabel(item.state),
@@ -196,8 +198,10 @@ class _SyncCenterScreenState extends State<SyncCenterScreen> {
                                       TextButton(
                                         onPressed: vm.isBusy
                                             ? null
-                                            : () => vm.cancelDraft(item.id,
-                                                confirmed: true),
+                                            : () => vm.cancelDraft(
+                                                item.id,
+                                                confirmed: true,
+                                              ),
                                         child: const Text('Batalkan draf'),
                                       ),
                                       const SizedBox(width: 6),

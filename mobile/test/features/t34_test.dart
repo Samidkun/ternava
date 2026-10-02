@@ -33,7 +33,9 @@ class IncidentDetailApiClient extends ApiClient {
       throwNext = null;
       throw t;
     }
-    return {'data': {'id': 'inc-1', 'version': 2}};
+    return {
+      'data': {'id': 'inc-1', 'version': 2},
+    };
   }
 }
 
@@ -42,21 +44,20 @@ JsonObject incidentJson({
   String status = 'open',
   String? assigneeId,
   int version = 1,
-}) =>
-    {
-      'id': id,
-      'farm_id': 'farm-1',
-      'cage_id': 'cage-1',
-      'flock_id': 'flock-1',
-      'source_daily_record_id': null,
-      'observed_at': '2026-10-02T06:30:00Z',
-      'observation': 'Ayam lemas di blok A3',
-      'attention': 'priority',
-      'assignee_id': assigneeId,
-      'status': status,
-      'version': version,
-      'updated_at': '2026-10-02T06:30:00Z',
-    };
+}) => {
+  'id': id,
+  'farm_id': 'farm-1',
+  'cage_id': 'cage-1',
+  'flock_id': 'flock-1',
+  'source_daily_record_id': null,
+  'observed_at': '2026-10-02T06:30:00Z',
+  'observation': 'Ayam lemas di blok A3',
+  'attention': 'priority',
+  'assignee_id': assigneeId,
+  'status': status,
+  'version': version,
+  'updated_at': '2026-10-02T06:30:00Z',
+};
 
 Future<CacheRepository> cacheWith(JsonObject incident) async {
   final store = PartitionStore();
@@ -109,8 +110,10 @@ void main() {
       await tester.tap(find.text('Tutup temuan'));
       await tester.pump();
 
-      expect(find.text('Jelaskan tindakan sebelum menutup temuan.'),
-          findsOneWidget);
+      expect(
+        find.text('Jelaskan tindakan sebelum menutup temuan.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('close dengan catatan mengirim aksi', (tester) async {
@@ -126,12 +129,14 @@ void main() {
       );
       await viewModel.load();
 
-      await viewModel.act(IncidentActionInput.fromJson({
-        'id': 'act-1',
-        'base_version': 1,
-        'notes': 'Sudah dipisahkan',
-        'status': 'closed',
-      }));
+      await viewModel.act(
+        IncidentActionInput.fromJson({
+          'id': 'act-1',
+          'base_version': 1,
+          'notes': 'Sudah dipisahkan',
+          'status': 'closed',
+        }),
+      );
 
       expect(api.lastOp, 'createIncidentAction');
       expect(api.lastBody!['status'], 'closed');
@@ -162,8 +167,9 @@ void main() {
       expect(find.text('Tutup temuan'), findsNothing);
     });
 
-    testWidgets('konflik versi memuat ulang dan mempertahankan catatan',
-        (tester) async {
+    testWidgets('konflik versi memuat ulang dan mempertahankan catatan', (
+      tester,
+    ) async {
       final cache = await cacheWith(incidentJson());
       final outbox = await freshOutbox();
       final api = IncidentDetailApiClient();
@@ -182,20 +188,23 @@ void main() {
       );
       await viewModel.load();
 
-      await viewModel.act(IncidentActionInput.fromJson({
-        'id': 'act-1',
-        'base_version': 1,
-        'notes': 'Catatan penting saya',
-        'status': 'in_progress',
-      }));
+      await viewModel.act(
+        IncidentActionInput.fromJson({
+          'id': 'act-1',
+          'base_version': 1,
+          'notes': 'Catatan penting saya',
+          'status': 'in_progress',
+        }),
+      );
 
       expect(viewModel.hasConflict, isTrue);
       // The user's notes survive the conflict so nothing is retyped.
       expect(viewModel.pendingNotes, 'Catatan penting saya');
     });
 
-    testWidgets('operator hanya melihat tombol untuk temuan yang ditugaskan',
-        (tester) async {
+    testWidgets('operator hanya melihat tombol untuk temuan yang ditugaskan', (
+      tester,
+    ) async {
       final cache = await cacheWith(incidentJson(assigneeId: 'op-9'));
       final outbox = await freshOutbox();
       final viewModel = IncidentDetailViewModel(
@@ -211,8 +220,9 @@ void main() {
       expect(viewModel.canAct, isFalse);
     });
 
-    testWidgets('temuan tidak dapat diakses memberi pemulihan kembali',
-        (tester) async {
+    testWidgets('temuan tidak dapat diakses memberi pemulihan kembali', (
+      tester,
+    ) async {
       final cache = await cacheWith(incidentJson());
       final outbox = await freshOutbox();
       final api = IncidentDetailApiClient();
@@ -231,12 +241,14 @@ void main() {
       );
       await viewModel.load();
 
-      await viewModel.act(IncidentActionInput.fromJson({
-        'id': 'act-1',
-        'base_version': 1,
-        'notes': 'x',
-        'status': 'in_progress',
-      }));
+      await viewModel.act(
+        IncidentActionInput.fromJson({
+          'id': 'act-1',
+          'base_version': 1,
+          'notes': 'x',
+          'status': 'in_progress',
+        }),
+      );
 
       expect(viewModel.isInaccessible, isTrue);
     });
@@ -254,10 +266,12 @@ void main() {
       );
       await viewModel.load();
 
-      await viewModel.assign(IncidentAssignmentInput.fromJson({
-        'base_version': 1,
-        'assignee_id': 'op-9',
-      }));
+      await viewModel.assign(
+        IncidentAssignmentInput.fromJson({
+          'base_version': 1,
+          'assignee_id': 'op-9',
+        }),
+      );
 
       expect(api.lastOp, 'assignIncident');
       expect(api.lastBody!['assignee_id'], 'op-9');
@@ -282,12 +296,14 @@ void main() {
       );
       await viewModel.load();
 
-      await viewModel.act(IncidentActionInput.fromJson({
-        'id': 'act-1',
-        'base_version': 1,
-        'notes': 'Tindakan offline',
-        'status': 'in_progress',
-      }));
+      await viewModel.act(
+        IncidentActionInput.fromJson({
+          'id': 'act-1',
+          'base_version': 1,
+          'notes': 'Tindakan offline',
+          'status': 'in_progress',
+        }),
+      );
 
       final intents = await outbox.allIntents();
       expect(intents.length, 1);

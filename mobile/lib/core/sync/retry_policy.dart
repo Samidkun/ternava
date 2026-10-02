@@ -1,11 +1,6 @@
 import '../api/api_failure.dart';
 
-enum RetryAction {
-  stopBlockedAuth,
-  needsReview,
-  retryAfter,
-  retryLater,
-}
+enum RetryAction { stopBlockedAuth, needsReview, retryAfter, retryLater }
 
 class RetryDecision {
   final RetryAction action;

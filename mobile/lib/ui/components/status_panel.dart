@@ -2,13 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/ternava_theme.dart';
 
-enum StatusKind {
-  online,
-  offline,
-  stale,
-  conflict,
-  error,
-}
+enum StatusKind { online, offline, stale, conflict, error }
 
 class StatusPanel extends StatelessWidget {
   final StatusKind kind;
@@ -93,10 +87,7 @@ class StatusPanel extends StatelessWidget {
             ),
           ),
           if (onRetry != null)
-            TextButton(
-              onPressed: onRetry,
-              child: const Text('Coba Lagi'),
-            ),
+            TextButton(onPressed: onRetry, child: const Text('Coba Lagi')),
         ],
       ),
     );

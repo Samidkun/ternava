@@ -6,10 +6,7 @@ import 'incident_list_view_model.dart';
 class IncidentListScreen extends StatefulWidget {
   final IncidentListViewModel viewModel;
 
-  const IncidentListScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const IncidentListScreen({super.key, required this.viewModel});
 
   @override
   State<IncidentListScreen> createState() => _IncidentListScreenState();
@@ -51,10 +48,18 @@ class _IncidentListScreenState extends State<IncidentListScreen> {
                         decoration: const InputDecoration(labelText: 'Status'),
                         items: const [
                           DropdownMenuItem(value: 'all', child: Text('Semua')),
-                          DropdownMenuItem(value: 'open', child: Text('Terbuka')),
                           DropdownMenuItem(
-                              value: 'in_progress', child: Text('Diproses')),
-                          DropdownMenuItem(value: 'closed', child: Text('Tutup')),
+                            value: 'open',
+                            child: Text('Terbuka'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'in_progress',
+                            child: Text('Diproses'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'closed',
+                            child: Text('Tutup'),
+                          ),
                         ],
                         onChanged: (v) {
                           setState(() => _statusFilter = v ?? 'all');
@@ -68,13 +73,19 @@ class _IncidentListScreenState extends State<IncidentListScreen> {
                         isExpanded: true,
                         key: const Key('incident-filter-assignment'),
                         initialValue: _assignmentFilter,
-                        decoration: const InputDecoration(labelText: 'Penugasan'),
+                        decoration: const InputDecoration(
+                          labelText: 'Penugasan',
+                        ),
                         items: const [
                           DropdownMenuItem(value: 'all', child: Text('Semua')),
                           DropdownMenuItem(
-                              value: 'unassigned', child: Text('Belum ditugaskan')),
+                            value: 'unassigned',
+                            child: Text('Belum ditugaskan'),
+                          ),
                           DropdownMenuItem(
-                              value: 'assigned', child: Text('Sudah ditugaskan')),
+                            value: 'assigned',
+                            child: Text('Sudah ditugaskan'),
+                          ),
                         ],
                         onChanged: (v) {
                           setState(() => _assignmentFilter = v ?? 'all');
@@ -95,8 +106,10 @@ class _IncidentListScreenState extends State<IncidentListScreen> {
                       )
                     : ListView.separated(
                         itemCount: vm.rows.length,
-                        separatorBuilder: (_, index) =>
-                            const Divider(height: 1, color: TernavaTheme.border),
+                        separatorBuilder: (_, index) => const Divider(
+                          height: 1,
+                          color: TernavaTheme.border,
+                        ),
                         itemBuilder: (context, index) {
                           final row = vm.rows[index];
                           return ListTile(
@@ -105,14 +118,17 @@ class _IncidentListScreenState extends State<IncidentListScreen> {
                             subtitle: Text(
                               '${row.status} · ${row.displayObservedAt()}',
                               style: const TextStyle(
-                                  fontSize: 12, color: TernavaTheme.textMuted),
+                                fontSize: 12,
+                                color: TernavaTheme.textMuted,
+                              ),
                             ),
                             trailing: row.assigneeId == null
                                 ? const Text(
                                     'Belum ditugaskan',
                                     style: TextStyle(
-                                        fontSize: 11,
-                                        color: TernavaTheme.warning),
+                                      fontSize: 11,
+                                      color: TernavaTheme.warning,
+                                    ),
                                   )
                                 : null,
                           );

@@ -38,8 +38,11 @@ class _InboxScreenState extends State<InboxScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.link_off,
-                          color: TernavaTheme.textMuted, size: 40),
+                      const Icon(
+                        Icons.link_off,
+                        color: TernavaTheme.textMuted,
+                        size: 40,
+                      ),
                       const SizedBox(height: 12),
                       const Text(
                         'Kembali ke pemberitahuan',
@@ -67,53 +70,53 @@ class _InboxScreenState extends State<InboxScreen> {
                   ),
                 )
               : vm.items.isEmpty
-                  ? Center(
-                      child: vm.isLoading
-                          ? const CircularProgressIndicator()
-                          : const Text(
-                              'Belum ada pemberitahuan.',
-                              style: TextStyle(color: TernavaTheme.textMuted),
-                            ),
-                    )
-                  : ListView.separated(
-                      itemCount: vm.items.length,
-                      separatorBuilder: (_, index) =>
-                          const Divider(height: 1, color: TernavaTheme.border),
-                      itemBuilder: (context, index) {
-                        final item = vm.items[index];
-                        return ListTile(
-                          key: Key('inbox-item-${item.id}'),
-                          tileColor: TernavaTheme.surface,
-                          leading: Icon(
-                            item.isUnread
-                                ? Icons.notifications_active
-                                : Icons.notifications_none,
-                            color: item.isUnread
-                                ? TernavaTheme.primary
-                                : TernavaTheme.textMuted,
-                          ),
-                          title: Text(
-                            item.title,
-                            style: TextStyle(
-                              fontWeight: item.isUnread
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
-                              color: TernavaTheme.textDark,
-                            ),
-                          ),
-                          subtitle: Text(
-                            item.body,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: TernavaTheme.textMuted,
-                            ),
-                          ),
-                          onTap: () => vm.open(item.id),
-                        );
-                      },
-                    ),
+              ? Center(
+                  child: vm.isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text(
+                          'Belum ada pemberitahuan.',
+                          style: TextStyle(color: TernavaTheme.textMuted),
+                        ),
+                )
+              : ListView.separated(
+                  itemCount: vm.items.length,
+                  separatorBuilder: (_, index) =>
+                      const Divider(height: 1, color: TernavaTheme.border),
+                  itemBuilder: (context, index) {
+                    final item = vm.items[index];
+                    return ListTile(
+                      key: Key('inbox-item-${item.id}'),
+                      tileColor: TernavaTheme.surface,
+                      leading: Icon(
+                        item.isUnread
+                            ? Icons.notifications_active
+                            : Icons.notifications_none,
+                        color: item.isUnread
+                            ? TernavaTheme.primary
+                            : TernavaTheme.textMuted,
+                      ),
+                      title: Text(
+                        item.title,
+                        style: TextStyle(
+                          fontWeight: item.isUnread
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                          color: TernavaTheme.textDark,
+                        ),
+                      ),
+                      subtitle: Text(
+                        item.body,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: TernavaTheme.textMuted,
+                        ),
+                      ),
+                      onTap: () => vm.open(item.id),
+                    );
+                  },
+                ),
         );
       },
     );

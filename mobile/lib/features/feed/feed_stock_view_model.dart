@@ -48,7 +48,8 @@ class FeedStockViewModel extends ChangeNotifier {
       _items = balances.map((b) {
         return FeedStockItem(
           feedTypeId: b['feed_type_id'] as String? ?? '',
-          feedTypeName: b['feed_type_name'] as String? ??
+          feedTypeName:
+              b['feed_type_name'] as String? ??
               b['feed_type_id'] as String? ??
               'Pakan',
           balanceKg: '${b['balance_kg'] ?? '0.00'}',
@@ -57,9 +58,9 @@ class FeedStockViewModel extends ChangeNotifier {
       }).toList();
 
       final checkpoint = await cache.getCheckpoint();
-      _asOf = checkpoint?.asOf ?? (balances.isNotEmpty
-          ? balances.first['as_of'] as String?
-          : null);
+      _asOf =
+          checkpoint?.asOf ??
+          (balances.isNotEmpty ? balances.first['as_of'] as String? : null);
     } finally {
       _isLoading = false;
       notifyListeners();

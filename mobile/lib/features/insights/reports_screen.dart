@@ -114,7 +114,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                                         ),
                                       ),
                                       Text(
-                                        row.isAccepted ? 'Tercatat' : 'Belum dicatat',
+                                        row.isAccepted
+                                            ? 'Tercatat'
+                                            : 'Belum dicatat',
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: row.isAccepted

@@ -21,8 +21,9 @@ import 'support/mobile_scenario.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('logout terkonfirmasi mengunci partisi namun antrean tetap ada',
-      (tester) async {
+  testWidgets('logout terkonfirmasi mengunci partisi namun antrean tetap ada', (
+    tester,
+  ) async {
     final s = await makeMobileScenario();
     await s.loginAsOperator();
     s.transport.offline = true;
@@ -78,8 +79,9 @@ void main() {
     );
   });
 
-  testWidgets('lease kedaluwarsa atau jam mundur menghentikan penulisan',
-      (tester) async {
+  testWidgets('lease kedaluwarsa atau jam mundur menghentikan penulisan', (
+    tester,
+  ) async {
     final issuedAt = DateTime.parse('2026-10-01T08:00:00Z');
     final lease = OfflineLease(
       issuedAt: issuedAt,
@@ -115,8 +117,9 @@ void main() {
     );
   });
 
-  testWidgets('bootstrap tidak menghapus draft/outbox yang belum terkirim',
-      (tester) async {
+  testWidgets('bootstrap tidak menghapus draft/outbox yang belum terkirim', (
+    tester,
+  ) async {
     final s = await makeMobileScenario();
     await s.loginAsOperator();
     s.transport.offline = true;

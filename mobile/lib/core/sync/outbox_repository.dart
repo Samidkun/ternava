@@ -3,13 +3,7 @@ import 'dart:async';
 import '../api/generated/types.dart';
 import '../local/partition_store.dart';
 
-enum IntentState {
-  pending,
-  sending,
-  accepted,
-  failed,
-  needsReview,
-}
+enum IntentState { pending, sending, accepted, failed, needsReview }
 
 class Intent {
   final String id; // Stable idempotency key
@@ -34,15 +28,16 @@ class Intent {
     this.lastError,
     DateTime? createdAt,
     DateTime? updatedAt,
-  })  : createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   factory Intent.onlineMaster(
     String operationId,
     JsonObject payload,
     String idempotencyKey,
   ) {
-    final resourceId = (payload['id'] as String?) ??
+    final resourceId =
+        (payload['id'] as String?) ??
         '$operationId-${DateTime.now().microsecondsSinceEpoch}';
     return Intent(
       id: idempotencyKey,
@@ -53,7 +48,8 @@ class Intent {
   }
 
   factory Intent.daily(JsonObject payload, {required String operationId}) {
-    final resourceId = (payload['id'] as String?) ??
+    final resourceId =
+        (payload['id'] as String?) ??
         'daily-${DateTime.now().microsecondsSinceEpoch}';
     return Intent(
       id: 'daily-${DateTime.now().microsecondsSinceEpoch}',
@@ -76,10 +72,7 @@ class Intent {
     );
   }
 
-  factory Intent.incident(
-    JsonObject payload,
-    String idempotencyKey,
-  ) {
+  factory Intent.incident(JsonObject payload, String idempotencyKey) {
     final resourceId = (payload['id'] as String?) ?? idempotencyKey;
     return Intent(
       id: idempotencyKey,
@@ -170,10 +163,9 @@ class OutboxRepository {
   }
 
   Future<List<Intent>> pendingIntents() async {
-    final pending = _queue.values
-        .where((i) => i.state == IntentState.pending)
-        .toList()
-      ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    final pending =
+        _queue.values.where((i) => i.state == IntentState.pending).toList()
+          ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
     return pending;
   }
 
@@ -202,8 +194,9 @@ class OutboxRepository {
     if (intent != null) {
       intent.attempts += 1;
       intent.lastError = error;
-      intent.state =
-          needsReview ? IntentState.needsReview : IntentState.pending;
+      intent.state = needsReview
+          ? IntentState.needsReview
+          : IntentState.pending;
       intent.updatedAt = DateTime.now();
     }
   }

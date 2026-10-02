@@ -6,10 +6,7 @@ import 'farm_setup_view_model.dart';
 class FarmSetupScreen extends StatefulWidget {
   final FarmSetupViewModel viewModel;
 
-  const FarmSetupScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const FarmSetupScreen({super.key, required this.viewModel});
 
   @override
   State<FarmSetupScreen> createState() => _FarmSetupScreenState();
@@ -61,12 +58,15 @@ class _FarmSetupScreenState extends State<FarmSetupScreen> {
                     color: TernavaTheme.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                        color: TernavaTheme.error.withValues(alpha: 0.3)),
+                      color: TernavaTheme.error.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Text(
                     vm.errorMessage!,
                     style: const TextStyle(
-                        color: TernavaTheme.error, fontSize: 13),
+                      color: TernavaTheme.error,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -110,7 +110,8 @@ class _FarmSetupScreenState extends State<FarmSetupScreen> {
                         if (ok && context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                                content: Text('Peternakan berhasil disimpan.')),
+                              content: Text('Peternakan berhasil disimpan.'),
+                            ),
                           );
                         }
                       },
@@ -119,7 +120,9 @@ class _FarmSetupScreenState extends State<FarmSetupScreen> {
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Text('Simpan peternakan'),
               ),

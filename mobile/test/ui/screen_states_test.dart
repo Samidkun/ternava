@@ -27,16 +27,17 @@ void main() {
     // The manifest is the single source of truth for the 24 screens / states.
     final file = File('../preview/manifest.json');
     final raw = file.readAsStringSync();
-    manifest = (jsonDecode(raw) as List<dynamic>)
-        .cast<Map<String, dynamic>>();
+    manifest = (jsonDecode(raw) as List<dynamic>).cast<Map<String, dynamic>>();
   });
 
   Future<ScreenGallery> makeGallery() async {
     final store = PartitionStore();
-    await store.unlock(const PartitionId(
-      actorId: ScreenGallery.operatorId,
-      farmId: ScreenGallery.farmId,
-    ));
+    await store.unlock(
+      const PartitionId(
+        actorId: ScreenGallery.operatorId,
+        farmId: ScreenGallery.farmId,
+      ),
+    );
     final cache = CacheRepository(store: store);
     final outbox = OutboxRepository(store: store);
     final transport = GalleryTransport();
@@ -69,8 +70,9 @@ void main() {
     expect(totalStates, 132);
   });
 
-  testWidgets('every screen renders every declared state without throwing',
-      (tester) async {
+  testWidgets('every screen renders every declared state without throwing', (
+    tester,
+  ) async {
     final failures = <String>[];
     var checked = 0;
 
@@ -134,9 +136,7 @@ void main() {
         ]);
 
         try {
-          await tester.pumpWidget(
-            gallery.appAt(id, args: {'state': state}),
-          );
+          await tester.pumpWidget(gallery.appAt(id, args: {'state': state}));
           await tester.pump(const Duration(milliseconds: 50));
           // A loading state may never settle; a single pump is enough to
           // verify the frame builds. Non-loading states settle fully.
@@ -160,8 +160,9 @@ void main() {
 
   // AC-40 requires both 320dp and 414dp at 200% text scale.
   for (final width in const [320.0, 414.0]) {
-    testWidgets('layout survives ${width.toInt()}dp width with 200% text scale',
-        (tester) async {
+    testWidgets('layout survives ${width.toInt()}dp width with 200% text scale', (
+      tester,
+    ) async {
       tester.view.physicalSize = Size(width * 3, 640 * 3);
       tester.view.devicePixelRatio = 3.0;
       addTearDown(tester.view.reset);
@@ -200,9 +201,12 @@ void main() {
         }
       }
 
-      expect(failures, isEmpty,
-          reason:
-              'Overflow/exception pada ${width.toInt()}dp 200%: ${failures.join('; ')}');
+      expect(
+        failures,
+        isEmpty,
+        reason:
+            'Overflow/exception pada ${width.toInt()}dp 200%: ${failures.join('; ')}',
+      );
     });
   }
 
@@ -234,10 +238,12 @@ void main() {
       await tester.pumpWidget(gallery.appAt(id, args: {'state': 'default'}));
       await tester.pump(const Duration(milliseconds: 50));
 
-      final targets = find.byWidgetPredicate((w) =>
-          buttonTypes.contains(w.runtimeType) ||
-          w is InkWell ||
-          w is GestureDetector);
+      final targets = find.byWidgetPredicate(
+        (w) =>
+            buttonTypes.contains(w.runtimeType) ||
+            w is InkWell ||
+            w is GestureDetector,
+      );
       for (final el in targets.evaluate()) {
         // Skip inner ink / gesture detectors that live inside a Material
         // button: their padded button ancestor is the real 48dp target.
@@ -254,18 +260,23 @@ void main() {
         final size = el.size;
         if (size == null) continue;
         if (size.width < 48 || size.height < 48) {
-          offenders
-              .add('$id: ${el.widget.runtimeType} ${size.width}x${size.height}');
+          offenders.add(
+            '$id: ${el.widget.runtimeType} ${size.width}x${size.height}',
+          );
         }
       }
     }
 
-    expect(offenders, isEmpty,
-        reason: 'Target sentuh <48dp: ${offenders.join('; ')}');
+    expect(
+      offenders,
+      isEmpty,
+      reason: 'Target sentuh <48dp: ${offenders.join('; ')}',
+    );
   });
 
-  testWidgets('reduced motion yields zero-duration theme animations',
-      (tester) async {
+  testWidgets('reduced motion yields zero-duration theme animations', (
+    tester,
+  ) async {
     late Duration motion;
     await tester.pumpWidget(
       MediaQuery(

@@ -85,12 +85,15 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                     color: TernavaTheme.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                        color: TernavaTheme.error.withValues(alpha: 0.3)),
+                      color: TernavaTheme.error.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Text(
                     vm.errorMessage!,
                     style: const TextStyle(
-                        color: TernavaTheme.error, fontSize: 13),
+                      color: TernavaTheme.error,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -117,10 +120,12 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                 initialValue: _selectedRole,
                 decoration: const InputDecoration(labelText: 'Peran'),
                 items: roles
-                    .map((r) => DropdownMenuItem(
-                          value: r,
-                          child: Text(_roleLabel(r)),
-                        ))
+                    .map(
+                      (r) => DropdownMenuItem(
+                        value: r,
+                        child: Text(_roleLabel(r)),
+                      ),
+                    )
                     .toList(),
                 onChanged: (v) => setState(() => _selectedRole = v),
               ),
@@ -150,8 +155,10 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                             'temporary_password': _passwordController.text,
                         };
                         final ok = widget.edit
-                            ? await vm.update(values,
-                                id: widget.initial?['id'] as String? ?? '')
+                            ? await vm.update(
+                                values,
+                                id: widget.initial?['id'] as String? ?? '',
+                              )
                             : await vm.create(values);
                         // Clear the secret from memory immediately.
                         _passwordController.clear();
@@ -164,7 +171,9 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Text('Simpan anggota'),
               ),

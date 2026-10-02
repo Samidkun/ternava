@@ -32,10 +32,10 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final res = await apiClient.request('login', body: {
-        'username': username,
-        'password': password,
-      });
+      final res = await apiClient.request(
+        'login',
+        body: {'username': username, 'password': password},
+      );
 
       final data = res['data'] as Map<String, dynamic>;
       final token = data['token'] as String;
@@ -69,16 +69,21 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   Future<void> changePassword(
-      String currentPassword, String newPassword) async {
+    String currentPassword,
+    String newPassword,
+  ) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      await apiClient.request('changePassword', body: {
-        'current_password': currentPassword,
-        'new_password': newPassword,
-      });
+      await apiClient.request(
+        'changePassword',
+        body: {
+          'current_password': currentPassword,
+          'new_password': newPassword,
+        },
+      );
       _mustChangePassword = false;
       await coordinator.refresh();
     } on ApiFailure catch (e) {

@@ -6,10 +6,7 @@ import 'team_list_view_model.dart';
 class TeamListScreen extends StatefulWidget {
   final TeamListViewModel viewModel;
 
-  const TeamListScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const TeamListScreen({super.key, required this.viewModel});
 
   @override
   State<TeamListScreen> createState() => _TeamListScreenState();
@@ -84,8 +81,9 @@ class _TeamListScreenState extends State<TeamListScreen> {
                       ),
                       child: ListTile(
                         leading: CircleAvatar(
-                          backgroundColor:
-                              TernavaTheme.primary.withValues(alpha: 0.1),
+                          backgroundColor: TernavaTheme.primary.withValues(
+                            alpha: 0.1,
+                          ),
                           child: Text(
                             (m['display_name'] as String? ?? '?')
                                 .characters
@@ -106,14 +104,18 @@ class _TeamListScreenState extends State<TeamListScreen> {
                         ),
                         subtitle: Text(
                           '@${m['username'] ?? '-'} · ${_roleLabel(m['role'] as String?)}',
-                          style: const TextStyle(
-                              color: TernavaTheme.textMuted),
+                          style: const TextStyle(color: TernavaTheme.textMuted),
                         ),
                         trailing: m['role'] == 'owner'
-                            ? const Icon(Icons.lock_outline,
-                                color: TernavaTheme.textMuted, size: 18)
-                            : const Icon(Icons.edit_outlined,
-                                color: TernavaTheme.textMuted),
+                            ? const Icon(
+                                Icons.lock_outline,
+                                color: TernavaTheme.textMuted,
+                                size: 18,
+                              )
+                            : const Icon(
+                                Icons.edit_outlined,
+                                color: TernavaTheme.textMuted,
+                              ),
                         onTap: () => Navigator.of(context).pushNamed(
                           '/member-form',
                           arguments: {'edit': true, 'member': m},

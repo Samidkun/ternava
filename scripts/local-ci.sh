@@ -5,6 +5,8 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 mode="${1:---full}"
 [[ "$mode" == --planning || "$mode" == --full ]] || { echo 'Use --planning or --full'; exit 2; }
 python3 scripts/check_contracts.py
+python3 scripts/validate_openapi.py
+python3 scripts/generate_dto.py --check
 python3 scripts/generate_diagrams.py --check
 python3 scripts/check_secrets.py
 if [[ "$mode" == --planning ]]; then

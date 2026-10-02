@@ -27,7 +27,10 @@ class RejectOnceTransport implements Transport {
 
   @override
   Future<JsonObject> send(
-      String operationId, JsonObject payload, String idempotencyKey) async {
+    String operationId,
+    JsonObject payload,
+    String idempotencyKey,
+  ) async {
     lastBody = payload;
     lastKey = idempotencyKey;
     final rejection = _next;
@@ -60,7 +63,9 @@ class FakeApiClient extends ApiClient {
       throwNext = null;
       throw t;
     }
-    return {'data': {'id': 'farm-1', ...?body}};
+    return {
+      'data': {'id': 'farm-1', ...?body},
+    };
   }
 }
 
@@ -68,7 +73,9 @@ void main() {
   group('T24 Farm setup tests', () {
     testWidgets('zona ditolak mempertahankan isian', (tester) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final transport = RejectOnceTransport();
       final worker = SyncWorker(
@@ -107,7 +114,9 @@ void main() {
 
     testWidgets('form awal tidak memuat isian fiktif', (tester) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final transport = RejectOnceTransport();
       final worker = SyncWorker(
@@ -128,50 +137,55 @@ void main() {
         ),
       );
 
-      final nameField =
-          tester.widget<TextField>(find.byKey(const Key('farm-name')));
+      final nameField = tester.widget<TextField>(
+        find.byKey(const Key('farm-name')),
+      );
       expect(nameField.controller!.text, isEmpty);
     });
 
-    test('respons tidak diketahui menyimpan key/payload untuk diulang',
-        () async {
-      final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
-      final outbox = outbox_lib.OutboxRepository(store: store);
-      final transport = RejectOnceTransport();
-      final worker = SyncWorker(
-        outbox: outbox,
-        transport: transport,
-        retryPolicy: const RetryPolicy(),
-      );
-      final api = FakeApiClient();
-      api.throwNext = const ApiFailure(
-        code: 'NETWORK_ERROR',
-        message: 'Koneksi terputus.',
-        status: 0,
-        retryable: true,
-      );
+    test(
+      'respons tidak diketahui menyimpan key/payload untuk diulang',
+      () async {
+        final store = PartitionStore();
+        await store.unlock(
+          const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+        );
+        final outbox = outbox_lib.OutboxRepository(store: store);
+        final transport = RejectOnceTransport();
+        final worker = SyncWorker(
+          outbox: outbox,
+          transport: transport,
+          retryPolicy: const RetryPolicy(),
+        );
+        final api = FakeApiClient();
+        api.throwNext = const ApiFailure(
+          code: 'NETWORK_ERROR',
+          message: 'Koneksi terputus.',
+          status: 0,
+          retryable: true,
+        );
 
-      final viewModel = FarmSetupViewModel(
-        apiClient: api,
-        outbox: outbox,
-        worker: worker,
-      );
+        final viewModel = FarmSetupViewModel(
+          apiClient: api,
+          outbox: outbox,
+          worker: worker,
+        );
 
-      final key = viewModel.ensurePersistKey();
-      await viewModel.save({
-        'name': 'Farm Uji',
-        'location': 'Blitar',
-        'timezone': 'Asia/Jakarta',
-      });
+        final key = viewModel.ensurePersistKey();
+        await viewModel.save({
+          'name': 'Farm Uji',
+          'location': 'Blitar',
+          'timezone': 'Asia/Jakarta',
+        });
 
-      // Persist key must be stable across attempts
-      expect(viewModel.ensurePersistKey(), key);
+        // Persist key must be stable across attempts
+        expect(viewModel.ensurePersistKey(), key);
 
-      final intents = await outbox.allIntents();
-      expect(intents, hasLength(1));
-      expect(intents.first.id, key);
-      expect(intents.first.payload['name'], 'Farm Uji');
-    });
+        final intents = await outbox.allIntents();
+        expect(intents, hasLength(1));
+        expect(intents.first.id, key);
+        expect(intents.first.payload['name'], 'Farm Uji');
+      },
+    );
   });
 }

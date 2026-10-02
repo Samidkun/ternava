@@ -7,7 +7,10 @@ import 'retry_policy.dart';
 
 abstract class Transport {
   Future<JsonObject> send(
-      String operationId, JsonObject payload, String idempotencyKey);
+    String operationId,
+    JsonObject payload,
+    String idempotencyKey,
+  );
 }
 
 class SyncWorker {
@@ -36,7 +39,8 @@ class SyncWorker {
         await outbox.markAccepted(intent.id, ack);
       } on ApiFailure catch (e) {
         final decision = retryPolicy.next(e, intent.attempts + 1);
-        final needsReview = decision.action == RetryAction.needsReview ||
+        final needsReview =
+            decision.action == RetryAction.needsReview ||
             decision.action == RetryAction.stopBlockedAuth;
         await outbox.markFailed(intent.id, e.message, needsReview);
       } catch (e) {

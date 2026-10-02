@@ -22,8 +22,9 @@ class SyncCenterViewModel extends ChangeNotifier {
   List<Intent> get items => _items;
   bool get isBusy => _isBusy;
 
-  int get blockedAuthCount =>
-      _items.where((i) => i.lastError != null && i.state == IntentState.pending).length;
+  int get blockedAuthCount => _items
+      .where((i) => i.lastError != null && i.state == IntentState.pending)
+      .length;
 
   Future<void> load() async {
     _items = await outbox.allIntents();
@@ -34,8 +35,9 @@ class SyncCenterViewModel extends ChangeNotifier {
     _isBusy = true;
     notifyListeners();
 
-    final target =
-        _items.where((i) => i.id == operationId || i.operationId == operationId);
+    final target = _items.where(
+      (i) => i.id == operationId || i.operationId == operationId,
+    );
     if (target.isEmpty) {
       _isBusy = false;
       notifyListeners();
@@ -65,10 +67,14 @@ class SyncCenterViewModel extends ChangeNotifier {
     await AppRouter.open('login');
   }
 
-  Future<void> cancelDraft(String operationId, {required bool confirmed}) async {
+  Future<void> cancelDraft(
+    String operationId, {
+    required bool confirmed,
+  }) async {
     if (!confirmed) return;
-    final target = _items
-        .where((i) => i.id == operationId || i.operationId == operationId);
+    final target = _items.where(
+      (i) => i.id == operationId || i.operationId == operationId,
+    );
     if (target.isEmpty) return;
     await outbox.cancelIntent(target.first.id);
     await load();

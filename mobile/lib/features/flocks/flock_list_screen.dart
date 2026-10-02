@@ -6,10 +6,7 @@ import 'flock_list_view_model.dart';
 class FlockListScreen extends StatefulWidget {
   final FlockListViewModel viewModel;
 
-  const FlockListScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const FlockListScreen({super.key, required this.viewModel});
 
   @override
   State<FlockListScreen> createState() => _FlockListScreenState();
@@ -67,8 +64,7 @@ class _FlockListScreenState extends State<FlockListScreen> {
                           vm.statusFilter == 'active'
                               ? 'Belum ada kelompok aktif.'
                               : 'Belum ada kelompok selesai.',
-                          style: const TextStyle(
-                              color: TernavaTheme.textMuted),
+                          style: const TextStyle(color: TernavaTheme.textMuted),
                         ),
                       )
                     : ListView.builder(
@@ -82,7 +78,9 @@ class _FlockListScreenState extends State<FlockListScreen> {
                             margin: const EdgeInsets.only(bottom: 10),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
-                              side: const BorderSide(color: TernavaTheme.border),
+                              side: const BorderSide(
+                                color: TernavaTheme.border,
+                              ),
                             ),
                             child: ListTile(
                               title: Text(
@@ -95,12 +93,14 @@ class _FlockListScreenState extends State<FlockListScreen> {
                               subtitle: Text(
                                 'Mulai: ${flock['start_date'] ?? '-'} · Populasi: ${flock['initial_population'] ?? '-'}',
                                 style: const TextStyle(
-                                    color: TernavaTheme.textMuted),
+                                  color: TernavaTheme.textMuted,
+                                ),
                               ),
-                              trailing: const Icon(Icons.chevron_right,
-                                  color: TernavaTheme.textMuted),
-                              onTap: () =>
-                                  Navigator.of(context).pushNamed(
+                              trailing: const Icon(
+                                Icons.chevron_right,
+                                color: TernavaTheme.textMuted,
+                              ),
+                              onTap: () => Navigator.of(context).pushNamed(
                                 '/flock-form',
                                 arguments: {'edit': true, 'flock': flock},
                               ),

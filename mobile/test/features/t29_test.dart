@@ -30,7 +30,9 @@ class FeedTypeApiClient extends ApiClient {
       throwNext = null;
       throw t;
     }
-    return {'data': {'id': 'ft-1', ...?body}};
+    return {
+      'data': {'id': 'ft-1', ...?body},
+    };
   }
 }
 
@@ -38,7 +40,9 @@ void main() {
   group('T29 Feed type & minimum threshold tests', () {
     testWidgets('edit jenis memakai versi accepted', (tester) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final api = FeedTypeApiClient();
       final viewModel = FeedTypeFormViewModel(
@@ -69,7 +73,9 @@ void main() {
 
     testWidgets('ambang minimum menyimpan presisi kg', (tester) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final api = FeedTypeApiClient();
       final viewModel = FeedTypeFormViewModel(
@@ -95,10 +101,13 @@ void main() {
       expect(api.lastBody!['min_threshold_kg'], isA<String>());
     });
 
-    testWidgets('jenis nonaktif tetap menyimpan referensi histori',
-        (tester) async {
+    testWidgets('jenis nonaktif tetap menyimpan referensi histori', (
+      tester,
+    ) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final api = FeedTypeApiClient();
       final viewModel = FeedTypeFormViewModel(
@@ -122,7 +131,9 @@ void main() {
 
     testWidgets('alert stok memakai transisi bukan refresh', (tester) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final viewModel = FeedTypeFormViewModel(
         apiClient: FeedTypeApiClient(),

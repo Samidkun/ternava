@@ -20,7 +20,10 @@ class FlockTransport implements Transport {
 
   @override
   Future<JsonObject> send(
-      String operationId, JsonObject payload, String idempotencyKey) async {
+    String operationId,
+    JsonObject payload,
+    String idempotencyKey,
+  ) async {
     lastBody = payload;
     lastKey = idempotencyKey;
     return {'status': 'accepted'};
@@ -46,16 +49,21 @@ class FlockApiClient extends ApiClient {
       throwNext = null;
       throw t;
     }
-    return {'data': {'id': 'flock-1', ...?body}};
+    return {
+      'data': {'id': 'flock-1', ...?body},
+    };
   }
 }
 
 void main() {
   group('T26 Flock list & form tests', () {
-    testWidgets('edit kelompok mencatat alasan dan kunci populasi awal',
-        (tester) async {
+    testWidgets('edit kelompok mencatat alasan dan kunci populasi awal', (
+      tester,
+    ) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final worker = SyncWorker(
         outbox: outbox,
@@ -85,14 +93,17 @@ void main() {
       );
 
       expect(find.byKey(const Key('change-reason')), findsOneWidget);
-      final field = tester
-          .widget<TextField>(find.byKey(const Key('initial-population')));
+      final field = tester.widget<TextField>(
+        find.byKey(const Key('initial-population')),
+      );
       expect(field.enabled, isFalse);
     });
 
     testWidgets('filter kelompok aktif dan selesai', (tester) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final cache = CacheRepository(store: store);
       await cache.applyPage({
         'scope_version': 1,

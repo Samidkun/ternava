@@ -10,10 +10,8 @@ class ApiClient {
   final HttpClient _httpClient;
   String? _authToken;
 
-  ApiClient({
-    required this.baseUrl,
-    HttpClient? httpClient,
-  }) : _httpClient = httpClient ?? HttpClient();
+  ApiClient({required this.baseUrl, HttpClient? httpClient})
+    : _httpClient = httpClient ?? HttpClient();
 
   void setAuthToken(String? token) {
     _authToken = token;
@@ -48,34 +46,61 @@ class ApiClient {
     'listDaily': (method: 'GET', path: '/api/v1/daily-records'),
     'createDaily': (method: 'POST', path: '/api/v1/daily-records'),
     'getDaily': (method: 'GET', path: '/api/v1/daily-records/{id}'),
-    'listDailyRevisions': (method: 'GET', path: '/api/v1/daily-records/{id}/revisions'),
-    'reviseDaily': (method: 'POST', path: '/api/v1/daily-records/{id}/revisions'),
+    'listDailyRevisions': (
+      method: 'GET',
+      path: '/api/v1/daily-records/{id}/revisions',
+    ),
+    'reviseDaily': (
+      method: 'POST',
+      path: '/api/v1/daily-records/{id}/revisions',
+    ),
     'bootstrapSync': (method: 'GET', path: '/api/v1/sync/bootstrap'),
     'pullChanges': (method: 'GET', path: '/api/v1/sync/changes'),
     'listTaskTemplate': (method: 'GET', path: '/api/v1/task-templates'),
     'createTaskTemplate': (method: 'POST', path: '/api/v1/task-templates'),
     'getTaskTemplate': (method: 'GET', path: '/api/v1/task-templates/{id}'),
-    'updateTaskTemplate': (method: 'PATCH', path: '/api/v1/task-templates/{id}'),
+    'updateTaskTemplate': (
+      method: 'PATCH',
+      path: '/api/v1/task-templates/{id}',
+    ),
     'listTaskRuns': (method: 'GET', path: '/api/v1/task-runs'),
     'getTaskRun': (method: 'GET', path: '/api/v1/task-runs/{id}'),
-    'createTaskResult': (method: 'POST', path: '/api/v1/task-runs/{id}/results'),
+    'createTaskResult': (
+      method: 'POST',
+      path: '/api/v1/task-runs/{id}/results',
+    ),
     'listTaskResults': (method: 'GET', path: '/api/v1/task-runs/{id}/results'),
     'listIncidents': (method: 'GET', path: '/api/v1/incidents'),
     'createIncident': (method: 'POST', path: '/api/v1/incidents'),
     'getIncident': (method: 'GET', path: '/api/v1/incidents/{id}'),
-    'assignIncident': (method: 'POST', path: '/api/v1/incidents/{id}/assignment'),
-    'createIncidentAction': (method: 'POST', path: '/api/v1/incidents/{id}/actions'),
-    'listIncidentActions': (method: 'GET', path: '/api/v1/incidents/{id}/actions'),
+    'assignIncident': (
+      method: 'POST',
+      path: '/api/v1/incidents/{id}/assignment',
+    ),
+    'createIncidentAction': (
+      method: 'POST',
+      path: '/api/v1/incidents/{id}/actions',
+    ),
+    'listIncidentActions': (
+      method: 'GET',
+      path: '/api/v1/incidents/{id}/actions',
+    ),
     'uploadAttachment': (method: 'POST', path: '/api/v1/attachments'),
     'listAttachments': (method: 'GET', path: '/api/v1/attachments'),
-    'downloadAttachment': (method: 'GET', path: '/api/v1/attachments/{id}/download'),
+    'downloadAttachment': (
+      method: 'GET',
+      path: '/api/v1/attachments/{id}/download',
+    ),
     'dashboard': (method: 'GET', path: '/api/v1/dashboard'),
     'operationsReport': (method: 'GET', path: '/api/v1/reports/operations'),
     'exportReport': (method: 'GET', path: '/api/v1/reports/operations.csv'),
     'listInbox': (method: 'GET', path: '/api/v1/inbox'),
     'readInbox': (method: 'POST', path: '/api/v1/inbox/{id}/read'),
     'registerPushDevice': (method: 'POST', path: '/api/v1/push-devices'),
-    'unregisterPushDevice': (method: 'DELETE', path: '/api/v1/push-devices/{id}'),
+    'unregisterPushDevice': (
+      method: 'DELETE',
+      path: '/api/v1/push-devices/{id}',
+    ),
   };
 
   Future<JsonObject> request(
@@ -122,7 +147,9 @@ class ApiClient {
         request.write(jsonEncode(body));
       }
 
-      final response = await request.close().timeout(const Duration(seconds: 20));
+      final response = await request.close().timeout(
+        const Duration(seconds: 20),
+      );
       final responseBody = await response.transform(utf8.decoder).join();
 
       final statusCode = response.statusCode;
@@ -142,7 +169,9 @@ class ApiClient {
 
       if (statusCode >= 400) {
         final retryAfterHeader = response.headers.value('Retry-After');
-        final retryAfter = retryAfterHeader != null ? int.tryParse(retryAfterHeader) : null;
+        final retryAfter = retryAfterHeader != null
+            ? int.tryParse(retryAfterHeader)
+            : null;
         throw ApiFailure.fromJson(decoded, statusCode, retryAfter: retryAfter);
       }
 

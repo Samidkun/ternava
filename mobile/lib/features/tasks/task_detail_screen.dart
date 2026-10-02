@@ -7,10 +7,7 @@ import 'task_detail_view_model.dart';
 class TaskDetailScreen extends StatefulWidget {
   final TaskDetailViewModel viewModel;
 
-  const TaskDetailScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const TaskDetailScreen({super.key, required this.viewModel});
 
   @override
   State<TaskDetailScreen> createState() => _TaskDetailScreenState();
@@ -53,7 +50,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     color: TernavaTheme.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                        color: TernavaTheme.error.withValues(alpha: 0.3)),
+                      color: TernavaTheme.error.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: const Text(
                     'Tugas ini perlu ditinjau ulang.',
@@ -96,9 +94,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   onChanged: vm.isReadOnly
                       ? null
                       : (value) => vm.toggle(
-                            vm.checklistItems[i]['id'] as String,
-                            value ?? false,
-                          ),
+                          vm.checklistItems[i]['id'] as String,
+                          value ?? false,
+                        ),
                   title: Text(vm.checklistItems[i]['label'] as String),
                   controlAffinity: ListTileControlAffinity.leading,
                   contentPadding: EdgeInsets.zero,
@@ -145,18 +143,22 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   Future<void> _submit(TaskDetailViewModel vm, String status) async {
     final note = _noteController.text.trim();
     final values = vm.checklistItems
-        .map((item) => {
-              'id': item['id'],
-              'checked': vm.isChecked(item['id'] as String),
-            })
+        .map(
+          (item) => {
+            'id': item['id'],
+            'checked': vm.isChecked(item['id'] as String),
+          },
+        )
         .toList();
 
-    await vm.submit(TaskResultInput.fromJson({
-      'id': 'res-${DateTime.now().microsecondsSinceEpoch}',
-      'base_version': 1,
-      'status': status,
-      'notes': note.isEmpty ? null : note,
-      'checklist_values': values,
-    }));
+    await vm.submit(
+      TaskResultInput.fromJson({
+        'id': 'res-${DateTime.now().microsecondsSinceEpoch}',
+        'base_version': 1,
+        'status': status,
+        'notes': note.isEmpty ? null : note,
+        'checklist_values': values,
+      }),
+    );
   }
 }

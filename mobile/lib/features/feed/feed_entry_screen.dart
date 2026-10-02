@@ -6,10 +6,7 @@ import 'feed_entry_view_model.dart';
 class FeedEntryScreen extends StatefulWidget {
   final FeedEntryViewModel viewModel;
 
-  const FeedEntryScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const FeedEntryScreen({super.key, required this.viewModel});
 
   @override
   State<FeedEntryScreen> createState() => _FeedEntryScreenState();
@@ -55,12 +52,15 @@ class _FeedEntryScreenState extends State<FeedEntryScreen> {
                     color: TernavaTheme.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                        color: TernavaTheme.error.withValues(alpha: 0.3)),
+                      color: TernavaTheme.error.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Text(
                     vm.errorMessage!,
                     style: const TextStyle(
-                        color: TernavaTheme.error, fontSize: 13),
+                      color: TernavaTheme.error,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -71,15 +71,15 @@ class _FeedEntryScreenState extends State<FeedEntryScreen> {
                   ButtonSegment(value: 'out', label: Text('Keluar')),
                 ],
                 selected: {_kind},
-                onSelectionChanged: (sel) =>
-                    setState(() => _kind = sel.first),
+                onSelectionChanged: (sel) => setState(() => _kind = sel.first),
               ),
               const SizedBox(height: 16),
               TextField(
                 key: const Key('feed-amount'),
                 controller: _amountController,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: const InputDecoration(
                   labelText: 'Jumlah (kg)',
                   hintText: 'misal: 25.50',
@@ -89,7 +89,9 @@ class _FeedEntryScreenState extends State<FeedEntryScreen> {
               TextField(
                 key: const Key('feed-note'),
                 controller: _noteController,
-                decoration: const InputDecoration(labelText: 'Catatan (opsional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Catatan (opsional)',
+                ),
               ),
               const SizedBox(height: 24),
               FilledButton(
@@ -111,7 +113,9 @@ class _FeedEntryScreenState extends State<FeedEntryScreen> {
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Text('Simpan transaksi'),
               ),

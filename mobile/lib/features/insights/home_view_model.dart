@@ -26,15 +26,16 @@ class CageStatusRow {
 
   /// A missing or not-expected cage has no egg figure; it must never be shown
   /// as zero, because zero would be a false claim about the day's production.
-  String get eggsLabel => eggsCount == null ? 'Belum dicatat' : '$eggsCount butir';
+  String get eggsLabel =>
+      eggsCount == null ? 'Belum dicatat' : '$eggsCount butir';
 
   factory CageStatusRow.fromJson(JsonObject json) => CageStatusRow(
-        cageId: json['cage_id'] as String? ?? '',
-        flockId: json['flock_id'] as String?,
-        recordState: json['record_state'] as String? ?? 'not_expected',
-        eggsCount: (json['eggs_count'] as num?)?.toInt(),
-        feedKg: json['feed_kg'] as String?,
-      );
+    cageId: json['cage_id'] as String? ?? '',
+    flockId: json['flock_id'] as String?,
+    recordState: json['record_state'] as String? ?? 'not_expected',
+    eggsCount: (json['eggs_count'] as num?)?.toInt(),
+    feedKg: json['feed_kg'] as String?,
+  );
 }
 
 /// An immutable snapshot of the dashboard, kept with its as-of timestamp so
@@ -65,28 +66,30 @@ class DashboardSnapshot {
   });
 
   int get pendingRecords => expectedRecords - acceptedRecords;
-  bool get isComplete => expectedRecords > 0 && acceptedRecords == expectedRecords;
+  bool get isComplete =>
+      expectedRecords > 0 && acceptedRecords == expectedRecords;
 
-  String get eggsLabel => eggsCount == null ? 'Belum dicatat' : '$eggsCount butir';
+  String get eggsLabel =>
+      eggsCount == null ? 'Belum dicatat' : '$eggsCount butir';
 
   factory DashboardSnapshot.fromJson(JsonObject json) => DashboardSnapshot(
-        businessDate: json['business_date'] as String? ?? '',
-        timezone: json['timezone'] as String? ?? 'UTC',
-        asOf: json['as_of'] as String? ?? '',
-        expectedRecords: (json['expected_records'] as num?)?.toInt() ?? 0,
-        acceptedRecords: (json['accepted_records'] as num?)?.toInt() ?? 0,
-        eggsCount: (json['eggs_count'] as num?)?.toInt(),
-        feedKg: json['feed_kg'] as String?,
-        openIncidents: (json['open_incidents'] as num?)?.toInt() ?? 0,
-        lowStockFeedTypeIds:
-            ((json['low_stock_feed_type_ids'] as List<dynamic>?) ?? [])
-                .map((e) => e.toString())
-                .toList(),
-        cages: ((json['cages'] as List<dynamic>?) ?? [])
-            .whereType<Map<String, dynamic>>()
-            .map((raw) => CageStatusRow.fromJson(Map<String, Object?>.from(raw)))
+    businessDate: json['business_date'] as String? ?? '',
+    timezone: json['timezone'] as String? ?? 'UTC',
+    asOf: json['as_of'] as String? ?? '',
+    expectedRecords: (json['expected_records'] as num?)?.toInt() ?? 0,
+    acceptedRecords: (json['accepted_records'] as num?)?.toInt() ?? 0,
+    eggsCount: (json['eggs_count'] as num?)?.toInt(),
+    feedKg: json['feed_kg'] as String?,
+    openIncidents: (json['open_incidents'] as num?)?.toInt() ?? 0,
+    lowStockFeedTypeIds:
+        ((json['low_stock_feed_type_ids'] as List<dynamic>?) ?? [])
+            .map((e) => e.toString())
             .toList(),
-      );
+    cages: ((json['cages'] as List<dynamic>?) ?? [])
+        .whereType<Map<String, dynamic>>()
+        .map((raw) => CageStatusRow.fromJson(Map<String, Object?>.from(raw)))
+        .toList(),
+  );
 }
 
 class HomeViewModel extends ChangeNotifier {

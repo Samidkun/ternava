@@ -34,37 +34,37 @@ class TaskApiClient extends ApiClient {
       throwNext = null;
       throw t;
     }
-    return {'data': {'id': 'run-1', ...?body}};
+    return {
+      'data': {'id': 'run-1', ...?body},
+    };
   }
 }
 
-JsonObject runPayload({
-  String status = 'open',
-  int version = 1,
-}) =>
-    {
-      'id': 'run-1',
-      'farm_id': 'farm-1',
-      'template_id': 'tpl-1',
-      'cage_id': 'cage-1',
-      'business_date': '2026-10-02',
-      'scheduled_at': '2026-10-02T06:30:00Z',
-      'title': 'Bersihkan tempat pakan',
-      'sop': 'Sikat tempat pakan\nBuang sisa pakan basah\nIsi pakan baru',
-      'assignee_id': 'operator-1',
-      'status': status,
-      'latest_note': null,
-      'checklist_items': [
-        {'id': 'c-1', 'label': 'Sikat tempat pakan'},
-        {'id': 'c-2', 'label': 'Buang sisa pakan basah'},
-        {'id': 'c-3', 'label': 'Isi pakan baru'},
-      ],
-      'version': version,
-    };
+JsonObject runPayload({String status = 'open', int version = 1}) => {
+  'id': 'run-1',
+  'farm_id': 'farm-1',
+  'template_id': 'tpl-1',
+  'cage_id': 'cage-1',
+  'business_date': '2026-10-02',
+  'scheduled_at': '2026-10-02T06:30:00Z',
+  'title': 'Bersihkan tempat pakan',
+  'sop': 'Sikat tempat pakan\nBuang sisa pakan basah\nIsi pakan baru',
+  'assignee_id': 'operator-1',
+  'status': status,
+  'latest_note': null,
+  'checklist_items': [
+    {'id': 'c-1', 'label': 'Sikat tempat pakan'},
+    {'id': 'c-2', 'label': 'Buang sisa pakan basah'},
+    {'id': 'c-3', 'label': 'Isi pakan baru'},
+  ],
+  'version': version,
+};
 
 Future<CacheRepository> cacheWithRun(JsonObject run) async {
   final store = PartitionStore();
-  await store.unlock(const PartitionId(actorId: 'operator-1', farmId: 'farm-1'));
+  await store.unlock(
+    const PartitionId(actorId: 'operator-1', farmId: 'farm-1'),
+  );
   final cache = CacheRepository(store: store);
   await cache.applyPage({
     'scope_version': 1,
@@ -89,7 +89,8 @@ void main() {
       final cache = await cacheWithRun(runPayload());
       final store = PartitionStore();
       await store.unlock(
-          const PartitionId(actorId: 'operator-1', farmId: 'farm-1'));
+        const PartitionId(actorId: 'operator-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final viewModel = TaskDetailViewModel(
         cache: cache,
@@ -119,12 +120,14 @@ void main() {
       );
     });
 
-    testWidgets('SOP ditampilkan literal dan tidak ada saran medis',
-        (tester) async {
+    testWidgets('SOP ditampilkan literal dan tidak ada saran medis', (
+      tester,
+    ) async {
       final cache = await cacheWithRun(runPayload());
       final store = PartitionStore();
       await store.unlock(
-          const PartitionId(actorId: 'operator-1', farmId: 'farm-1'));
+        const PartitionId(actorId: 'operator-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final viewModel = TaskDetailViewModel(
         cache: cache,
@@ -150,7 +153,8 @@ void main() {
       final cache = await cacheWithRun(runPayload());
       final store = PartitionStore();
       await store.unlock(
-          const PartitionId(actorId: 'operator-1', farmId: 'farm-1'));
+        const PartitionId(actorId: 'operator-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final api = TaskApiClient();
       final viewModel = TaskDetailViewModel(
@@ -177,12 +181,14 @@ void main() {
       expect(viewModel.runStatus, 'open');
     });
 
-    testWidgets('hasil completed menutup tugas dan menjadi read-only',
-        (tester) async {
+    testWidgets('hasil completed menutup tugas dan menjadi read-only', (
+      tester,
+    ) async {
       final cache = await cacheWithRun(runPayload());
       final store = PartitionStore();
       await store.unlock(
-          const PartitionId(actorId: 'operator-1', farmId: 'farm-1'));
+        const PartitionId(actorId: 'operator-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final api = TaskApiClient();
       final viewModel = TaskDetailViewModel(
@@ -193,17 +199,19 @@ void main() {
       );
       await viewModel.load();
 
-      await viewModel.submit(TaskResultInput.fromJson({
-        'id': 'res-2',
-        'base_version': 1,
-        'status': 'completed',
-        'notes': null,
-        'checklist_values': [
-          {'id': 'c-1', 'checked': true},
-          {'id': 'c-2', 'checked': true},
-          {'id': 'c-3', 'checked': true},
-        ],
-      }));
+      await viewModel.submit(
+        TaskResultInput.fromJson({
+          'id': 'res-2',
+          'base_version': 1,
+          'status': 'completed',
+          'notes': null,
+          'checklist_values': [
+            {'id': 'c-1', 'checked': true},
+            {'id': 'c-2', 'checked': true},
+            {'id': 'c-3', 'checked': true},
+          ],
+        }),
+      );
 
       expect(viewModel.runStatus, 'completed');
       expect(viewModel.isReadOnly, isTrue);
@@ -213,7 +221,8 @@ void main() {
       final cache = await cacheWithRun(runPayload());
       final store = PartitionStore();
       await store.unlock(
-          const PartitionId(actorId: 'operator-1', farmId: 'farm-1'));
+        const PartitionId(actorId: 'operator-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final api = TaskApiClient();
       api.throwNext = const ApiFailure(
@@ -230,13 +239,15 @@ void main() {
       );
       await viewModel.load();
 
-      await viewModel.submit(TaskResultInput.fromJson({
-        'id': 'res-3',
-        'base_version': 1,
-        'status': 'note',
-        'notes': 'Catatan offline',
-        'checklist_values': [],
-      }));
+      await viewModel.submit(
+        TaskResultInput.fromJson({
+          'id': 'res-3',
+          'base_version': 1,
+          'status': 'note',
+          'notes': 'Catatan offline',
+          'checklist_values': [],
+        }),
+      );
 
       final intents = await outbox.allIntents();
       expect(intents.length, 1);
@@ -248,7 +259,8 @@ void main() {
       final cache = await cacheWithRun(runPayload(status: 'cancelled'));
       final store = PartitionStore();
       await store.unlock(
-          const PartitionId(actorId: 'operator-1', farmId: 'farm-1'));
+        const PartitionId(actorId: 'operator-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final api = TaskApiClient();
       api.throwNext = const ApiFailure(
@@ -265,13 +277,15 @@ void main() {
       );
       await viewModel.load();
 
-      await viewModel.submit(TaskResultInput.fromJson({
-        'id': 'res-4',
-        'base_version': 1,
-        'status': 'completed',
-        'notes': null,
-        'checklist_values': [],
-      }));
+      await viewModel.submit(
+        TaskResultInput.fromJson({
+          'id': 'res-4',
+          'base_version': 1,
+          'status': 'completed',
+          'notes': null,
+          'checklist_values': [],
+        }),
+      );
 
       expect(viewModel.needsReview, isTrue);
     });
@@ -279,7 +293,8 @@ void main() {
     testWidgets('template tugas disimpan online', (tester) async {
       final store = PartitionStore();
       await store.unlock(
-          const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final api = TaskApiClient();
       final viewModel = TaskFormViewModel(apiClient: api, outbox: outbox);

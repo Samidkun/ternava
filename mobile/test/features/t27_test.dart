@@ -33,7 +33,7 @@ class MemberApiClient extends ApiClient {
       throw t;
     }
     return {
-      'data': {'id': 'member-1', 'username': body?['username']}
+      'data': {'id': 'member-1', 'username': body?['username']},
     };
   }
 }
@@ -42,7 +42,9 @@ void main() {
   group('T27 Team & member form tests', () {
     testWidgets('password sementara tidak diprefill', (tester) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final viewModel = MemberFormViewModel(
         apiClient: MemberApiClient(),
@@ -57,14 +59,17 @@ void main() {
         ),
       );
 
-      final field = tester
-          .widget<TextField>(find.byKey(const Key('temporary-password')));
+      final field = tester.widget<TextField>(
+        find.byKey(const Key('temporary-password')),
+      );
       expect(field.controller!.text, isEmpty);
     });
 
     testWidgets('admin hanya bisa memilih peran operator', (tester) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'admin-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'admin-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final viewModel = MemberFormViewModel(
         apiClient: MemberApiClient(),
@@ -88,7 +93,9 @@ void main() {
 
     testWidgets('payload password tidak pernah disimpan lokal', (tester) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final api = MemberApiClient();
       api.throwNext = const ApiFailure(
@@ -119,7 +126,9 @@ void main() {
 
     testWidgets('password minimal 12 karakter ditolak', (tester) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final viewModel = MemberFormViewModel(
         apiClient: MemberApiClient(),
@@ -140,7 +149,9 @@ void main() {
 
     testWidgets('daftar tim memuat anggota', (tester) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final api = MemberApiClient();
       final viewModel = TeamListViewModel(apiClient: api, outbox: outbox);

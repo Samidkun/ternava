@@ -70,7 +70,8 @@ class FeedEntryViewModel extends ChangeNotifier {
       // Offline / server failure: queue for later, preserving input.
       if (e.status == 0 || e.status >= 500) {
         await outbox.enqueue(
-            Intent.onlineMaster('createFeedEntry', values, _persistKey!));
+          Intent.onlineMaster('createFeedEntry', values, _persistKey!),
+        );
       }
       _errorMessage = e.message;
       return false;

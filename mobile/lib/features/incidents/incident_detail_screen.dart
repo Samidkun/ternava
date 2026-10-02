@@ -8,10 +8,7 @@ import 'incident_detail_view_model.dart';
 class IncidentDetailScreen extends StatefulWidget {
   final IncidentDetailViewModel viewModel;
 
-  const IncidentDetailScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const IncidentDetailScreen({super.key, required this.viewModel});
 
   @override
   State<IncidentDetailScreen> createState() => _IncidentDetailScreenState();
@@ -85,7 +82,10 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
               if (vm.errorMessage != null) ...[
                 Text(
                   vm.errorMessage!,
-                  style: const TextStyle(color: TernavaTheme.error, fontSize: 13),
+                  style: const TextStyle(
+                    color: TernavaTheme.error,
+                    fontSize: 13,
+                  ),
                 ),
                 const SizedBox(height: 12),
               ],
@@ -101,7 +101,9 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
               Text(
                 'Status: ${vm.status} · versi ${vm.version}',
                 style: const TextStyle(
-                    fontSize: 13, color: TernavaTheme.textMuted),
+                  fontSize: 13,
+                  color: TernavaTheme.textMuted,
+                ),
               ),
               const SizedBox(height: 20),
               TextField(
@@ -109,7 +111,9 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
                 controller: _notesController,
                 enabled: !vm.isReadOnly,
                 maxLines: 3,
-                decoration: const InputDecoration(labelText: 'Catatan tindakan'),
+                decoration: const InputDecoration(
+                  labelText: 'Catatan tindakan',
+                ),
               ),
               const SizedBox(height: 20),
               if (!vm.isReadOnly) ...[
@@ -156,27 +160,33 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
 
     if (status == 'closed' && notes.isEmpty) {
       // Surface the guard immediately, matching the server rule.
-      await vm.act(IncidentActionInput.fromJson({
-        'id': 'act-${DateTime.now().microsecondsSinceEpoch}',
-        'base_version': vm.version,
-        'notes': '',
-        'status': status,
-      }));
+      await vm.act(
+        IncidentActionInput.fromJson({
+          'id': 'act-${DateTime.now().microsecondsSinceEpoch}',
+          'base_version': vm.version,
+          'notes': '',
+          'status': status,
+        }),
+      );
       return;
     }
 
-    await vm.act(IncidentActionInput.fromJson({
-      'id': 'act-${DateTime.now().microsecondsSinceEpoch}',
-      'base_version': vm.version,
-      'notes': notes,
-      'status': status,
-    }));
+    await vm.act(
+      IncidentActionInput.fromJson({
+        'id': 'act-${DateTime.now().microsecondsSinceEpoch}',
+        'base_version': vm.version,
+        'notes': notes,
+        'status': status,
+      }),
+    );
   }
 
   Future<void> _assign(IncidentDetailViewModel vm) async {
-    await vm.assign(IncidentAssignmentInput.fromJson({
-      'base_version': vm.version,
-      'assignee_id': '',
-    }));
+    await vm.assign(
+      IncidentAssignmentInput.fromJson({
+        'base_version': vm.version,
+        'assignee_id': '',
+      }),
+    );
   }
 }

@@ -11,10 +11,7 @@ class TeamListViewModel extends ChangeNotifier {
   List<JsonObject> _members = [];
   bool _isLoading = false;
 
-  TeamListViewModel({
-    required this.apiClient,
-    required this.outbox,
-  });
+  TeamListViewModel({required this.apiClient, required this.outbox});
 
   List<JsonObject> get members => _members;
   bool get isLoading => _isLoading;

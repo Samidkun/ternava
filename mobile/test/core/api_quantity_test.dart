@@ -42,7 +42,7 @@ void main() {
           'code': 'INSUFFICIENT_STOCK',
           'message': 'Saldo pakan tidak mencukupi',
           'retryable': false,
-        }
+        },
       }, 422);
 
       expect(failure.code, 'INSUFFICIENT_STOCK');
@@ -59,7 +59,7 @@ void main() {
           'message': 'Versi catatan telah berubah',
           'current_version': 2,
           'retryable': false,
-        }
+        },
       }, 409);
 
       expect(failure.code, 'VERSION_CONFLICT');
@@ -74,7 +74,9 @@ void main() {
 
     setUp(() async {
       server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
-      client = ApiClient(baseUrl: 'http://${server.address.host}:${server.port}');
+      client = ApiClient(
+        baseUrl: 'http://${server.address.host}:${server.port}',
+      );
     });
 
     tearDown(() async {
@@ -93,9 +95,11 @@ void main() {
         request.response
           ..statusCode = HttpStatus.ok
           ..headers.contentType = ContentType.json
-          ..write(jsonEncode({
-            'data': {'status': 'accepted', 'version': 1}
-          }))
+          ..write(
+            jsonEncode({
+              'data': {'status': 'accepted', 'version': 1},
+            }),
+          )
           ..close();
       });
 
@@ -115,21 +119,25 @@ void main() {
         request.response
           ..statusCode = HttpStatus.unprocessableEntity
           ..headers.contentType = ContentType.json
-          ..write(jsonEncode({
-            'error': {
-              'code': 'INSUFFICIENT_STOCK',
-              'message': 'Saldo pakan habis',
-              'retryable': false,
-            }
-          }))
+          ..write(
+            jsonEncode({
+              'error': {
+                'code': 'INSUFFICIENT_STOCK',
+                'message': 'Saldo pakan habis',
+                'retryable': false,
+              },
+            }),
+          )
           ..close();
       });
 
       expect(
         () => client.request('createDaily'),
-        throwsA(isA<ApiFailure>()
-            .having((e) => e.code, 'code', 'INSUFFICIENT_STOCK')
-            .having((e) => e.status, 'status', 422)),
+        throwsA(
+          isA<ApiFailure>()
+              .having((e) => e.code, 'code', 'INSUFFICIENT_STOCK')
+              .having((e) => e.status, 'status', 422),
+        ),
       );
     });
   });

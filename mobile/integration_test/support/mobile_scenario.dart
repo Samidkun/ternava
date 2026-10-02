@@ -24,7 +24,9 @@ import 'package:mobile/core/local/payload_cipher.dart';
 import 'package:mobile/core/sync/bootstrap_coordinator.dart';
 import 'package:mobile/core/sync/cache_repository.dart';
 import 'package:mobile/core/sync/outbox_repository.dart' hide Intent;
-import 'package:mobile/core/sync/outbox_repository.dart' as outbox_lib show Intent;
+import 'package:mobile/core/sync/outbox_repository.dart'
+    as outbox_lib
+    show Intent;
 import 'package:mobile/core/sync/retry_policy.dart';
 import 'package:mobile/core/sync/sync_worker.dart';
 import 'package:mobile/features/access/account_screen.dart';
@@ -84,7 +86,9 @@ class ControllableTransport implements Transport, SyncTransport {
         retryable: true,
       );
     }
-    return {'data': {'id': payload['id'] ?? 'gen-1', 'version': 1}};
+    return {
+      'data': {'id': payload['id'] ?? 'gen-1', 'version': 1},
+    };
   }
 
   @override
@@ -179,7 +183,7 @@ class MobileScenario {
   PartitionId? _partition;
 
   MobileScenario({ControllableTransport? transport})
-      : transport = transport ?? ControllableTransport() {
+    : transport = transport ?? ControllableTransport() {
     cache = CacheRepository(store: store);
     outbox = OutboxRepository(store: store);
     worker = SyncWorker(
@@ -195,7 +199,8 @@ class MobileScenario {
   }
 
   PartitionId get partition =>
-      _partition ?? const PartitionId(actorId: 'operator-budi', farmId: 'farm-test-01');
+      _partition ??
+      const PartitionId(actorId: 'operator-budi', farmId: 'farm-test-01');
 
   ScenarioApiClient get api => ScenarioApiClient(transport);
 
@@ -211,7 +216,10 @@ class MobileScenario {
   }
 
   Future<void> loginAsB() async {
-    _partition = const PartitionId(actorId: 'operator-sari', farmId: 'farm-test-01');
+    _partition = const PartitionId(
+      actorId: 'operator-sari',
+      farmId: 'farm-test-01',
+    );
     await store.unlock(_partition!);
   }
 
@@ -229,24 +237,23 @@ class MobileScenario {
     }
   }
 
-  Future<void> enqueueDaily({
-    String feedKg = '12.50',
-    int eggs = 80,
-  }) async {
+  Future<void> enqueueDaily({String feedKg = '12.50', int eggs = 80}) async {
     final id = 'daily-${DateTime.now().microsecondsSinceEpoch}';
-    await outbox.enqueue(outbox_lib.Intent(
-      id: 'intent-$id',
-      resourceId: id,
-      operationId: 'createDaily',
-      payload: {
-        'id': id,
-        'flock_id': 'flock-1',
-        'business_date': '2026-10-02',
-        'feed_type_id': 'default-feed-type',
-        'feed_kg': feedKg,
-        'eggs_count': eggs,
-      },
-    ));
+    await outbox.enqueue(
+      outbox_lib.Intent(
+        id: 'intent-$id',
+        resourceId: id,
+        operationId: 'createDaily',
+        payload: {
+          'id': id,
+          'flock_id': 'flock-1',
+          'business_date': '2026-10-02',
+          'feed_type_id': 'default-feed-type',
+          'feed_kg': feedKg,
+          'eggs_count': eggs,
+        },
+      ),
+    );
   }
 
   Future<void> enqueueIncident(String observation) async {
@@ -256,13 +263,15 @@ class MobileScenario {
       'id': 'incident-draft',
       'observation': observation,
     });
-    await outbox.enqueue(outbox_lib.Intent.incident({
-      'id': id,
-      'cage_id': 'cage-1',
-      'observed_at': '2026-10-02T06:00:00Z',
-      'observation': observation,
-      'attention': 'routine',
-    }, key));
+    await outbox.enqueue(
+      outbox_lib.Intent.incident({
+        'id': id,
+        'cage_id': 'cage-1',
+        'observed_at': '2026-10-02T06:00:00Z',
+        'observation': observation,
+        'attention': 'routine',
+      }, key),
+    );
   }
 
   Future<String> incidentText() async {
@@ -298,12 +307,12 @@ class MobileScenario {
       home: _build(screenId),
       routes: {
         '/login': (_) => LoginScreen(
-              viewModel: LoginViewModel(
-                apiClient: api,
-                coordinator: bootstrap,
-                store: store,
-              ),
-            ),
+          viewModel: LoginViewModel(
+            apiClient: api,
+            coordinator: bootstrap,
+            store: store,
+          ),
+        ),
       },
     );
   }
@@ -346,7 +355,9 @@ class MobileScenario {
           ),
         );
       default:
-        return const Scaffold(body: Center(child: Text('Layar tidak dikenal.')));
+        return const Scaffold(
+          body: Center(child: Text('Layar tidak dikenal.')),
+        );
     }
   }
 }

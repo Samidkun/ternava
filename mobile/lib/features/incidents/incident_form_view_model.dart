@@ -7,13 +7,7 @@ import '../../core/sync/outbox_repository.dart';
 
 /// Status of an optional photo attached to an incident.
 /// The photo is tracked independently from the observation text.
-enum PhotoState {
-  none,
-  queued,
-  waitingForParent,
-  uploaded,
-  failed,
-}
+enum PhotoState { none, queued, waitingForParent, uploaded, failed }
 
 class IncidentFormViewModel extends ChangeNotifier {
   final ApiClient apiClient;
@@ -32,10 +26,7 @@ class IncidentFormViewModel extends ChangeNotifier {
   String? _photoMediaType;
   PhotoState _photoState = PhotoState.none;
 
-  IncidentFormViewModel({
-    required this.apiClient,
-    required this.outbox,
-  });
+  IncidentFormViewModel({required this.apiClient, required this.outbox});
 
   String get draftObservation => _draftObservation;
   String? get errorMessage => _errorMessage;
@@ -62,10 +53,7 @@ class IncidentFormViewModel extends ChangeNotifier {
 
   /// Attach a photo. The photo is validated and queued separately from the
   /// observation text; a rejected photo never discards the text.
-  bool attachPhoto({
-    required List<int> bytes,
-    required String mediaType,
-  }) {
+  bool attachPhoto({required List<int> bytes, required String mediaType}) {
     if (!allowedPhotoTypes.contains(mediaType)) {
       _errorMessage = 'Gunakan JPEG atau PNG yang dapat dibuka.';
       notifyListeners();

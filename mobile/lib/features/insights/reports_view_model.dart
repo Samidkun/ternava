@@ -30,19 +30,20 @@ class ReportRowView {
   bool get isMissing => recordState == 'missing';
   bool get isAccepted => recordState == 'accepted';
 
-  String get eggsLabel => eggsCount == null ? 'Belum dicatat' : '$eggsCount butir';
+  String get eggsLabel =>
+      eggsCount == null ? 'Belum dicatat' : '$eggsCount butir';
   String get feedLabel => feedKg == null ? 'Belum dicatat' : '$feedKg kg';
 
   factory ReportRowView.fromJson(JsonObject json) => ReportRowView(
-        businessDate: json['business_date'] as String? ?? '',
-        cageId: json['cage_id'] as String? ?? '',
-        flockId: json['flock_id'] as String? ?? '',
-        recordState: json['record_state'] as String? ?? 'missing',
-        eggsCount: (json['eggs_count'] as num?)?.toInt(),
-        feedKg: json['feed_kg'] as String?,
-        mortalityCount: (json['mortality_count'] as num?)?.toInt(),
-        condition: json['condition'] as String?,
-      );
+    businessDate: json['business_date'] as String? ?? '',
+    cageId: json['cage_id'] as String? ?? '',
+    flockId: json['flock_id'] as String? ?? '',
+    recordState: json['record_state'] as String? ?? 'missing',
+    eggsCount: (json['eggs_count'] as num?)?.toInt(),
+    feedKg: json['feed_kg'] as String?,
+    mortalityCount: (json['mortality_count'] as num?)?.toInt(),
+    condition: json['condition'] as String?,
+  );
 }
 
 class OperationsReport {
@@ -69,23 +70,24 @@ class OperationsReport {
   });
 
   /// When nothing was accepted the total is unknown, not zero.
-  String get eggsLabel => eggsCount == null ? 'Belum dicatat' : '$eggsCount butir';
+  String get eggsLabel =>
+      eggsCount == null ? 'Belum dicatat' : '$eggsCount butir';
   String get feedLabel => feedKg == null ? 'Belum dicatat' : '$feedKg kg';
 
   factory OperationsReport.fromJson(JsonObject json) => OperationsReport(
-        from: json['from'] as String? ?? '',
-        to: json['to'] as String? ?? '',
-        timezone: json['timezone'] as String? ?? 'UTC',
-        asOf: json['as_of'] as String? ?? '',
-        expectedRecords: (json['expected_records'] as num?)?.toInt() ?? 0,
-        acceptedRecords: (json['accepted_records'] as num?)?.toInt() ?? 0,
-        eggsCount: (json['eggs_count'] as num?)?.toInt(),
-        feedKg: json['feed_kg'] as String?,
-        rows: ((json['rows'] as List<dynamic>?) ?? [])
-            .whereType<Map<String, dynamic>>()
-            .map((raw) => ReportRowView.fromJson(Map<String, Object?>.from(raw)))
-            .toList(),
-      );
+    from: json['from'] as String? ?? '',
+    to: json['to'] as String? ?? '',
+    timezone: json['timezone'] as String? ?? 'UTC',
+    asOf: json['as_of'] as String? ?? '',
+    expectedRecords: (json['expected_records'] as num?)?.toInt() ?? 0,
+    acceptedRecords: (json['accepted_records'] as num?)?.toInt() ?? 0,
+    eggsCount: (json['eggs_count'] as num?)?.toInt(),
+    feedKg: json['feed_kg'] as String?,
+    rows: ((json['rows'] as List<dynamic>?) ?? [])
+        .whereType<Map<String, dynamic>>()
+        .map((raw) => ReportRowView.fromJson(Map<String, Object?>.from(raw)))
+        .toList(),
+  );
 }
 
 class ReportsViewModel extends ChangeNotifier {
@@ -115,7 +117,8 @@ class ReportsViewModel extends ChangeNotifier {
     _errorMessage = null;
 
     if (!_isValidPeriod(from, to)) {
-      _errorMessage = 'Rentang tanggal maksimal $maxDays hari dan tidak boleh terbalik.';
+      _errorMessage =
+          'Rentang tanggal maksimal $maxDays hari dan tidak boleh terbalik.';
       notifyListeners();
       return false;
     }

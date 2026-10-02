@@ -74,12 +74,11 @@ class _CageListScreenState extends State<CageListScreen> {
                       ),
                       child: ListTile(
                         leading: CircleAvatar(
-                          backgroundColor:
-                              TernavaTheme.primary.withValues(alpha: 0.1),
+                          backgroundColor: TernavaTheme.primary.withValues(
+                            alpha: 0.1,
+                          ),
                           child: Text(
-                            (cage['code'] as String? ?? '?')
-                                .characters
-                                .first
+                            (cage['code'] as String? ?? '?').characters.first
                                 .toUpperCase(),
                             style: const TextStyle(
                               color: TernavaTheme.primary,
@@ -96,18 +95,19 @@ class _CageListScreenState extends State<CageListScreen> {
                         ),
                         subtitle: Text(
                           'Kode: ${cage['code'] ?? '-'}',
-                          style:
-                              const TextStyle(color: TernavaTheme.textMuted),
+                          style: const TextStyle(color: TernavaTheme.textMuted),
                         ),
                         trailing: widget.canManage
-                            ? const Icon(Icons.edit_outlined,
-                                color: TernavaTheme.textMuted)
+                            ? const Icon(
+                                Icons.edit_outlined,
+                                color: TernavaTheme.textMuted,
+                              )
                             : null,
                         onTap: widget.canManage
                             ? () => Navigator.of(context).pushNamed(
-                                  '/cage-form',
-                                  arguments: {'edit': true, 'cage': cage},
-                                )
+                                '/cage-form',
+                                arguments: {'edit': true, 'cage': cage},
+                              )
                             : null,
                       ),
                     );

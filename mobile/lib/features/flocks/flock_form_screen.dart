@@ -6,10 +6,7 @@ import 'flock_form_view_model.dart';
 class FlockFormScreen extends StatefulWidget {
   final FlockFormViewModel viewModel;
 
-  const FlockFormScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const FlockFormScreen({super.key, required this.viewModel});
 
   @override
   State<FlockFormScreen> createState() => _FlockFormScreenState();
@@ -69,12 +66,15 @@ class _FlockFormScreenState extends State<FlockFormScreen> {
                     color: TernavaTheme.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                        color: TernavaTheme.error.withValues(alpha: 0.3)),
+                      color: TernavaTheme.error.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Text(
                     vm.errorMessage!,
                     style: const TextStyle(
-                        color: TernavaTheme.error, fontSize: 13),
+                      color: TernavaTheme.error,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -123,17 +123,15 @@ class _FlockFormScreenState extends State<FlockFormScreen> {
                 onPressed: vm.isSaving
                     ? null
                     : () async {
-                        final ok = await vm.save(
-                          {
-                            'name': _nameController.text.trim(),
-                            if (!vm.initialPopulationLocked)
-                              'initial_population': int.tryParse(
-                                  _populationController.text.trim()),
-                            if (!vm.edit)
-                              'start_date': _startDateController.text.trim(),
-                          },
-                          reason: _reasonController.text,
-                        );
+                        final ok = await vm.save({
+                          'name': _nameController.text.trim(),
+                          if (!vm.initialPopulationLocked)
+                            'initial_population': int.tryParse(
+                              _populationController.text.trim(),
+                            ),
+                          if (!vm.edit)
+                            'start_date': _startDateController.text.trim(),
+                        }, reason: _reasonController.text);
                         if (ok && context.mounted) {
                           Navigator.of(context).pop();
                         }
@@ -143,7 +141,9 @@ class _FlockFormScreenState extends State<FlockFormScreen> {
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Text('Simpan kelompok'),
               ),

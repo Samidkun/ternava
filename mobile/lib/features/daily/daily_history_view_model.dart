@@ -46,24 +46,30 @@ class DailyHistoryViewModel extends ChangeNotifier {
       final from = query['from'] as String?;
       final to = query['to'] as String?;
 
-      _rows = accepted.where((raw) {
-        if (cageId != null && raw['cage_id'] != cageId) return false;
-        final bd = raw['business_date'] as String?;
-        if (date != null && bd != date) return false;
-        if (from != null && (bd ?? '') .compareTo(from) < 0) return false;
-        if (to != null && (bd ?? '').compareTo(to) > 0) return false;
-        return true;
-      }).map((raw) {
-        return DailyHistoryRow(
-          id: raw['id'] as String? ?? '',
-          cageId: raw['cage_id'] as String? ?? '',
-          businessDate: raw['business_date'] as String? ?? '',
-          feedKg: raw['feed_kg'] as String? ?? '0.00',
-          eggsCount: (raw['eggs_count'] as num?)?.toInt() ?? 0,
-          pendingLocal: false,
-        );
-      }).toList()
-        ..sort((a, b) => b.businessDate.compareTo(a.businessDate));
+      _rows =
+          accepted
+              .where((raw) {
+                if (cageId != null && raw['cage_id'] != cageId) return false;
+                final bd = raw['business_date'] as String?;
+                if (date != null && bd != date) return false;
+                if (from != null && (bd ?? '').compareTo(from) < 0) {
+                  return false;
+                }
+                if (to != null && (bd ?? '').compareTo(to) > 0) return false;
+                return true;
+              })
+              .map((raw) {
+                return DailyHistoryRow(
+                  id: raw['id'] as String? ?? '',
+                  cageId: raw['cage_id'] as String? ?? '',
+                  businessDate: raw['business_date'] as String? ?? '',
+                  feedKg: raw['feed_kg'] as String? ?? '0.00',
+                  eggsCount: (raw['eggs_count'] as num?)?.toInt() ?? 0,
+                  pendingLocal: false,
+                );
+              })
+              .toList()
+            ..sort((a, b) => b.businessDate.compareTo(a.businessDate));
     } finally {
       _isLoading = false;
       notifyListeners();

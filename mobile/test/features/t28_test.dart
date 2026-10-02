@@ -20,7 +20,10 @@ class FeedTransport implements Transport {
 
   @override
   Future<JsonObject> send(
-      String operationId, JsonObject payload, String idempotencyKey) async {
+    String operationId,
+    JsonObject payload,
+    String idempotencyKey,
+  ) async {
     lastBody = payload;
     lastKey = idempotencyKey;
     return {'status': 'accepted'};
@@ -48,7 +51,9 @@ class FeedApiClient extends ApiClient {
       throwNext = null;
       throw t;
     }
-    return {'data': {'id': 'entry-1', ...?body}};
+    return {
+      'data': {'id': 'entry-1', ...?body},
+    };
   }
 }
 
@@ -56,7 +61,9 @@ void main() {
   group('T28 Feed stock & entry tests', () {
     testWidgets('stok stale menampilkan waktu snapshot', (tester) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final cache = CacheRepository(store: store);
       await cache.applyPage({
         'scope_version': 1,
@@ -91,10 +98,13 @@ void main() {
       expect(find.textContaining('Terakhir diperbarui'), findsWidgets);
     });
 
-    testWidgets('server menolak saldo negatif, isian dipertahankan',
-        (tester) async {
+    testWidgets('server menolak saldo negatif, isian dipertahankan', (
+      tester,
+    ) async {
       final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'owner-1', farmId: 'farm-1'));
+      await store.unlock(
+        const PartitionId(actorId: 'owner-1', farmId: 'farm-1'),
+      );
       final outbox = outbox_lib.OutboxRepository(store: store);
       final worker = SyncWorker(
         outbox: outbox,

@@ -38,8 +38,10 @@ class PhotoWorker {
       await repository.markState(photo.operationId, PhotoState.uploading);
 
       try {
-        final bytes = await repository.cipher
-            .decrypt(photo.encryptedBytes, photo.aad);
+        final bytes = await repository.cipher.decrypt(
+          photo.encryptedBytes,
+          photo.aad,
+        );
         await uploader.send(photo.operationId, photo.sha256, bytes);
         await repository.markState(photo.operationId, PhotoState.uploaded);
       } catch (_) {

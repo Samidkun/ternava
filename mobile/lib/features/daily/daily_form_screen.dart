@@ -6,10 +6,7 @@ import 'daily_form_view_model.dart';
 class DailyFormScreen extends StatefulWidget {
   final DailyFormViewModel viewModel;
 
-  const DailyFormScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const DailyFormScreen({super.key, required this.viewModel});
 
   @override
   State<DailyFormScreen> createState() => _DailyFormScreenState();
@@ -67,12 +64,16 @@ class _DailyFormScreenState extends State<DailyFormScreen> {
                     color: TernavaTheme.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                        color: TernavaTheme.error.withValues(alpha: 0.3)),
+                      color: TernavaTheme.error.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline,
-                          color: TernavaTheme.error, size: 20),
+                      const Icon(
+                        Icons.error_outline,
+                        color: TernavaTheme.error,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -92,7 +93,9 @@ class _DailyFormScreenState extends State<DailyFormScreen> {
               TextField(
                 key: const Key('feed-kg-input'),
                 controller: _feedController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: const InputDecoration(
                   labelText: 'Jumlah Pakan (kg)',
                   hintText: 'misal: 12.50',
@@ -124,14 +127,13 @@ class _DailyFormScreenState extends State<DailyFormScreen> {
                 isExpanded: true,
                 key: const Key('condition-input'),
                 initialValue: _condition,
-                decoration: const InputDecoration(
-                  labelText: 'Kondisi Kandang',
-                ),
+                decoration: const InputDecoration(labelText: 'Kondisi Kandang'),
                 items: const [
                   DropdownMenuItem(value: 'normal', child: Text('Normal')),
                   DropdownMenuItem(
-                      value: 'perlu_perhatian',
-                      child: Text('Perlu Perhatian')),
+                    value: 'perlu_perhatian',
+                    child: Text('Perlu Perhatian'),
+                  ),
                   DropdownMenuItem(value: 'kritis', child: Text('Kritis')),
                 ],
                 onChanged: (val) {
@@ -165,7 +167,8 @@ class _DailyFormScreenState extends State<DailyFormScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text(
-                                  'Catatan tersimpan lokal, menunggu sinkronisasi.'),
+                                'Catatan tersimpan lokal, menunggu sinkronisasi.',
+                              ),
                             ),
                           );
                           Navigator.of(context).pop();
@@ -197,7 +200,8 @@ class _DailyFormScreenState extends State<DailyFormScreen> {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                                content: Text('Draf lokal disimpan.')),
+                              content: Text('Draf lokal disimpan.'),
+                            ),
                           );
                         }
                       },

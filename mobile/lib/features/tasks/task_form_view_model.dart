@@ -15,10 +15,7 @@ class TaskFormViewModel extends ChangeNotifier {
   bool _isComplete = false;
   String? _persistKey;
 
-  TaskFormViewModel({
-    required this.apiClient,
-    required this.outbox,
-  });
+  TaskFormViewModel({required this.apiClient, required this.outbox});
 
   bool get isSaving => _isSaving;
   String? get errorMessage => _errorMessage;

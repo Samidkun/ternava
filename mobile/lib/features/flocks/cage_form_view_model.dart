@@ -51,7 +51,11 @@ class CageFormViewModel extends ChangeNotifier {
     } on ApiFailure catch (e) {
       if (e.status == 0 || e.status >= 500) {
         await outbox.enqueue(
-          Intent.onlineMaster(edit ? 'updateCage' : 'createCage', input, _persistKey!),
+          Intent.onlineMaster(
+            edit ? 'updateCage' : 'createCage',
+            input,
+            _persistKey!,
+          ),
         );
       }
       if (e.fields != null) {

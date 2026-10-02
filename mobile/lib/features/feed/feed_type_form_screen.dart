@@ -6,10 +6,7 @@ import 'feed_type_form_view_model.dart';
 class FeedTypeFormScreen extends StatefulWidget {
   final FeedTypeFormViewModel viewModel;
 
-  const FeedTypeFormScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const FeedTypeFormScreen({super.key, required this.viewModel});
 
   @override
   State<FeedTypeFormScreen> createState() => _FeedTypeFormScreenState();
@@ -68,12 +65,15 @@ class _FeedTypeFormScreenState extends State<FeedTypeFormScreen> {
                     color: TernavaTheme.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                        color: TernavaTheme.error.withValues(alpha: 0.3)),
+                      color: TernavaTheme.error.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Text(
                     vm.errorMessage!,
                     style: const TextStyle(
-                        color: TernavaTheme.error, fontSize: 13),
+                      color: TernavaTheme.error,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -81,14 +81,17 @@ class _FeedTypeFormScreenState extends State<FeedTypeFormScreen> {
               TextField(
                 key: const Key('feed-type-name'),
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Nama Jenis Pakan'),
+                decoration: const InputDecoration(
+                  labelText: 'Nama Jenis Pakan',
+                ),
               ),
               const SizedBox(height: 14),
               TextField(
                 key: const Key('min-threshold'),
                 controller: _thresholdController,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: const InputDecoration(
                   labelText: 'Ambang Minimum (kg)',
                   helperText:
@@ -104,7 +107,10 @@ class _FeedTypeFormScreenState extends State<FeedTypeFormScreen> {
                   decoration: const InputDecoration(labelText: 'Status'),
                   items: const [
                     DropdownMenuItem(value: 'active', child: Text('Aktif')),
-                    DropdownMenuItem(value: 'inactive', child: Text('Nonaktif')),
+                    DropdownMenuItem(
+                      value: 'inactive',
+                      child: Text('Nonaktif'),
+                    ),
                   ],
                   onChanged: (v) => setState(() => _status = v ?? 'active'),
                 ),
@@ -140,7 +146,9 @@ class _FeedTypeFormScreenState extends State<FeedTypeFormScreen> {
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Text('Simpan jenis pakan'),
               ),

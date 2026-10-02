@@ -6,10 +6,7 @@ import 'incident_form_view_model.dart';
 class IncidentFormScreen extends StatefulWidget {
   final IncidentFormViewModel viewModel;
 
-  const IncidentFormScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const IncidentFormScreen({super.key, required this.viewModel});
 
   @override
   State<IncidentFormScreen> createState() => _IncidentFormScreenState();
@@ -49,7 +46,10 @@ class _IncidentFormScreenState extends State<IncidentFormScreen> {
               if (vm.errorMessage != null) ...[
                 Text(
                   vm.errorMessage!,
-                  style: const TextStyle(color: TernavaTheme.error, fontSize: 13),
+                  style: const TextStyle(
+                    color: TernavaTheme.error,
+                    fontSize: 13,
+                  ),
                 ),
                 const SizedBox(height: 12),
               ],
@@ -78,7 +78,9 @@ class _IncidentFormScreenState extends State<IncidentFormScreen> {
                 onPressed: () {},
                 icon: const Icon(Icons.photo_camera_outlined),
                 label: Text(
-                  vm.hasPhoto ? 'Foto dilampirkan' : 'Lampirkan foto (opsional)',
+                  vm.hasPhoto
+                      ? 'Foto dilampirkan'
+                      : 'Lampirkan foto (opsional)',
                 ),
               ),
               const SizedBox(height: 24),
@@ -89,7 +91,9 @@ class _IncidentFormScreenState extends State<IncidentFormScreen> {
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Text('Simpan temuan'),
               ),
@@ -101,8 +105,9 @@ class _IncidentFormScreenState extends State<IncidentFormScreen> {
   }
 
   Future<void> _submit() async {
-    await widget.viewModel
-        .saveDraft(observation: _observationController.text.trim());
+    await widget.viewModel.saveDraft(
+      observation: _observationController.text.trim(),
+    );
     await widget.viewModel.submit(cageId: '', attention: _attention);
   }
 }

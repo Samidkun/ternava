@@ -77,7 +77,8 @@ class IncidentDetailViewModel extends ChangeNotifier {
     notifyListeners();
 
     final body = input.toJson();
-    final key = 'incident-assign-$incidentId-${DateTime.now().microsecondsSinceEpoch}';
+    final key =
+        'incident-assign-$incidentId-${DateTime.now().microsecondsSinceEpoch}';
 
     try {
       await apiClient.request(
@@ -113,7 +114,8 @@ class IncidentDetailViewModel extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    final key = 'incident-action-$incidentId-${DateTime.now().microsecondsSinceEpoch}';
+    final key =
+        'incident-action-$incidentId-${DateTime.now().microsecondsSinceEpoch}';
 
     try {
       await apiClient.request(
@@ -137,7 +139,13 @@ class IncidentDetailViewModel extends ChangeNotifier {
 
   void _handleFailure(ApiFailure e, JsonObject body, {String notes = ''}) {
     if (e.status == 0 || e.status >= 500) {
-      outbox.enqueue(Intent.incidentAction(incidentId, body, 'incident-action-$incidentId-${DateTime.now().microsecondsSinceEpoch}'));
+      outbox.enqueue(
+        Intent.incidentAction(
+          incidentId,
+          body,
+          'incident-action-$incidentId-${DateTime.now().microsecondsSinceEpoch}',
+        ),
+      );
     } else if (e.status == 409) {
       // A version conflict: keep the user's notes and let them reload.
       _hasConflict = true;

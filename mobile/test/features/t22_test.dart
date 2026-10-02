@@ -11,37 +11,42 @@ import 'package:mobile/ui/theme/ternava_theme.dart';
 
 void main() {
   group('T22 Today & Daily Form tests', () {
-    testWidgets('pakan kosong tidak menjadi nol dan menampilkan pesan validasi',
-        (tester) async {
-      final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'act-1', farmId: 'farm-1'));
-      final outbox = OutboxRepository(store: store);
+    testWidgets(
+      'pakan kosong tidak menjadi nol dan menampilkan pesan validasi',
+      (tester) async {
+        final store = PartitionStore();
+        await store.unlock(
+          const PartitionId(actorId: 'act-1', farmId: 'farm-1'),
+        );
+        final outbox = OutboxRepository(store: store);
 
-      final viewModel = DailyFormViewModel(
-        outbox: outbox,
-        flockId: 'flock-123',
-        cageName: 'Kandang 1',
-        businessDate: '2026-10-01',
-      );
+        final viewModel = DailyFormViewModel(
+          outbox: outbox,
+          flockId: 'flock-123',
+          cageName: 'Kandang 1',
+          businessDate: '2026-10-01',
+        );
 
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: TernavaTheme.light(),
-          home: DailyFormScreen(viewModel: viewModel),
-        ),
-      );
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: TernavaTheme.light(),
+            home: DailyFormScreen(viewModel: viewModel),
+          ),
+        );
 
-      // Attempt to submit with empty feed_kg
-      await tester.tap(find.widgetWithText(FilledButton, 'Kirim Catatan'));
-      await tester.pumpAndSettle();
+        // Attempt to submit with empty feed_kg
+        await tester.tap(find.widgetWithText(FilledButton, 'Kirim Catatan'));
+        await tester.pumpAndSettle();
 
-      final pending = await outbox.pendingIntents();
-      expect(pending, isEmpty); // Outbox must be empty!
-      expect(find.text('Isi jumlah pakan dalam kg.'), findsOneWidget);
-    });
+        final pending = await outbox.pendingIntents();
+        expect(pending, isEmpty); // Outbox must be empty!
+        expect(find.text('Isi jumlah pakan dalam kg.'), findsOneWidget);
+      },
+    );
 
-    testWidgets('Today screen lists assigned cages and recording status',
-        (tester) async {
+    testWidgets('Today screen lists assigned cages and recording status', (
+      tester,
+    ) async {
       final store = PartitionStore();
       await store.unlock(const PartitionId(actorId: 'act-1', farmId: 'farm-1'));
       final cache = CacheRepository(store: store);
@@ -53,11 +58,7 @@ void main() {
             'resource_type': 'cage',
             'resource_id': 'c-1',
             'action': 'upsert',
-            'value': {
-              'id': 'c-1',
-              'name': 'Kandang Baterai A',
-              'code': 'K-01',
-            },
+            'value': {'id': 'c-1', 'name': 'Kandang Baterai A', 'code': 'K-01'},
           },
         ],
         'next_cursor': null,

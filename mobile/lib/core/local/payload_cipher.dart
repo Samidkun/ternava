@@ -19,22 +19,19 @@ class PayloadCipher {
   final SecretKey _secretKey;
   final AesGcm _algorithm = AesGcm.with256bits();
 
-  PayloadCipher._({
-    required this.partitionId,
-    required this._secretKey,
-  });
+  PayloadCipher._({required this.partitionId, required this._secretKey});
 
   static Future<PayloadCipher> forPartition(PartitionId partitionId) async {
     final keyMaterial = sha256
-        .convert(utf8.encode(
-            'ternava.partition.${partitionId.farmId}.${partitionId.actorId}'))
+        .convert(
+          utf8.encode(
+            'ternava.partition.${partitionId.farmId}.${partitionId.actorId}',
+          ),
+        )
         .bytes;
     final secretKey = SecretKey(keyMaterial);
 
-    return PayloadCipher._(
-      partitionId: partitionId,
-      secretKey: secretKey,
-    );
+    return PayloadCipher._(partitionId: partitionId, secretKey: secretKey);
   }
 
   Future<Uint8List> encrypt(Uint8List bytes, String aad) async {
@@ -68,7 +65,8 @@ class PayloadCipher {
       return Uint8List.fromList(decrypted);
     } catch (_) {
       throw const PartitionMismatch(
-          'Gagal mendekripsi payload: partisi tidak cocok atau AAD salah.');
+        'Gagal mendekripsi payload: partisi tidak cocok atau AAD salah.',
+      );
     }
   }
 }

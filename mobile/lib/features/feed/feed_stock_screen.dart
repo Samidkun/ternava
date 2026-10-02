@@ -6,10 +6,7 @@ import 'feed_stock_view_model.dart';
 class FeedStockScreen extends StatefulWidget {
   final FeedStockViewModel viewModel;
 
-  const FeedStockScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const FeedStockScreen({super.key, required this.viewModel});
 
   @override
   State<FeedStockScreen> createState() => _FeedStockScreenState();
@@ -65,14 +62,19 @@ class _FeedStockScreenState extends State<FeedStockScreen> {
                   color: TernavaTheme.warning.withValues(alpha: 0.12),
                   child: Row(
                     children: [
-                      const Icon(Icons.cloud_off_outlined,
-                          size: 18, color: TernavaTheme.warning),
+                      const Icon(
+                        Icons.cloud_off_outlined,
+                        size: 18,
+                        color: TernavaTheme.warning,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Angka mungkin belum terbaru. Terakhir diperbarui ${_formatAsOf(vm.asOf)}.',
                           style: const TextStyle(
-                              color: TernavaTheme.textDark, fontSize: 12),
+                            color: TernavaTheme.textDark,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     ],
@@ -101,17 +103,23 @@ class _FeedStockScreenState extends State<FeedStockScreen> {
                             margin: const EdgeInsets.only(bottom: 10),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
-                              side: const BorderSide(color: TernavaTheme.border),
+                              side: const BorderSide(
+                                color: TernavaTheme.border,
+                              ),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
                               child: Row(
                                 children: [
                                   const CircleAvatar(
                                     backgroundColor: Color(0xFFE8F0ED),
-                                    child: Icon(Icons.grain,
-                                        color: TernavaTheme.primary),
+                                    child: Icon(
+                                      Icons.grain,
+                                      color: TernavaTheme.primary,
+                                    ),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
@@ -130,8 +138,9 @@ class _FeedStockScreenState extends State<FeedStockScreen> {
                                         Text(
                                           'Terakhir diperbarui ${_formatAsOf(item.asOf ?? vm.asOf)}',
                                           style: const TextStyle(
-                                              color: TernavaTheme.textMuted,
-                                              fontSize: 12),
+                                            color: TernavaTheme.textMuted,
+                                            fontSize: 12,
+                                          ),
                                         ),
                                         const SizedBox(height: 6),
                                         Text(

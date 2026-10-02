@@ -56,8 +56,8 @@ class DailyFormViewModel extends ChangeNotifier {
 
     final mortality =
         mortalityCountText != null && mortalityCountText.trim().isNotEmpty
-            ? int.tryParse(mortalityCountText.trim())
-            : null;
+        ? int.tryParse(mortalityCountText.trim())
+        : null;
 
     _isSaving = true;
     notifyListeners();

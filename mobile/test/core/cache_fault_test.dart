@@ -6,41 +6,46 @@ import 'package:mobile/core/sync/outbox_repository.dart';
 
 void main() {
   group('CacheRepository & BootstrapCoordinator tests', () {
-    test('applyPage updates checkpoint and accepted cache atomically', () async {
-      final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'act-1', farmId: 'farm-1'));
-      final cache = CacheRepository(store: store);
+    test(
+      'applyPage updates checkpoint and accepted cache atomically',
+      () async {
+        final store = PartitionStore();
+        await store.unlock(
+          const PartitionId(actorId: 'act-1', farmId: 'farm-1'),
+        );
+        final cache = CacheRepository(store: store);
 
-      final page = {
-        'scope_version': 1,
-        'as_of': '2026-10-01T08:00:00Z',
-        'changes': [
-          {
-            'resource_type': 'cage',
-            'resource_id': 'cage-1',
-            'action': 'upsert',
-            'value': {'id': 'cage-1', 'name': 'Kandang 1'},
-          },
-          {
-            'resource_type': 'cage',
-            'resource_id': 'cage-2',
-            'action': 'upsert',
-            'value': {'id': 'cage-2', 'name': 'Kandang 2'},
-          },
-        ],
-        'next_cursor': 'cursor-page-1',
-        'has_more': false,
-      };
+        final page = {
+          'scope_version': 1,
+          'as_of': '2026-10-01T08:00:00Z',
+          'changes': [
+            {
+              'resource_type': 'cage',
+              'resource_id': 'cage-1',
+              'action': 'upsert',
+              'value': {'id': 'cage-1', 'name': 'Kandang 1'},
+            },
+            {
+              'resource_type': 'cage',
+              'resource_id': 'cage-2',
+              'action': 'upsert',
+              'value': {'id': 'cage-2', 'name': 'Kandang 2'},
+            },
+          ],
+          'next_cursor': 'cursor-page-1',
+          'has_more': false,
+        };
 
-      await cache.applyPage(page);
+        await cache.applyPage(page);
 
-      final checkpoint = await cache.getCheckpoint();
-      expect(checkpoint?.cursor, 'cursor-page-1');
-      expect(checkpoint?.scopeVersion, 1);
+        final checkpoint = await cache.getCheckpoint();
+        expect(checkpoint?.cursor, 'cursor-page-1');
+        expect(checkpoint?.scopeVersion, 1);
 
-      final cageIds = await cache.getAcceptedIds('cage');
-      expect(cageIds, containsAll(['cage-1', 'cage-2']));
-    });
+        final cageIds = await cache.getAcceptedIds('cage');
+        expect(cageIds, containsAll(['cage-1', 'cage-2']));
+      },
+    );
 
     test('reset preserves draft and outbox intents intact', () async {
       final store = PartitionStore();
@@ -96,7 +101,7 @@ class MockSyncTransport implements SyncTransport {
         ],
         'next_cursor': 'cursor-bootstrap-final',
         'has_more': false,
-      }
+      },
     ];
   }
 }

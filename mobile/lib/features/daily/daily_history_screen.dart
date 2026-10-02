@@ -6,10 +6,7 @@ import 'daily_history_view_model.dart';
 class DailyHistoryScreen extends StatefulWidget {
   final DailyHistoryViewModel viewModel;
 
-  const DailyHistoryScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const DailyHistoryScreen({super.key, required this.viewModel});
 
   @override
   State<DailyHistoryScreen> createState() => _DailyHistoryScreenState();
@@ -84,7 +81,9 @@ class _DailyHistoryScreenState extends State<DailyHistoryScreen> {
                             margin: const EdgeInsets.only(bottom: 10),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
-                              side: const BorderSide(color: TernavaTheme.border),
+                              side: const BorderSide(
+                                color: TernavaTheme.border,
+                              ),
                             ),
                             child: ListTile(
                               title: Text(
@@ -97,16 +96,22 @@ class _DailyHistoryScreenState extends State<DailyHistoryScreen> {
                               subtitle: Text(
                                 'Pakan: ${row.feedKg} kg · Telur: ${row.eggsCount} butir',
                                 style: const TextStyle(
-                                    color: TernavaTheme.textMuted),
+                                  color: TernavaTheme.textMuted,
+                                ),
                               ),
                               trailing: row.pendingLocal
                                   ? const Chip(
-                                      label: Text('Lokal',
-                                          style: TextStyle(fontSize: 11)),
+                                      label: Text(
+                                        'Lokal',
+                                        style: TextStyle(fontSize: 11),
+                                      ),
                                       backgroundColor: Color(0xFFFFF3E0),
                                     )
-                                  : const Icon(Icons.verified,
-                                      color: TernavaTheme.success, size: 20),
+                                  : const Icon(
+                                      Icons.verified,
+                                      color: TernavaTheme.success,
+                                      size: 20,
+                                    ),
                             ),
                           );
                         },

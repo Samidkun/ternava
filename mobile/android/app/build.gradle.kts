@@ -1,8 +1,36 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+// Release signing is loaded from a properties file that lives OUTSIDE Git
+// (default: ~/.ternava/release-signing.properties, override with
+// TERNAVA_SIGNING_PROPERTIES). The file holds the keystore path and the four
+// credential keys; none of them are ever committed. When the file is absent the
+// release build still assembles but stays UNSIGNED, so CI can compile without
+// the secret and only the release job (which injects the file) produces a
+// signed artifact. This is why ops/release.sh verifies the signature: an
+// unsigned APK must never be published.
+val signingPropertiesFile: File? = run {
+    val explicit = System.getenv("TERNAVA_SIGNING_PROPERTIES")
+    val candidates = listOfNotNull(
+        explicit?.let { File(it) },
+        File(System.getProperty("user.home"), ".ternava/release-signing.properties"),
+    )
+    candidates.firstOrNull { it.isFile }
+}
+
+val signingProperties = Properties().apply {
+    signingPropertiesFile?.inputStream()?.use { load(it) }
+}
+
+val hasReleaseSigning = signingPropertiesFile != null &&
+    listOf("storeFile", "storePassword", "keyAlias", "keyPassword").all {
+        !signingProperties.getProperty(it).isNullOrBlank()
+    }
 
 android {
     namespace = "com.ternava.mobile"
@@ -15,25 +43,34 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.ternava.mobile"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
-        // is added automatically by Flutter. (https://developer.android.com/studio/build/configure-apk-splits#configure-APK-versions)
-        // You can force using the value of versionCode by specifying the `-P force-version-code-ignoring-abi=true`
-        // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = File(signingProperties.getProperty("storeFile"))
+                storePassword = signingProperties.getProperty("storePassword")
+                keyAlias = signingProperties.getProperty("keyAlias")
+                keyPassword = signingProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Only attach a signing config when real release credentials exist.
+            // Otherwise the APK is built unsigned and ops/release.sh refuses to
+            // publish it (AC-42: no debug key may sign a release).
+            signingConfig = if (hasReleaseSigning) {
+                signingConfigs.getByName("release")
+            } else {
+                null
+            }
         }
     }
 }

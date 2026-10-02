@@ -75,33 +75,41 @@ void main() {
       expect(policy.next(netFail, 1).action, RetryAction.retryLater);
     });
 
-    test('sync worker processes pending intent with stable key and marks accepted', () async {
-      final store = PartitionStore();
-      await store.unlock(const PartitionId(actorId: 'act-1', farmId: 'farm-1'));
-      final outbox = OutboxRepository(store: store);
+    test(
+      'sync worker processes pending intent with stable key and marks accepted',
+      () async {
+        final store = PartitionStore();
+        await store.unlock(
+          const PartitionId(actorId: 'act-1', farmId: 'farm-1'),
+        );
+        final outbox = OutboxRepository(store: store);
 
-      final intent = Intent(
-        id: 'stable-key-uuid-1',
-        resourceId: 'daily-id-1',
-        operationId: 'createDaily',
-        payload: {'feed_kg': '10.00', 'eggs_count': 80},
-      );
+        final intent = Intent(
+          id: 'stable-key-uuid-1',
+          resourceId: 'daily-id-1',
+          operationId: 'createDaily',
+          payload: {'feed_kg': '10.00', 'eggs_count': 80},
+        );
 
-      await outbox.enqueue(intent);
+        await outbox.enqueue(intent);
 
-      final mockTransport = MockTransport();
-      final worker = SyncWorker(
-        outbox: outbox,
-        transport: mockTransport,
-        retryPolicy: RetryPolicy(),
-      );
+        final mockTransport = MockTransport();
+        final worker = SyncWorker(
+          outbox: outbox,
+          transport: mockTransport,
+          retryPolicy: RetryPolicy(),
+        );
 
-      await worker.runOnce();
+        await worker.runOnce();
 
-      expect(mockTransport.sentKeys, ['stable-key-uuid-1']);
-      final pendingAfter = await outbox.pendingIntents();
-      expect(pendingAfter, isEmpty); // Accepted intents are removed from pending
-    });
+        expect(mockTransport.sentKeys, ['stable-key-uuid-1']);
+        final pendingAfter = await outbox.pendingIntents();
+        expect(
+          pendingAfter,
+          isEmpty,
+        ); // Accepted intents are removed from pending
+      },
+    );
   });
 }
 
@@ -109,8 +117,14 @@ class MockTransport implements Transport {
   final List<String> sentKeys = [];
 
   @override
-  Future<JsonObject> send(String operationId, JsonObject payload, String idempotencyKey) async {
+  Future<JsonObject> send(
+    String operationId,
+    JsonObject payload,
+    String idempotencyKey,
+  ) async {
     sentKeys.add(idempotencyKey);
-    return {'data': {'status': 'accepted', 'version': 1}};
+    return {
+      'data': {'status': 'accepted', 'version': 1},
+    };
   }
 }

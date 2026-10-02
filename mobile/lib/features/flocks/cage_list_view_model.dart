@@ -10,10 +10,7 @@ class CageListViewModel extends ChangeNotifier {
   List<JsonObject> _cages = [];
   bool _isLoading = false;
 
-  CageListViewModel({
-    required this.cache,
-    this.assignedCageIds,
-  });
+  CageListViewModel({required this.cache, this.assignedCageIds});
 
   List<JsonObject> get cages => _cages;
   bool get isLoading => _isLoading;
@@ -25,8 +22,11 @@ class CageListViewModel extends ChangeNotifier {
     try {
       final rows = await cache.listAssignedCages(assignedIds: assignedCageIds);
       _cages = rows
-        ..sort((a, b) => (a['code'] as String? ?? '')
-            .compareTo(b['code'] as String? ?? ''));
+        ..sort(
+          (a, b) => (a['code'] as String? ?? '').compareTo(
+            b['code'] as String? ?? '',
+          ),
+        );
     } finally {
       _isLoading = false;
       notifyListeners();

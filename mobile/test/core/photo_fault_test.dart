@@ -46,8 +46,12 @@ void main() {
       final parents = FakeParents();
       final uploader = FakeUploader();
 
-      await repo.add('incident', 'inc-1', Uint8List.fromList([1, 2, 3, 4]),
-          mediaType: 'image/jpeg');
+      await repo.add(
+        'incident',
+        'inc-1',
+        Uint8List.fromList([1, 2, 3, 4]),
+        mediaType: 'image/jpeg',
+      );
 
       final worker = PhotoWorker(
         repository: repo,
@@ -115,13 +119,21 @@ void main() {
       final repo = PhotoRepository(store: store, cipher: cipher);
 
       for (var i = 0; i < 3; i++) {
-        await repo.add('incident', 'inc-1', Uint8List.fromList([i]),
-            mediaType: 'image/jpeg');
+        await repo.add(
+          'incident',
+          'inc-1',
+          Uint8List.fromList([i]),
+          mediaType: 'image/jpeg',
+        );
       }
 
       expect(
-        () => repo.add('incident', 'inc-1', Uint8List.fromList([9]),
-            mediaType: 'image/jpeg'),
+        () => repo.add(
+          'incident',
+          'inc-1',
+          Uint8List.fromList([9]),
+          mediaType: 'image/jpeg',
+        ),
         throwsA(isA<PhotoRejected>()),
       );
     });
@@ -133,8 +145,12 @@ void main() {
       final repo = PhotoRepository(store: store, cipher: cipher);
 
       expect(
-        () => repo.add('incident', 'inc-1', Uint8List.fromList([1]),
-            mediaType: 'text/plain'),
+        () => repo.add(
+          'incident',
+          'inc-1',
+          Uint8List.fromList([1]),
+          mediaType: 'text/plain',
+        ),
         throwsA(isA<PhotoRejected>()),
       );
 
@@ -153,8 +169,12 @@ void main() {
       final parents = FakeParents()..accepted.add('inc-1');
       final uploader = FakeUploader()..failNext = 99;
 
-      await repo.add('incident', 'inc-1', Uint8List.fromList([1, 2]),
-          mediaType: 'image/jpeg');
+      await repo.add(
+        'incident',
+        'inc-1',
+        Uint8List.fromList([1, 2]),
+        mediaType: 'image/jpeg',
+      );
 
       final worker = PhotoWorker(
         repository: repo,

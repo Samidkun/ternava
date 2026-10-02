@@ -58,24 +58,32 @@ class IncidentListViewModel extends ChangeNotifier {
       final cageId = query['cage_id'] as String?;
       final assigned = query['assigned'] as String?;
 
-      _rows = accepted.where((raw) {
-        if (status != null && raw['status'] != status) return false;
-        if (cageId != null && raw['cage_id'] != cageId) return false;
-        if (assigned == 'unassigned' && raw['assignee_id'] != null) return false;
-        if (assigned == 'assigned' && raw['assignee_id'] == null) return false;
-        return true;
-      }).map((raw) {
-        return IncidentRow(
-          id: raw['id'] as String? ?? '',
-          cageId: raw['cage_id'] as String? ?? '',
-          observation: raw['observation'] as String? ?? '',
-          attention: raw['attention'] as String? ?? 'routine',
-          status: raw['status'] as String? ?? 'open',
-          assigneeId: raw['assignee_id'] as String?,
-          observedAt: raw['observed_at'] as String? ?? '',
-        );
-      }).toList()
-        ..sort((a, b) => b.observedAt.compareTo(a.observedAt));
+      _rows =
+          accepted
+              .where((raw) {
+                if (status != null && raw['status'] != status) return false;
+                if (cageId != null && raw['cage_id'] != cageId) return false;
+                if (assigned == 'unassigned' && raw['assignee_id'] != null) {
+                  return false;
+                }
+                if (assigned == 'assigned' && raw['assignee_id'] == null) {
+                  return false;
+                }
+                return true;
+              })
+              .map((raw) {
+                return IncidentRow(
+                  id: raw['id'] as String? ?? '',
+                  cageId: raw['cage_id'] as String? ?? '',
+                  observation: raw['observation'] as String? ?? '',
+                  attention: raw['attention'] as String? ?? 'routine',
+                  status: raw['status'] as String? ?? 'open',
+                  assigneeId: raw['assignee_id'] as String?,
+                  observedAt: raw['observed_at'] as String? ?? '',
+                );
+              })
+              .toList()
+            ..sort((a, b) => b.observedAt.compareTo(a.observedAt));
     } finally {
       _isLoading = false;
       notifyListeners();

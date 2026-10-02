@@ -18,8 +18,9 @@ import 'support/mobile_scenario.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('catatan offline survive relaunch lalu sync sekali',
-      (tester) async {
+  testWidgets('catatan offline survive relaunch lalu sync sekali', (
+    tester,
+  ) async {
     final s = await makeMobileScenario();
     await s.loginAsOperator();
     s.transport.offline = true;
@@ -37,8 +38,9 @@ void main() {
     expect(await s.pendingIds(), isEmpty);
   });
 
-  testWidgets('timeout setelah commit mempertahankan key dan payload',
-      (tester) async {
+  testWidgets('timeout setelah commit mempertahankan key dan payload', (
+    tester,
+  ) async {
     final s = await makeMobileScenario();
     await s.loginAsOperator();
     s.transport.dropAckAfterEffect = true;
@@ -59,11 +61,15 @@ void main() {
     // Retry reuses the SAME idempotency key.
     s.transport.dropAckAfterEffect = false;
     await s.worker.runOnce();
-    expect(s.transport.sentKeys.where((k) => k == before).length, greaterThanOrEqualTo(2));
+    expect(
+      s.transport.sentKeys.where((k) => k == before).length,
+      greaterThanOrEqualTo(2),
+    );
   });
 
-  testWidgets('teks temuan offline tahan relaunch dan tidak hilang',
-      (tester) async {
+  testWidgets('teks temuan offline tahan relaunch dan tidak hilang', (
+    tester,
+  ) async {
     final s = await makeMobileScenario();
     await s.loginAsOperator();
     s.transport.offline = true;
@@ -78,8 +84,9 @@ void main() {
     expect(await s.pendingIds(), hasLength(1));
   });
 
-  testWidgets('401/403 menghentikan retry, 409/422 minta tinjauan',
-      (tester) async {
+  testWidgets('401/403 menghentikan retry, 409/422 minta tinjauan', (
+    tester,
+  ) async {
     final s = await makeMobileScenario();
     await s.loginAsOperator();
 
@@ -90,17 +97,25 @@ void main() {
 
     // Drive the production retry policy directly on the real failure types.
     expect(
-      s.worker.retryPolicy.next(
-        const ApiFailure(code: 'UNAUTHORIZED', message: 'x', status: 401),
-        intent.attempts + 1,
-      ).action,
+      s.worker.retryPolicy
+          .next(
+            const ApiFailure(code: 'UNAUTHORIZED', message: 'x', status: 401),
+            intent.attempts + 1,
+          )
+          .action,
       RetryAction.stopBlockedAuth,
     );
     expect(
-      s.worker.retryPolicy.next(
-        const ApiFailure(code: 'DAILY_ALREADY_EXISTS', message: 'x', status: 409),
-        intent.attempts + 1,
-      ).action,
+      s.worker.retryPolicy
+          .next(
+            const ApiFailure(
+              code: 'DAILY_ALREADY_EXISTS',
+              message: 'x',
+              status: 409,
+            ),
+            intent.attempts + 1,
+          )
+          .action,
       RetryAction.needsReview,
     );
   });
@@ -120,15 +135,26 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('layar kritis membangun frame tanpa error di perangkat',
-      (tester) async {
+  testWidgets('layar kritis membangun frame tanpa error di perangkat', (
+    tester,
+  ) async {
     final s = await makeMobileScenario();
     await s.loginAsOperator();
 
-    for (final id in ['login', 'today', 'daily-form', 'sync-center', 'account']) {
+    for (final id in [
+      'login',
+      'today',
+      'daily-form',
+      'sync-center',
+      'account',
+    ]) {
       await tester.pumpWidget(s.appAt(id));
       await tester.pump(const Duration(milliseconds: 50));
-      expect(tester.takeException(), isNull, reason: 'layar $id gagal dirender');
+      expect(
+        tester.takeException(),
+        isNull,
+        reason: 'layar $id gagal dirender',
+      );
     }
   });
 }

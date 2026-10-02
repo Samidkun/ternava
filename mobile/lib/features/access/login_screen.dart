@@ -6,10 +6,7 @@ import 'login_view_model.dart';
 class LoginScreen extends StatefulWidget {
   final LoginViewModel viewModel;
 
-  const LoginScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const LoginScreen({super.key, required this.viewModel});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -79,13 +76,18 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: TernavaTheme.error.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                  color: TernavaTheme.error
-                                      .withValues(alpha: 0.3)),
+                                color: TernavaTheme.error.withValues(
+                                  alpha: 0.3,
+                                ),
+                              ),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.error_outline,
-                                    color: TernavaTheme.error, size: 20),
+                                const Icon(
+                                  Icons.error_outline,
+                                  color: TernavaTheme.error,
+                                  size: 20,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(

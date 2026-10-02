@@ -52,7 +52,8 @@ class FlockFormViewModel extends ChangeNotifier {
         final payload = FlockUpdate.fromJson({
           ...values,
           'base_version': baseVersion,
-          if (reason != null && reason.trim().isNotEmpty) 'reason': reason.trim(),
+          if (reason != null && reason.trim().isNotEmpty)
+            'reason': reason.trim(),
         });
         await apiClient.request(
           'updateFlock',
@@ -72,8 +73,13 @@ class FlockFormViewModel extends ChangeNotifier {
       return true;
     } on ApiFailure catch (e) {
       if (e.status == 0 || e.status >= 500) {
-        await outbox.enqueue(Intent.onlineMaster(
-            edit ? 'updateFlock' : 'createFlock', values, _persistKey!));
+        await outbox.enqueue(
+          Intent.onlineMaster(
+            edit ? 'updateFlock' : 'createFlock',
+            values,
+            _persistKey!,
+          ),
+        );
       }
       _errorMessage = e.message;
       return false;
@@ -85,9 +91,9 @@ class FlockFormViewModel extends ChangeNotifier {
 
   Future<bool> finish(String endDate, {required bool confirmed}) async {
     if (!confirmed) return false;
-    return save(
-      {'status': 'finished', 'end_date': endDate},
-      reason: 'Kelompok selesai',
-    );
+    return save({
+      'status': 'finished',
+      'end_date': endDate,
+    }, reason: 'Kelompok selesai');
   }
 }

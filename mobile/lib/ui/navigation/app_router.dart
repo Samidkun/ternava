@@ -7,13 +7,17 @@ class AppRouter {
       GlobalKey<NavigatorState>();
 
   static Future<T?> open<T>(String screenId, {JsonObject? args}) async {
-    return await navigatorKey.currentState
-        ?.pushNamed<T>('/$screenId', arguments: args);
+    return await navigatorKey.currentState?.pushNamed<T>(
+      '/$screenId',
+      arguments: args,
+    );
   }
 
   static void replace(String screenId, {JsonObject? args}) {
-    navigatorKey.currentState
-        ?.pushReplacementNamed('/$screenId', arguments: args);
+    navigatorKey.currentState?.pushReplacementNamed(
+      '/$screenId',
+      arguments: args,
+    );
   }
 
   static void back<T>([T? result]) {

@@ -8,10 +8,7 @@ class AccountViewModel extends ChangeNotifier {
   final PartitionStore store;
   Map<String, dynamic>? _userProfile;
 
-  AccountViewModel({
-    required this.apiClient,
-    required this.store,
-  });
+  AccountViewModel({required this.apiClient, required this.store});
 
   Map<String, dynamic>? get userProfile => _userProfile;
 

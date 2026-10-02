@@ -6,10 +6,7 @@ import 'task_form_view_model.dart';
 class TaskFormScreen extends StatefulWidget {
   final TaskFormViewModel viewModel;
 
-  const TaskFormScreen({
-    super.key,
-    required this.viewModel,
-  });
+  const TaskFormScreen({super.key, required this.viewModel});
 
   @override
   State<TaskFormScreen> createState() => _TaskFormScreenState();
@@ -52,7 +49,10 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
               if (vm.errorMessage != null) ...[
                 Text(
                   vm.errorMessage!,
-                  style: const TextStyle(color: TernavaTheme.error, fontSize: 13),
+                  style: const TextStyle(
+                    color: TernavaTheme.error,
+                    fontSize: 13,
+                  ),
                 ),
                 const SizedBox(height: 12),
               ],
@@ -69,8 +69,14 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                 decoration: const InputDecoration(labelText: 'Jenis'),
                 items: const [
                   DropdownMenuItem(value: 'routine', child: Text('Rutin')),
-                  DropdownMenuItem(value: 'inspection', child: Text('Pemeriksaan')),
-                  DropdownMenuItem(value: 'vaccination', child: Text('Vaksinasi')),
+                  DropdownMenuItem(
+                    value: 'inspection',
+                    child: Text('Pemeriksaan'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'vaccination',
+                    child: Text('Vaksinasi'),
+                  ),
                 ],
                 onChanged: (v) => setState(() => _kind = v ?? 'routine'),
               ),
@@ -104,7 +110,9 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Text('Simpan tugas'),
               ),

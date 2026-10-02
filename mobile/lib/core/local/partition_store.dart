@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 @immutable
@@ -6,10 +7,7 @@ class PartitionId {
   final String actorId;
   final String farmId;
 
-  const PartitionId({
-    required this.actorId,
-    required this.farmId,
-  });
+  const PartitionId({required this.actorId, required this.farmId});
 
   @override
   bool operator ==(Object other) =>
@@ -45,7 +43,8 @@ class PartitionStore {
   Future<T> transaction<T>(Future<T> Function() action) async {
     if (!_isUnlocked || _currentPartition == null) {
       throw StateError(
-          'PartitionStore terkunci. Buka kunci partisi sebelum melakukan transaksi.');
+        'PartitionStore terkunci. Buka kunci partisi sebelum melakukan transaksi.',
+      );
     }
     return await action();
   }

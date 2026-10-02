@@ -33,7 +33,9 @@ class IncidentApiClient extends ApiClient {
       throwNext = null;
       throw t;
     }
-    return {'data': {'id': 'inc-1'}};
+    return {
+      'data': {'id': 'inc-1'},
+    };
   }
 }
 
@@ -44,21 +46,20 @@ JsonObject incidentPayload({
   String cageId = 'cage-1',
   String attention = 'priority',
   String observation = 'Nafsu makan menurun',
-}) =>
-    {
-      'id': id,
-      'farm_id': 'farm-1',
-      'cage_id': cageId,
-      'flock_id': 'flock-1',
-      'source_daily_record_id': null,
-      'observed_at': '2026-10-02T06:30:00Z',
-      'observation': observation,
-      'attention': attention,
-      'assignee_id': assigneeId,
-      'status': status,
-      'version': 1,
-      'updated_at': '2026-10-02T06:30:00Z',
-    };
+}) => {
+  'id': id,
+  'farm_id': 'farm-1',
+  'cage_id': cageId,
+  'flock_id': 'flock-1',
+  'source_daily_record_id': null,
+  'observed_at': '2026-10-02T06:30:00Z',
+  'observation': observation,
+  'attention': attention,
+  'assignee_id': assigneeId,
+  'status': status,
+  'version': 1,
+  'updated_at': '2026-10-02T06:30:00Z',
+};
 
 Future<CacheRepository> cacheWithIncidents(List<JsonObject> incidents) async {
   final store = PartitionStore();
@@ -68,12 +69,14 @@ Future<CacheRepository> cacheWithIncidents(List<JsonObject> incidents) async {
     'scope_version': 1,
     'as_of': '2026-10-02T06:00:00Z',
     'changes': incidents
-        .map((i) => {
-              'resource_type': 'incident',
-              'resource_id': i['id'],
-              'action': 'upsert',
-              'value': i,
-            })
+        .map(
+          (i) => {
+            'resource_type': 'incident',
+            'resource_id': i['id'],
+            'action': 'upsert',
+            'value': i,
+          },
+        )
         .toList(),
     'next_cursor': null,
     'has_more': false,
@@ -103,8 +106,9 @@ void main() {
       expect(viewModel.rows.first.id, 'inc-1');
     });
 
-    testWidgets('filter assignment menampilkan temuan belum ditugaskan',
-        (tester) async {
+    testWidgets('filter assignment menampilkan temuan belum ditugaskan', (
+      tester,
+    ) async {
       final cache = await cacheWithIncidents([
         incidentPayload(id: 'inc-1', assigneeId: null),
         incidentPayload(id: 'inc-2', assigneeId: 'op-9'),
@@ -138,7 +142,9 @@ void main() {
       );
 
       await tester.enterText(
-          find.byKey(const Key('incident-observation')), 'Nafsu makan menurun');
+        find.byKey(const Key('incident-observation')),
+        'Nafsu makan menurun',
+      );
       await tester.tap(find.text('Simpan temuan'));
       await tester.pumpAndSettle();
 
@@ -155,22 +161,32 @@ void main() {
       await store.unlock(const PartitionId(actorId: 'op-1', farmId: 'farm-1'));
       final outbox = outbox_lib.OutboxRepository(store: store);
 
-      final vm1 = IncidentFormViewModel(apiClient: IncidentApiClient(), outbox: outbox);
+      final vm1 = IncidentFormViewModel(
+        apiClient: IncidentApiClient(),
+        outbox: outbox,
+      );
       await vm1.saveDraft(observation: 'Ayam lemas di blok A3');
 
       // Simulate app restart: a brand new view model reads persisted drafts.
-      final vm2 = IncidentFormViewModel(apiClient: IncidentApiClient(), outbox: outbox);
+      final vm2 = IncidentFormViewModel(
+        apiClient: IncidentApiClient(),
+        outbox: outbox,
+      );
       await vm2.loadDraft();
 
       expect(vm2.draftObservation, 'Ayam lemas di blok A3');
     });
 
-    testWidgets('foto terpisah dari teks dan punya status sendiri',
-        (tester) async {
+    testWidgets('foto terpisah dari teks dan punya status sendiri', (
+      tester,
+    ) async {
       final store = PartitionStore();
       await store.unlock(const PartitionId(actorId: 'op-1', farmId: 'farm-1'));
       final outbox = outbox_lib.OutboxRepository(store: store);
-      final viewModel = IncidentFormViewModel(apiClient: IncidentApiClient(), outbox: outbox);
+      final viewModel = IncidentFormViewModel(
+        apiClient: IncidentApiClient(),
+        outbox: outbox,
+      );
 
       viewModel.attachPhoto(bytes: [1, 2, 3], mediaType: 'image/jpeg');
 
@@ -180,12 +196,16 @@ void main() {
       expect(viewModel.draftObservation, '');
     });
 
-    testWidgets('foto rusak memberi pesan yang bisa ditindaklanjuti',
-        (tester) async {
+    testWidgets('foto rusak memberi pesan yang bisa ditindaklanjuti', (
+      tester,
+    ) async {
       final store = PartitionStore();
       await store.unlock(const PartitionId(actorId: 'op-1', farmId: 'farm-1'));
       final outbox = outbox_lib.OutboxRepository(store: store);
-      final viewModel = IncidentFormViewModel(apiClient: IncidentApiClient(), outbox: outbox);
+      final viewModel = IncidentFormViewModel(
+        apiClient: IncidentApiClient(),
+        outbox: outbox,
+      );
 
       final ok = viewModel.attachPhoto(bytes: [0], mediaType: 'text/plain');
 
@@ -198,7 +218,10 @@ void main() {
       final store = PartitionStore();
       await store.unlock(const PartitionId(actorId: 'op-1', farmId: 'farm-1'));
       final outbox = outbox_lib.OutboxRepository(store: store);
-      final viewModel = IncidentFormViewModel(apiClient: IncidentApiClient(), outbox: outbox);
+      final viewModel = IncidentFormViewModel(
+        apiClient: IncidentApiClient(),
+        outbox: outbox,
+      );
 
       await tester.pumpWidget(
         MaterialApp(
@@ -211,8 +234,9 @@ void main() {
       expect(find.text('Simpan temuan'), findsOneWidget);
     });
 
-    testWidgets('temuan tidak menyebut penyakit secara otomatis',
-        (tester) async {
+    testWidgets('temuan tidak menyebut penyakit secara otomatis', (
+      tester,
+    ) async {
       final cache = await cacheWithIncidents([
         incidentPayload(observation: 'Ayam lemas di blok A3'),
       ]);

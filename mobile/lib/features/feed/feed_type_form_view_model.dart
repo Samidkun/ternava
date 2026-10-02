@@ -83,8 +83,13 @@ class FeedTypeFormViewModel extends ChangeNotifier {
       return true;
     } on ApiFailure catch (e) {
       if (e.status == 0 || e.status >= 500) {
-        await outbox.enqueue(Intent.onlineMaster(
-            edit ? 'updateFeedType' : 'createFeedType', input, _persistKey!));
+        await outbox.enqueue(
+          Intent.onlineMaster(
+            edit ? 'updateFeedType' : 'createFeedType',
+            input,
+            _persistKey!,
+          ),
+        );
       }
       _errorMessage = e.message;
       return false;

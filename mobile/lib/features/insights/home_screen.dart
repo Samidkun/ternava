@@ -19,7 +19,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     if (widget.viewModel.dashboard == null) {
-      widget.viewModel.refresh(DateTime.now().toIso8601String().substring(0, 10));
+      widget.viewModel.refresh(
+        DateTime.now().toIso8601String().substring(0, 10),
+      );
     }
   }
 
