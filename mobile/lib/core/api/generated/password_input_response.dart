@@ -1,0 +1,16 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// Schema: PasswordInputResponse
+
+import 'types.dart';
+
+class PasswordInputResponse {
+  final JsonObject _raw;
+
+  const PasswordInputResponse(this._raw);
+
+  factory PasswordInputResponse.fromJson(JsonObject json) => PasswordInputResponse(Map<String, Object?>.from(json));
+
+  JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
+
+  Object? operator [](String key) => _raw[key];
+}
