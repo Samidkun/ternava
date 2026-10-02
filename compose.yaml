@@ -1,0 +1,83 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-ternava}
+      POSTGRES_USER: ${DB_USERNAME:-ternava}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-ternava_secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-ternava} -d ${DB_DATABASE:-ternava}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8080:8000"
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      APP_KEY: ${APP_KEY:-base64:defaultkeyforternavalocalenv12345678=}
+      APP_DEBUG: ${APP_DEBUG:-true}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-ternava}
+      DB_USERNAME: ${DB_USERNAME:-ternava}
+      DB_PASSWORD: ${DB_PASSWORD:-ternava_secret}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: ["php", "artisan", "queue:work", "--tries=3", "--timeout=90"]
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      APP_KEY: ${APP_KEY:-base64:defaultkeyforternavalocalenv12345678=}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-ternava}
+      DB_USERNAME: ${DB_USERNAME:-ternava}
+      DB_PASSWORD: ${DB_PASSWORD:-ternava_secret}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+
+  scheduler:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: ["php", "artisan", "schedule:work"]
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      APP_KEY: ${APP_KEY:-base64:defaultkeyforternavalocalenv12345678=}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-ternava}
+      DB_USERNAME: ${DB_USERNAME:-ternava}
+      DB_PASSWORD: ${DB_PASSWORD:-ternava_secret}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
