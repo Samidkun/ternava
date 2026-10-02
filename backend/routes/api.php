@@ -10,6 +10,7 @@ use App\Http\Controllers\FlockController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\InboxController;
 use App\Http\Controllers\IncidentController;
+use App\Http\Controllers\InsightsController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PushController;
 use App\Http\Controllers\SessionController;
@@ -107,5 +108,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/inbox/{id}/read', [InboxController::class, 'read'])->name('inbox.read');
         Route::put('/push-devices', [PushController::class, 'register'])->name('push_devices.register');
         Route::delete('/push-devices/{id}', [PushController::class, 'unregister'])->name('push_devices.unregister');
+
+        // Insights endpoints
+        Route::get('/dashboard', [InsightsController::class, 'dashboard'])->name('insights.dashboard');
+        Route::get('/reports/operations', [InsightsController::class, 'operations'])->name('insights.operations');
+        Route::get('/reports/operations.csv', [InsightsController::class, 'export'])->name('insights.operations.export');
     });
 });
