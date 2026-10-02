@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CageController;
 use App\Http\Controllers\FarmController;
+use App\Http\Controllers\FeedController;
 use App\Http\Controllers\FlockController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\MemberController;
@@ -51,6 +52,15 @@ Route::prefix('v1')->group(function () {
         Route::post('/members', [MemberController::class, 'store'])->name('members.store');
         Route::get('/members/{id}', [MemberController::class, 'show'])->name('members.show');
         Route::patch('/members/{id}', [MemberController::class, 'update'])->name('members.update');
+
+        // Feed endpoints
+        Route::get('/feed-types', [FeedController::class, 'listTypes'])->name('feed_types.index');
+        Route::post('/feed-types', [FeedController::class, 'storeType'])->name('feed_types.store');
+        Route::get('/feed-types/{id}', [FeedController::class, 'showType'])->name('feed_types.show');
+        Route::patch('/feed-types/{id}', [FeedController::class, 'updateType'])->name('feed_types.update');
+        Route::get('/feed-balances', [FeedController::class, 'listBalances'])->name('feed_balances.index');
+        Route::get('/feed-entries', [FeedController::class, 'listEntries'])->name('feed_entries.index');
+        Route::post('/feed-entries', [FeedController::class, 'storeEntry'])->name('feed_entries.store');
 
         Route::post('/daily-records', function (Request $request) {
             $feedKg = $request->input('feed_kg');
