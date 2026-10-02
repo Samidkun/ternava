@@ -8,7 +8,9 @@ class SyncPage {
 
   const SyncPage(this._raw);
 
-  factory SyncPage.fromJson(JsonObject json) => SyncPage(Map<String, Object?>.from(json));
+  factory SyncPage.fromJson(JsonObject json) {
+    return SyncPage(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

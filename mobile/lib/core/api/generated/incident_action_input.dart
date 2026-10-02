@@ -8,7 +8,9 @@ class IncidentActionInput {
 
   const IncidentActionInput(this._raw);
 
-  factory IncidentActionInput.fromJson(JsonObject json) => IncidentActionInput(Map<String, Object?>.from(json));
+  factory IncidentActionInput.fromJson(JsonObject json) {
+    return IncidentActionInput(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

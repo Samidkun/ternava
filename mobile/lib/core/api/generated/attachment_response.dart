@@ -8,7 +8,9 @@ class AttachmentResponse {
 
   const AttachmentResponse(this._raw);
 
-  factory AttachmentResponse.fromJson(JsonObject json) => AttachmentResponse(Map<String, Object?>.from(json));
+  factory AttachmentResponse.fromJson(JsonObject json) {
+    return AttachmentResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

@@ -8,7 +8,9 @@ class TaskTemplatePage {
 
   const TaskTemplatePage(this._raw);
 
-  factory TaskTemplatePage.fromJson(JsonObject json) => TaskTemplatePage(Map<String, Object?>.from(json));
+  factory TaskTemplatePage.fromJson(JsonObject json) {
+    return TaskTemplatePage(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

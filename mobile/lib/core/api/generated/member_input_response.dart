@@ -8,7 +8,9 @@ class MemberInputResponse {
 
   const MemberInputResponse(this._raw);
 
-  factory MemberInputResponse.fromJson(JsonObject json) => MemberInputResponse(Map<String, Object?>.from(json));
+  factory MemberInputResponse.fromJson(JsonObject json) {
+    return MemberInputResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

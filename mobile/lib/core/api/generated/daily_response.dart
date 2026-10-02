@@ -8,7 +8,9 @@ class DailyResponse {
 
   const DailyResponse(this._raw);
 
-  factory DailyResponse.fromJson(JsonObject json) => DailyResponse(Map<String, Object?>.from(json));
+  factory DailyResponse.fromJson(JsonObject json) {
+    return DailyResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

@@ -8,7 +8,9 @@ class Incident {
 
   const Incident(this._raw);
 
-  factory Incident.fromJson(JsonObject json) => Incident(Map<String, Object?>.from(json));
+  factory Incident.fromJson(JsonObject json) {
+    return Incident(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

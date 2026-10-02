@@ -8,7 +8,9 @@ class IncidentActionResponse {
 
   const IncidentActionResponse(this._raw);
 
-  factory IncidentActionResponse.fromJson(JsonObject json) => IncidentActionResponse(Map<String, Object?>.from(json));
+  factory IncidentActionResponse.fromJson(JsonObject json) {
+    return IncidentActionResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

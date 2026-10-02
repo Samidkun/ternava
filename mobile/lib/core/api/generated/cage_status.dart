@@ -8,7 +8,9 @@ class CageStatus {
 
   const CageStatus(this._raw);
 
-  factory CageStatus.fromJson(JsonObject json) => CageStatus(Map<String, Object?>.from(json));
+  factory CageStatus.fromJson(JsonObject json) {
+    return CageStatus(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

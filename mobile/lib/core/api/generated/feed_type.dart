@@ -8,7 +8,9 @@ class FeedType {
 
   const FeedType(this._raw);
 
-  factory FeedType.fromJson(JsonObject json) => FeedType(Map<String, Object?>.from(json));
+  factory FeedType.fromJson(JsonObject json) {
+    return FeedType(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

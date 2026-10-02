@@ -8,7 +8,9 @@ class Error {
 
   const Error(this._raw);
 
-  factory Error.fromJson(JsonObject json) => Error(Map<String, Object?>.from(json));
+  factory Error.fromJson(JsonObject json) {
+    return Error(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

@@ -8,7 +8,9 @@ class FeedTypeResponse {
 
   const FeedTypeResponse(this._raw);
 
-  factory FeedTypeResponse.fromJson(JsonObject json) => FeedTypeResponse(Map<String, Object?>.from(json));
+  factory FeedTypeResponse.fromJson(JsonObject json) {
+    return FeedTypeResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

@@ -8,7 +8,9 @@ class SessionResponse {
 
   const SessionResponse(this._raw);
 
-  factory SessionResponse.fromJson(JsonObject json) => SessionResponse(Map<String, Object?>.from(json));
+  factory SessionResponse.fromJson(JsonObject json) {
+    return SessionResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

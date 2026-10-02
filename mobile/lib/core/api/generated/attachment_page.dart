@@ -8,7 +8,9 @@ class AttachmentPage {
 
   const AttachmentPage(this._raw);
 
-  factory AttachmentPage.fromJson(JsonObject json) => AttachmentPage(Map<String, Object?>.from(json));
+  factory AttachmentPage.fromJson(JsonObject json) {
+    return AttachmentPage(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

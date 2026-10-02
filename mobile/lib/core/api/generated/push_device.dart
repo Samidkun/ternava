@@ -8,7 +8,9 @@ class PushDevice {
 
   const PushDevice(this._raw);
 
-  factory PushDevice.fromJson(JsonObject json) => PushDevice(Map<String, Object?>.from(json));
+  factory PushDevice.fromJson(JsonObject json) {
+    return PushDevice(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

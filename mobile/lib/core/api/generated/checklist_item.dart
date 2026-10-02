@@ -8,7 +8,9 @@ class ChecklistItem {
 
   const ChecklistItem(this._raw);
 
-  factory ChecklistItem.fromJson(JsonObject json) => ChecklistItem(Map<String, Object?>.from(json));
+  factory ChecklistItem.fromJson(JsonObject json) {
+    return ChecklistItem(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

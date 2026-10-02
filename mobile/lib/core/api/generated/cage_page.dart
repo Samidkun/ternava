@@ -8,7 +8,9 @@ class CagePage {
 
   const CagePage(this._raw);
 
-  factory CagePage.fromJson(JsonObject json) => CagePage(Map<String, Object?>.from(json));
+  factory CagePage.fromJson(JsonObject json) {
+    return CagePage(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

@@ -8,7 +8,9 @@ class FeedEntryPage {
 
   const FeedEntryPage(this._raw);
 
-  factory FeedEntryPage.fromJson(JsonObject json) => FeedEntryPage(Map<String, Object?>.from(json));
+  factory FeedEntryPage.fromJson(JsonObject json) {
+    return FeedEntryPage(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

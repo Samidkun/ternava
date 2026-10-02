@@ -8,7 +8,9 @@ class MemberUpdate {
 
   const MemberUpdate(this._raw);
 
-  factory MemberUpdate.fromJson(JsonObject json) => MemberUpdate(Map<String, Object?>.from(json));
+  factory MemberUpdate.fromJson(JsonObject json) {
+    return MemberUpdate(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

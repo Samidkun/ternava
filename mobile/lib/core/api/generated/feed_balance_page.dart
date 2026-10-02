@@ -8,7 +8,9 @@ class FeedBalancePage {
 
   const FeedBalancePage(this._raw);
 
-  factory FeedBalancePage.fromJson(JsonObject json) => FeedBalancePage(Map<String, Object?>.from(json));
+  factory FeedBalancePage.fromJson(JsonObject json) {
+    return FeedBalancePage(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

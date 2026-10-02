@@ -8,7 +8,9 @@ class FlockUpdate {
 
   const FlockUpdate(this._raw);
 
-  factory FlockUpdate.fromJson(JsonObject json) => FlockUpdate(Map<String, Object?>.from(json));
+  factory FlockUpdate.fromJson(JsonObject json) {
+    return FlockUpdate(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

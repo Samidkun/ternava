@@ -8,7 +8,9 @@ class ActorResponse {
 
   const ActorResponse(this._raw);
 
-  factory ActorResponse.fromJson(JsonObject json) => ActorResponse(Map<String, Object?>.from(json));
+  factory ActorResponse.fromJson(JsonObject json) {
+    return ActorResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

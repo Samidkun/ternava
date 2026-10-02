@@ -8,7 +8,9 @@ class MemberInput {
 
   const MemberInput(this._raw);
 
-  factory MemberInput.fromJson(JsonObject json) => MemberInput(Map<String, Object?>.from(json));
+  factory MemberInput.fromJson(JsonObject json) {
+    return MemberInput(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

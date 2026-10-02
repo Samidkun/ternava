@@ -8,7 +8,9 @@ class IncidentActionPage {
 
   const IncidentActionPage(this._raw);
 
-  factory IncidentActionPage.fromJson(JsonObject json) => IncidentActionPage(Map<String, Object?>.from(json));
+  factory IncidentActionPage.fromJson(JsonObject json) {
+    return IncidentActionPage(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

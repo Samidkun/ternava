@@ -8,7 +8,9 @@ class SyncChange {
 
   const SyncChange(this._raw);
 
-  factory SyncChange.fromJson(JsonObject json) => SyncChange(Map<String, Object?>.from(json));
+  factory SyncChange.fromJson(JsonObject json) {
+    return SyncChange(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

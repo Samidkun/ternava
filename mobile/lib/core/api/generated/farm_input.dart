@@ -8,7 +8,9 @@ class FarmInput {
 
   const FarmInput(this._raw);
 
-  factory FarmInput.fromJson(JsonObject json) => FarmInput(Map<String, Object?>.from(json));
+  factory FarmInput.fromJson(JsonObject json) {
+    return FarmInput(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

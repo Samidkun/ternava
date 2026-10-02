@@ -8,7 +8,9 @@ class DashboardResponse {
 
   const DashboardResponse(this._raw);
 
-  factory DashboardResponse.fromJson(JsonObject json) => DashboardResponse(Map<String, Object?>.from(json));
+  factory DashboardResponse.fromJson(JsonObject json) {
+    return DashboardResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

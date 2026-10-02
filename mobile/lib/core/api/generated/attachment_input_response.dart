@@ -8,7 +8,9 @@ class AttachmentInputResponse {
 
   const AttachmentInputResponse(this._raw);
 
-  factory AttachmentInputResponse.fromJson(JsonObject json) => AttachmentInputResponse(Map<String, Object?>.from(json));
+  factory AttachmentInputResponse.fromJson(JsonObject json) {
+    return AttachmentInputResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

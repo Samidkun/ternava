@@ -8,7 +8,9 @@ class FeedBalanceResponse {
 
   const FeedBalanceResponse(this._raw);
 
-  factory FeedBalanceResponse.fromJson(JsonObject json) => FeedBalanceResponse(Map<String, Object?>.from(json));
+  factory FeedBalanceResponse.fromJson(JsonObject json) {
+    return FeedBalanceResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

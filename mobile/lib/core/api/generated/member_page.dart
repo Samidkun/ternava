@@ -8,7 +8,9 @@ class MemberPage {
 
   const MemberPage(this._raw);
 
-  factory MemberPage.fromJson(JsonObject json) => MemberPage(Map<String, Object?>.from(json));
+  factory MemberPage.fromJson(JsonObject json) {
+    return MemberPage(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

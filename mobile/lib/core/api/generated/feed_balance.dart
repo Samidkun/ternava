@@ -8,7 +8,9 @@ class FeedBalance {
 
   const FeedBalance(this._raw);
 
-  factory FeedBalance.fromJson(JsonObject json) => FeedBalance(Map<String, Object?>.from(json));
+  factory FeedBalance.fromJson(JsonObject json) {
+    return FeedBalance(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

@@ -65,6 +65,10 @@ final readonly class {name}
     return code
 
 def generate_dart_dto(name: str, schema: dict) -> str:
+    # The factory uses a block body (not `=> expr`) so the generated line stays
+    # under 80 columns for every schema name and therefore matches `dart format`
+    # byte-for-byte. An arrow body would be re-wrapped by the formatter for long
+    # names, making `generate_dto.py --check` and `dart format --check` disagree.
     code = f"""// GENERATED CODE - DO NOT MODIFY BY HAND
 // Schema: {name}
 
@@ -75,7 +79,9 @@ class {name} {{
 
   const {name}(this._raw);
 
-  factory {name}.fromJson(JsonObject json) => {name}(Map<String, Object?>.from(json));
+  factory {name}.fromJson(JsonObject json) {{
+    return {name}(Map<String, Object?>.from(json));
+  }}
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

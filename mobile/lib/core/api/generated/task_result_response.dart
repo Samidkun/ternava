@@ -8,7 +8,9 @@ class TaskResultResponse {
 
   const TaskResultResponse(this._raw);
 
-  factory TaskResultResponse.fromJson(JsonObject json) => TaskResultResponse(Map<String, Object?>.from(json));
+  factory TaskResultResponse.fromJson(JsonObject json) {
+    return TaskResultResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

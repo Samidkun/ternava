@@ -8,7 +8,9 @@ class AckResponse {
 
   const AckResponse(this._raw);
 
-  factory AckResponse.fromJson(JsonObject json) => AckResponse(Map<String, Object?>.from(json));
+  factory AckResponse.fromJson(JsonObject json) {
+    return AckResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

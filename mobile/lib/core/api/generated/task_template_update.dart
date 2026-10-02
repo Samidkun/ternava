@@ -8,7 +8,9 @@ class TaskTemplateUpdate {
 
   const TaskTemplateUpdate(this._raw);
 
-  factory TaskTemplateUpdate.fromJson(JsonObject json) => TaskTemplateUpdate(Map<String, Object?>.from(json));
+  factory TaskTemplateUpdate.fromJson(JsonObject json) {
+    return TaskTemplateUpdate(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

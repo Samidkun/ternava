@@ -8,7 +8,9 @@ class FlockResponse {
 
   const FlockResponse(this._raw);
 
-  factory FlockResponse.fromJson(JsonObject json) => FlockResponse(Map<String, Object?>.from(json));
+  factory FlockResponse.fromJson(JsonObject json) {
+    return FlockResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

@@ -8,7 +8,9 @@ class PopulationChangeResponse {
 
   const PopulationChangeResponse(this._raw);
 
-  factory PopulationChangeResponse.fromJson(JsonObject json) => PopulationChangeResponse(Map<String, Object?>.from(json));
+  factory PopulationChangeResponse.fromJson(JsonObject json) {
+    return PopulationChangeResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

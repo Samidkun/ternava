@@ -8,7 +8,9 @@ class InboxPage {
 
   const InboxPage(this._raw);
 
-  factory InboxPage.fromJson(JsonObject json) => InboxPage(Map<String, Object?>.from(json));
+  factory InboxPage.fromJson(JsonObject json) {
+    return InboxPage(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

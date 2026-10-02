@@ -8,7 +8,9 @@ class FeedEntryInput {
 
   const FeedEntryInput(this._raw);
 
-  factory FeedEntryInput.fromJson(JsonObject json) => FeedEntryInput(Map<String, Object?>.from(json));
+  factory FeedEntryInput.fromJson(JsonObject json) {
+    return FeedEntryInput(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

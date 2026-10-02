@@ -8,7 +8,9 @@ class PasswordInput {
 
   const PasswordInput(this._raw);
 
-  factory PasswordInput.fromJson(JsonObject json) => PasswordInput(Map<String, Object?>.from(json));
+  factory PasswordInput.fromJson(JsonObject json) {
+    return PasswordInput(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

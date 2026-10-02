@@ -8,7 +8,9 @@ class FeedEntry {
 
   const FeedEntry(this._raw);
 
-  factory FeedEntry.fromJson(JsonObject json) => FeedEntry(Map<String, Object?>.from(json));
+  factory FeedEntry.fromJson(JsonObject json) {
+    return FeedEntry(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

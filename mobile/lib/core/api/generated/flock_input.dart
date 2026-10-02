@@ -8,7 +8,9 @@ class FlockInput {
 
   const FlockInput(this._raw);
 
-  factory FlockInput.fromJson(JsonObject json) => FlockInput(Map<String, Object?>.from(json));
+  factory FlockInput.fromJson(JsonObject json) {
+    return FlockInput(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

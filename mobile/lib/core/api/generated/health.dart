@@ -8,7 +8,9 @@ class Health {
 
   const Health(this._raw);
 
-  factory Health.fromJson(JsonObject json) => Health(Map<String, Object?>.from(json));
+  factory Health.fromJson(JsonObject json) {
+    return Health(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

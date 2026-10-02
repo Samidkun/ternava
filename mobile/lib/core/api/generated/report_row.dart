@@ -8,7 +8,9 @@ class ReportRow {
 
   const ReportRow(this._raw);
 
-  factory ReportRow.fromJson(JsonObject json) => ReportRow(Map<String, Object?>.from(json));
+  factory ReportRow.fromJson(JsonObject json) {
+    return ReportRow(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

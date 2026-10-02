@@ -8,7 +8,9 @@ class FarmInputResponse {
 
   const FarmInputResponse(this._raw);
 
-  factory FarmInputResponse.fromJson(JsonObject json) => FarmInputResponse(Map<String, Object?>.from(json));
+  factory FarmInputResponse.fromJson(JsonObject json) {
+    return FarmInputResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

@@ -8,7 +8,9 @@ class FlockPage {
 
   const FlockPage(this._raw);
 
-  factory FlockPage.fromJson(JsonObject json) => FlockPage(Map<String, Object?>.from(json));
+  factory FlockPage.fromJson(JsonObject json) {
+    return FlockPage(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

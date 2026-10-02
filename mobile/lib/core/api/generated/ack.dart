@@ -8,7 +8,9 @@ class Ack {
 
   const Ack(this._raw);
 
-  factory Ack.fromJson(JsonObject json) => Ack(Map<String, Object?>.from(json));
+  factory Ack.fromJson(JsonObject json) {
+    return Ack(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

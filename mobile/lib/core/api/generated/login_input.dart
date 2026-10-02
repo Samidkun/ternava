@@ -8,7 +8,9 @@ class LoginInput {
 
   const LoginInput(this._raw);
 
-  factory LoginInput.fromJson(JsonObject json) => LoginInput(Map<String, Object?>.from(json));
+  factory LoginInput.fromJson(JsonObject json) {
+    return LoginInput(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

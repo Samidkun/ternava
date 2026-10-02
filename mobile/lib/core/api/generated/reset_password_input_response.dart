@@ -8,7 +8,9 @@ class ResetPasswordInputResponse {
 
   const ResetPasswordInputResponse(this._raw);
 
-  factory ResetPasswordInputResponse.fromJson(JsonObject json) => ResetPasswordInputResponse(Map<String, Object?>.from(json));
+  factory ResetPasswordInputResponse.fromJson(JsonObject json) {
+    return ResetPasswordInputResponse(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 

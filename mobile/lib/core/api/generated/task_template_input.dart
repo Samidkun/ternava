@@ -8,7 +8,9 @@ class TaskTemplateInput {
 
   const TaskTemplateInput(this._raw);
 
-  factory TaskTemplateInput.fromJson(JsonObject json) => TaskTemplateInput(Map<String, Object?>.from(json));
+  factory TaskTemplateInput.fromJson(JsonObject json) {
+    return TaskTemplateInput(Map<String, Object?>.from(json));
+  }
 
   JsonObject toJson() => Map<String, Object?>.unmodifiable(_raw);
 
