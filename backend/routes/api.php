@@ -10,6 +10,7 @@ use App\Http\Controllers\HealthController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\SyncController;
+use App\Http\Controllers\TaskController;
 use App\Http\Middleware\RequirePasswordChange;
 use Illuminate\Support\Facades\Route;
 
@@ -73,5 +74,15 @@ Route::prefix('v1')->group(function () {
         // Sync endpoints
         Route::get('/sync/bootstrap', [SyncController::class, 'bootstrap'])->name('sync.bootstrap');
         Route::get('/sync/changes', [SyncController::class, 'changes'])->name('sync.changes');
+
+        // Task endpoints
+        Route::get('/task-templates', [TaskController::class, 'listTemplates'])->name('task_templates.index');
+        Route::post('/task-templates', [TaskController::class, 'storeTemplate'])->name('task_templates.store');
+        Route::get('/task-templates/{id}', [TaskController::class, 'showTemplate'])->name('task_templates.show');
+        Route::patch('/task-templates/{id}', [TaskController::class, 'updateTemplate'])->name('task_templates.update');
+        Route::get('/task-runs', [TaskController::class, 'listRuns'])->name('task_runs.index');
+        Route::get('/task-runs/{id}', [TaskController::class, 'showRun'])->name('task_runs.show');
+        Route::post('/task-runs/{id}/results', [TaskController::class, 'storeResult'])->name('task_runs.results.store');
+        Route::get('/task-runs/{id}/results', [TaskController::class, 'listResults'])->name('task_runs.results.index');
     });
 });

@@ -193,6 +193,27 @@ class Scenario
     }
 
     /**
+     * @param  array<string, mixed>  $f
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    public static function weeklyTemplate(array $f, array $overrides = []): array
+    {
+        return array_merge([
+            'id' => (string) str()->uuid(),
+            'cage_id' => $f['cage']['id'],
+            'title' => 'Bersihkan tempat pakan',
+            'kind' => 'routine',
+            'sop' => "Sikat tempat pakan\nBuang sisa pakan basah\nIsi pakan baru",
+            'assignee_id' => $f['operator']->id,
+            'start_on' => now()->format('Y-m-d'),
+            'end_on' => null,
+            'local_time' => '06:30',
+            'recurrence' => 'weekly',
+        ], $overrides);
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public static function secondOwnerRow(User $owner): array
