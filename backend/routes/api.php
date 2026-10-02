@@ -4,6 +4,7 @@ use App\Http\Controllers\CageController;
 use App\Http\Controllers\FarmController;
 use App\Http\Controllers\FlockController;
 use App\Http\Controllers\HealthController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\SessionController;
 use App\Http\Middleware\RequirePasswordChange;
 use App\Support\WireValidator;
@@ -44,6 +45,12 @@ Route::prefix('v1')->group(function () {
         Route::post('/flocks', [FlockController::class, 'store'])->name('flocks.store');
         Route::get('/flocks/{id}', [FlockController::class, 'show'])->name('flocks.show');
         Route::patch('/flocks/{id}', [FlockController::class, 'update'])->name('flocks.update');
+
+        // Member endpoints
+        Route::get('/members', [MemberController::class, 'index'])->name('members.index');
+        Route::post('/members', [MemberController::class, 'store'])->name('members.store');
+        Route::get('/members/{id}', [MemberController::class, 'show'])->name('members.show');
+        Route::patch('/members/{id}', [MemberController::class, 'update'])->name('members.update');
 
         Route::post('/daily-records', function (Request $request) {
             $feedKg = $request->input('feed_kg');
