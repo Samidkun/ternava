@@ -8,8 +8,10 @@ use App\Http\Controllers\FarmController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\FlockController;
 use App\Http\Controllers\HealthController;
+use App\Http\Controllers\InboxController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\PushController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\SyncController;
 use App\Http\Controllers\TaskController;
@@ -99,5 +101,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/attachments', [AttachmentController::class, 'store'])->name('attachments.store');
         Route::get('/attachments', [AttachmentController::class, 'index'])->name('attachments.index');
         Route::get('/attachments/{id}/download', [AttachmentController::class, 'download'])->name('attachments.download');
+
+        // Inbox & push endpoints
+        Route::get('/inbox', [InboxController::class, 'index'])->name('inbox.index');
+        Route::post('/inbox/{id}/read', [InboxController::class, 'read'])->name('inbox.read');
+        Route::put('/push-devices', [PushController::class, 'register'])->name('push_devices.register');
+        Route::delete('/push-devices/{id}', [PushController::class, 'unregister'])->name('push_devices.unregister');
     });
 });

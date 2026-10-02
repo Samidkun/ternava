@@ -330,6 +330,44 @@ class Scenario
     }
 
     /**
+     * Persist a notification event for the given farm scenario.
+     *
+     * @param  array<string, mixed>  $f
+     */
+    public static function incidentEvent(array $f, string $observation = 'Temuan baru'): object
+    {
+        $id = (string) str()->uuid();
+        $resourceId = (string) str()->uuid();
+
+        DB::table('notification_outbox')->insert([
+            'id' => $id,
+            'farm_id' => $f['farm_id'],
+            'event_kind' => 'incident',
+            'resource_id' => $resourceId,
+            'payload' => json_encode([
+                'kind' => 'incident',
+                'title' => 'Temuan baru',
+                'body' => 'Ada temuan yang perlu ditinjau.',
+                'resource_type' => 'incident',
+                'resource_id' => $resourceId,
+            ]),
+            'attempts' => 0,
+            'processed_at' => null,
+            'created_at' => now(),
+        ]);
+
+        return (object) ['id' => $id, 'farm_id' => $f['farm_id'], 'kind' => 'incident'];
+    }
+
+    /**
+     * Force the FCM transport to fail for subsequent deliveries.
+     */
+    public static function failFcm(): void
+    {
+        config(['services.fcm.force_fail' => true]);
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public static function secondOwnerRow(User $owner): array
