@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CageController;
+use App\Http\Controllers\FarmController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\SessionController;
 use App\Http\Middleware\RequirePasswordChange;
@@ -26,10 +28,15 @@ Route::prefix('v1')->group(function () {
         Route::delete('/session', [SessionController::class, 'logout'])->name('session.destroy');
         Route::post('/auth/logout', [SessionController::class, 'logout'])->name('auth.logout');
 
-        // Business endpoints guarded by password change requirement
-        Route::get('/cages', function () {
-            return response()->json(['data' => []]);
-        })->name('cages.index');
+        // Farm endpoints
+        Route::get('/farm', [FarmController::class, 'show'])->name('farm.show');
+        Route::patch('/farm', [FarmController::class, 'update'])->name('farm.update');
+
+        // Cage endpoints
+        Route::get('/cages', [CageController::class, 'index'])->name('cages.index');
+        Route::post('/cages', [CageController::class, 'store'])->name('cages.store');
+        Route::get('/cages/{id}', [CageController::class, 'show'])->name('cages.show');
+        Route::patch('/cages/{id}', [CageController::class, 'update'])->name('cages.update');
 
         Route::post('/daily-records', function (Request $request) {
             $feedKg = $request->input('feed_kg');
