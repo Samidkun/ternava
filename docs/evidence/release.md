@@ -31,9 +31,15 @@ di-redact.
    `composer audit --no-interaction`.
 
 > Catatan perbaikan: gate `dart format` dan `flutter analyze --fatal-infos` awalnya
-> **gagal** karena kode ditulis dengan gaya formatter Dart lama; T45 menjalankan
-> formatter resmi (mekanis, hanya whitespace) dan menambahkan blok `{}` pada dua
-> `if (...) return false;` agar lolos lint. Tidak ada perubahan perilaku.
+> **gagal** karena dua hal, keduanya diperbaiki di T45 tanpa mengubah perilaku:
+> (1) kode ditulis dengan gaya formatter Dart lama — formatter resmi dijalankan
+> (mekanis, hanya whitespace) dan dua `if (...) return false;` diberi blok `{}`
+> agar lolos lint; (2) generator DTO memakai arrow body yang dibungkus ulang oleh
+> `dart format`, sehingga `generate_dto.py --check` dan `dart format --check`
+> bertentangan — generator diubah ke block body dan 125 DTO di-regenerate.
+
+Hasil akhir: **`local-ci.sh --full` PASS** (mobile 93/93, backend 139/139,
+pint/phpstan bersih, `composer audit` tanpa advisory, gitleaks tree+history PASS).
 
 ## 3. Artefak release bertanda tangan (AC-42)
 
