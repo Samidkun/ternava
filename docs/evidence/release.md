@@ -46,10 +46,36 @@ pint/phpstan bersih, `composer audit` tanpa advisory, gitleaks tree+history PASS
 ```
 $ TERNAVA_SIGNING_PROPERTIES=~/.ternava/release-signing.properties bash ops/release.sh build
 ...
-APK signed; cert sha256=…
+✓ Built build/app/outputs/flutter-apk/app-release.apk (44.1MB)
+APK signed; cert sha256=a133fa3fe6199aef…
+backend SBOM: 111 components
+SBOM written: …/sbom-mobile.cdx.json (40 components)
 release manifest: build/release/release-manifest.json
 release build SELESAI (belum dipublikasikan)
 ```
+
+Manifest nyata (`build/release/release-manifest.json`, di-git-ignore):
+
+```json
+{
+  "git_commit": "68d91fcdbb78d16f252aca362da177d22ccd0a09",
+  "built_at": "2026-10-02T09:48:36Z",
+  "apk": {
+    "path": "mobile/build/app/outputs/flutter-apk/app-release.apk",
+    "sha256": "264a6fc7ddef180c0e664f05d302fe8706f8cc9e6a9141510b4764ff71b448a9",
+    "signer_cert_sha256": "a133fa3fe6199aef300bd8d0ad38a9ebe3d99c5267724f98158ecb850462f7cb",
+    "version": "1.0.0+1"
+  },
+  "backend_image": {
+    "ref": "ternava-api:latest",
+    "digest": "sha256:60c661f4a41b325405162aa07d9be63c0e88181fd3025245e458a9315d83e5ad"
+  },
+  "sbom": { "mobile": "sbom-mobile.cdx.json", "backend": "sbom-backend.cdx.json" }
+}
+```
+
+Sertifikat penanda tangan: `CN=TERNAVA Release, OU=Ops, O=TERNAVA, L=Jakarta, C=ID`
+(APK Signature Scheme v2 verified).
 
 - APK release dibangun dengan **kunci rilis asli** yang disimpan **di luar Git**
   (`~/.ternava/release.jks` + `release-signing.properties`, mode 600). Tidak ada
