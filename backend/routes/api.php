@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CageController;
 use App\Http\Controllers\FarmController;
+use App\Http\Controllers\FlockController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\SessionController;
 use App\Http\Middleware\RequirePasswordChange;
@@ -37,6 +38,12 @@ Route::prefix('v1')->group(function () {
         Route::post('/cages', [CageController::class, 'store'])->name('cages.store');
         Route::get('/cages/{id}', [CageController::class, 'show'])->name('cages.show');
         Route::patch('/cages/{id}', [CageController::class, 'update'])->name('cages.update');
+
+        // Flock endpoints
+        Route::get('/flocks', [FlockController::class, 'index'])->name('flocks.index');
+        Route::post('/flocks', [FlockController::class, 'store'])->name('flocks.store');
+        Route::get('/flocks/{id}', [FlockController::class, 'show'])->name('flocks.show');
+        Route::patch('/flocks/{id}', [FlockController::class, 'update'])->name('flocks.update');
 
         Route::post('/daily-records', function (Request $request) {
             $feedKg = $request->input('feed_kg');
