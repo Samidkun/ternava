@@ -52,6 +52,14 @@ class ApiClient {
     'reviseDaily': (method: 'POST', path: '/api/v1/daily-records/{id}/revisions'),
     'bootstrapSync': (method: 'GET', path: '/api/v1/sync/bootstrap'),
     'pullChanges': (method: 'GET', path: '/api/v1/sync/changes'),
+    'listTaskTemplate': (method: 'GET', path: '/api/v1/task-templates'),
+    'createTaskTemplate': (method: 'POST', path: '/api/v1/task-templates'),
+    'getTaskTemplate': (method: 'GET', path: '/api/v1/task-templates/{id}'),
+    'updateTaskTemplate': (method: 'PATCH', path: '/api/v1/task-templates/{id}'),
+    'listTaskRuns': (method: 'GET', path: '/api/v1/task-runs'),
+    'getTaskRun': (method: 'GET', path: '/api/v1/task-runs/{id}'),
+    'createTaskResult': (method: 'POST', path: '/api/v1/task-runs/{id}/results'),
+    'listTaskResults': (method: 'GET', path: '/api/v1/task-runs/{id}/results'),
   };
 
   Future<JsonObject> request(
