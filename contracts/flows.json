@@ -1,0 +1,56 @@
+{
+  "F-03": {
+    "file": "daily-flow.md",
+    "acs": [
+      "AC-13",
+      "AC-23",
+      "AC-26",
+      "AC-27"
+    ],
+    "mermaid": [
+      "flowchart TD",
+      "  A[Hari ini: kandang ditugaskan] --> B[Isi total harian]",
+      "  B --> C{Lengkap?}",
+      "  C -->|Belum| D[Draft lokal]",
+      "  D --> B",
+      "  C -->|Ya| E{Local commit berhasil?}",
+      "  E -->|Gagal| F[Form tetap ada]",
+      "  F --> B",
+      "  E -->|Ya| G[Pending immutable dan key]",
+      "  G --> H{Online dan sesi valid?}",
+      "  H -->|Belum| G",
+      "  H -->|Ya| I{Server commit?}",
+      "  I -->|ACK| J[Diterima sistem]",
+      "  I -->|Timeout| G",
+      "  I -->|401/403| K[Reauth; antrean terkunci]",
+      "  I -->|409/422| L[Review tanpa overwrite]",
+      "  L --> B"
+    ]
+  },
+  "F-06": {
+    "file": "incident-flow.md",
+    "acs": [
+      "AC-19",
+      "AC-20",
+      "AC-37"
+    ],
+    "mermaid": [
+      "flowchart TD",
+      "  A[Pengamatan manual] --> B[Local persist teks dan foto]",
+      "  B --> C[Sync teks]",
+      "  C --> D{Hasil server}",
+      "  D -->|Ditolak / timeout| E[Preserve dan review / retry]",
+      "  E --> C",
+      "  D -->|ACK| F[Temuan accepted]",
+      "  F --> G[Upload foto setelah ACK]",
+      "  G --> H{Foto diterima?}",
+      "  H -->|Belum| I[Foto pending; teks accepted]",
+      "  I --> G",
+      "  F --> J[Pengelola assign petugas]",
+      "  J --> K[Tindakan dengan versi]",
+      "  K --> L{Penutupan dengan notes?}",
+      "  L -->|Belum| K",
+      "  L -->|Ya| M[Closed dan histori]"
+    ]
+  }
+}

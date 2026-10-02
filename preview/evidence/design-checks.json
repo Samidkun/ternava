@@ -1,0 +1,40 @@
+{
+  "validator": "Local PyYAML/reference/contrast checks; @google/design.md CLI unavailable locally and not installed.",
+  "references": 19,
+  "contrasts": [
+    {
+      "component": "button-primary",
+      "contrast": 8.52
+    },
+    {
+      "component": "button-primary-pressed",
+      "contrast": 11.74
+    },
+    {
+      "component": "button-secondary",
+      "contrast": 8.52
+    },
+    {
+      "component": "field",
+      "contrast": 13.91
+    },
+    {
+      "component": "status-warning",
+      "contrast": 6.1
+    },
+    {
+      "component": "status-danger",
+      "contrast": 5.92
+    },
+    {
+      "component": "status-success",
+      "contrast": 6.41
+    },
+    {
+      "component": "status-info",
+      "contrast": 6.93
+    }
+  ],
+  "screenInventoryAligned": true,
+  "screenCount": 24
+}

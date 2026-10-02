@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-01",
+  "scope": "planning-only D-012",
+  "spec_approval": "D-011",
+  "source_root": "/mnt/data/porto/ternava",
+  "source_root_modified_this_turn": false,
+  "checks": [
+    {
+      "command": "python3 scripts/check_plan.py",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "stdout": "PLAN PASS: 46 tasks / 47 AC / 24 screens / 59 operations; DAG and verbatim scope checked. App tests NOT RUN.\n",
+      "stderr": ""
+    },
+    {
+      "command": "bash scripts/local-ci.sh --planning",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "stdout": "{\n  \"operations\": 59,\n  \"schemas\": 124,\n  \"tables\": 26,\n  \"screens\": 24,\n  \"ears_criteria\": 47,\n  \"valid_examples\": 4,\n  \"rejected_invalid_examples\": 5,\n  \"scope\": \"Local references/schema-subset/traceability; no full OpenAPI validation, live API or native tests\"\n}\nDiagrams consistent: 8\nWorking tree gitleaks: PASS\nGit history UNAVAILABLE: project repository not initialized; not a history pass.\nPLANNING CHECKS PASS; application/native/security gates NOT RUN.\n",
+      "stderr": ""
+    },
+    {
+      "command": "bash scripts/local-ci.sh --full",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "stdout": "{\n  \"operations\": 59,\n  \"schemas\": 124,\n  \"tables\": 26,\n  \"screens\": 24,\n  \"ears_criteria\": 47,\n  \"valid_examples\": 4,\n  \"rejected_invalid_examples\": 5,\n  \"scope\": \"Local references/schema-subset/traceability; no full OpenAPI validation, live API or native tests\"\n}\nDiagrams consistent: 8\nWorking tree gitleaks: PASS\nGit history UNAVAILABLE: project repository not initialized; not a history pass.\nNOT READY: missing mobile/pubspec.yaml; full gates cannot run.\n",
+      "stderr": ""
+    }
+  ],
+  "application_tests_run": false,
+  "native_tests_run": false,
+  "preview_render_after_amendments_run": false,
+  "handoff_frozen": true,
+  "counts": {
+    "tasks": 46,
+    "criteria": 47,
+    "screens": 24,
+    "api_operations": 59,
+    "logical_tables": 26
+  }
+}

@@ -1,0 +1,60 @@
+name: TERNAVA planning and application gates
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  planning-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: bash scripts/local-ci.sh --planning
+  application-gates:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: ternava_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: changeme
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s
+          --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Require applications and locked toolchain
+        run: |
+          test -f mobile/pubspec.lock
+          test -f backend/composer.lock
+          test -f toolchain/flutter-version.txt
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '8.4', tools: composer, extensions: pdo_pgsql }
+      - id: toolchain
+        run: echo "flutter=$(cat toolchain/flutter-version.txt)" >> "$GITHUB_OUTPUT"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.toolchain.outputs.flutter }}
+          channel: stable
+          cache: true
+      - name: Install scanner (pin version/digest at toolchain freeze)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gitleaks
+      - name: Full local gates
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: ternava_test
+          DB_USERNAME: postgres
+          DB_PASSWORD: changeme
+        run: bash scripts/local-ci.sh --full

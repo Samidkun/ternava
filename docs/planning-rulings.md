@@ -1,0 +1,33 @@
+# Keputusan Sementara untuk Desain TERNAVA
+
+1 Oktober 2026. Arah scope/stack telah disetujui. Aturan berikut merupakan baseline yang dibuat agar flow dan mockup dapat direview secara konkret. Ini bukan hasil wawancara atau pengamatan peternakan. Aturan dapat direvisi sebelum spesifikasi final dan handoff.
+
+| ID | Baseline | Dampak dan alasan | Validasi berikutnya |
+|---|---|---|---|
+| R-01 | Belum ada peternakan pilot. Seluruh nama, angka, tugas, dan temuan pada preview adalah data contoh rekaan. | Desain dapat dilanjutkan sesuai arahan pengguna; tidak mengklaim kesesuaian lapangan. | Observasi/wawancara calon pilot sebelum uji operasional. |
+| R-02 | Android dahulu, bahasa Indonesia, tema terang, zona waktu contoh Asia/Jakarta, mata uang IDR. | Variasi desain dibatasi; Flutter tetap memungkinkan perluasan platform kemudian. | Perangkat nyata dan zona waktu ditetapkan saat calon pilot tersedia. |
+| R-03 | Satu gudang pakan per peternakan; pemakaian ditautkan ke kelompok ayam/kandang. | Tidak ada transfer antargudang pada MVP. | Jika pilot menyimpan pakan per kandang, revisi ledger sebelum implementasi model tersebut. |
+| R-04 | Satu kelompok aktif per kandang pada contoh; model menyimpan identitas kelompok. | Form memilih kelompok, bukan menggabungkan riwayat kelompok lama/baru. | Penempatan aktual sebelum migrasi data. |
+| R-05 | Total pakan dan telur dicatat per kelompok per tanggal peternakan. Draft boleh belum lengkap; catatan untuk dikirim membutuhkan pakan dan telur terisi. Nol harus dicatat secara eksplisit. Kondisi/populasi yang belum diperiksa tetap kosong. | Catatan harian merupakan total, bukan penjumlahan antaroperator/shift. Jika pengumpulan dicatat beberapa kali, diperlukan model event sebelum build. | Proses pencatatan telur dan shift calon pilot. |
+| R-06 | Draft tetap di perangkat. “Simpan catatan” membuat perubahan yang tahan relaunch lalu masuk antrean pengiriman. Catatan menunggu hasil server tidak diedit. | Retry mempertahankan identitas dan payload; respons yang hilang tidak menyebabkan perubahan payload dengan identitas sama. | Review flow sync, kemudian kontrak dan uji fault pada implementasi. |
+| R-07 | Owner/admin boleh merevisi catatan yang telah diterima, dengan alasan dan versi sebelumnya. Operator memperbaiki draft atau catatan yang ditolak; catatan yang telah diterima dibaca saja. | Revisi harian yang mengubah pakan membuat ledger koreksi atomik. Tidak menambah workflow permohonan koreksi pada MVP. | Pengelola pilot menyetujui kebijakan koreksi sebelum operasional. |
+| R-08 | Saldo negatif ditolak backend; produksi dan pemakaian pakan pada satu catatan diterima atau ditolak sebagai satu transaksi. Catatan tertolak tetap tersedia untuk diperbaiki. | Dashboard tidak menampilkan produksi sebagai telah diterima ketika transaksi hariannya gagal. Snapshot lokal boleh kedaluwarsa dan ditandai waktunya. | Kontrak sync dan aturan saldo sebelum handoff. |
+| R-09 | Owner pertama diprovisikan saat persiapan pilot. Owner/admin membuat akun operator/admin dengan sandi sementara; tidak ada pendaftaran publik atau pengiriman undangan otomatis pada MVP. | Akun bisa disiapkan tanpa integrasi email/SMS. Penggantian sandi pertama tersedia pada layar akun. | Prosedur serah akses aman saat pilot; mockup tidak mengirim pesan. |
+| R-10 | Operator hanya mendapat data kandang/kelompok yang ditugaskan. Saat sesi habis atau akses dicabut, data antrean dipertahankan dan ditandai perlu masuk ulang/ditinjau; pengiriman berhenti. | UI bukan satu-satunya kontrol akses. Server memeriksa setiap operasi. | Threat review dan pengujian lintas akses pada implementasi. |
+| R-11 | Keluar akun dengan antrean belum terkirim memerlukan konfirmasi. Data tidak dibuang; terkunci pada identitas semula sampai masuk ulang. Tidak dibuka oleh akun berikutnya. | Mendukung perangkat bergantian tanpa mencampur catatan. | Uji relaunch/logout/pergantian akun sebelum pilot. |
+| R-12 | Pengingat pemeriksaan/vaksinasi merupakan jenis tugas dengan tanggal dan SOP yang dimasukkan pengelola. Temuan memiliki petugas dan riwayat tindakan. | Tidak ada diagnosis atau jadwal medis otomatis. | SOP pengelola/petugas kesehatan hewan sebelum jadwal dipakai di lapangan. |
+| R-13 | Laporan menggunakan data server yang diterima, menyertakan periode, zona waktu, kelengkapan, dan waktu pembaruan. Ekspor CSV pada MVP; PDF kemudian jika pengguna memerlukan. | Data lokal yang belum terkirim tidak dicampur dengan laporan resmi aplikasi. Tidak menampilkan laba atau estimasi manfaat yang belum diukur. | Review format bersama pengelola sebelum pilot. |
+| R-14 | Push menunjuk ke tugas/temuan; inbox menyimpan riwayat yang dapat dibuka. Tugas/push tidak menjamin respons darurat. | Penanggung jawab dan status tindak lanjut tetap terlihat di aplikasi. | SOP komunikasi peternakan sebelum pilot. |
+
+
+| R-15 | Docker lokal dulu, tanpa provider berbayar yang dipilih. | D-010 keputusan pengguna; tidak ada deployment. | Provider/biaya/location dipilih sebelum data nyata, bukan penghalang rancangan lokal. |
+| R-16 | Sesi 7 hari, offline lease 24 jam; scope selalu diperiksa server saat online. | Batas eksplisit untuk perangkat bergantian/revokasi. | Review spec lalu uji perangkat; jangan klaim revokasi instan saat offline. |
+| R-17 | Pilot template 1 farm, 20 kandang, 10 akun, 20 perangkat; report <=183 hari. | Membatasi beban/ruang desain sebelum farm diketahui. | Angka rancangan, bukan jumlah peternakan pengguna. |
+| R-18 | Retensi operasional/audit 730 hari, foto 180, inbox 90, delta 30, log 14; backup30 hari. | Kebijakan konkret untuk review, termasuk risiko recovery/delete. | Farm owner menerima sebelum data nyata. |
+| R-19 | RPO 24 jam/RTO 4 jam, SLO99,5%, benchmark pada 2 vCPU/4 GiB. | Target pengujian/operasi; belum dicapai. | Pengukuran dan restore sebelum pilot. |
+| R-20 | Penanggung jawab fungsional pemilik project + admin farm; belum ada nama/provider/budget/tenggat. | Rencana lokal dapat selesai; pilot nyata memiliki gate orang/biaya yang eksplisit. | Nama/kontak/jam respons dan anggaran dicatat sebelum deploy. |
+| R-21 | Catatan terlambat maksimal30 hari, dalam rentang flock; populasi awal immutable setelah operasi pertama. | Histori cohort/populasi tidak dipindahkan dengan edit master. | Validasi kebutuhan migrasi lama calon farm, lalu perubahan scope jika perlu. |
+
+## Parameter lapangan dan deployment
+
+R-15–R-21 menetapkan rancangan lokal dan parameter sementara untuk review spesifikasi. Parameter ini tidak menjadi fakta lapangan. Identitas farm, provider/budget/jadwal dan petugas nyata ditentukan sebelum pilot sesuai operations-security.md. Spesifikasi, implementasi dan kesiapan operasional tidak dinyatakan diterima hanya karena ruling telah ditulis.

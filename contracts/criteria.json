@@ -1,0 +1,284 @@
+[
+  {
+    "id": "AC-01",
+    "module": "farm-access",
+    "requirement": "WHEN login online berhasil, THE aplikasi SHALL membuka workspace role setelah referensi awal tersedia.",
+    "verify": "API + Flutter integration: login owner/operator, sandi salah, login pertama offline; periksa tujuan layar dan pesan pemulihan."
+  },
+  {
+    "id": "AC-02",
+    "module": "farm-access",
+    "requirement": "WHEN pengelola menyimpan farm valid, THE aplikasi SHALL menampilkan nama dan zona waktu yang diterima server.",
+    "verify": "API + widget: nama kosong, zona IANA tidak valid, role tanpa izin; perubahan zona setelah operasi pertama ditolak."
+  },
+  {
+    "id": "AC-03",
+    "module": "flocks",
+    "requirement": "WHILE operator membuka daftar kandang, THE aplikasi SHALL menampilkan hanya kandang dalam assignment aktif dengan status pencatatan bertanggal.",
+    "verify": "API + widget: operator ditugaskan ke dua kandang; kandang lainnya tidak terlihat, status bertanggal, empty/error/stale dapat dipulihkan."
+  },
+  {
+    "id": "AC-04",
+    "module": "flocks",
+    "requirement": "WHEN pengelola menyimpan kandang berkode unik, THE sistem SHALL menyediakan kandang itu sebagai referensi tanpa menimpa kode yang sudah dipakai.",
+    "verify": "API: create, replay, kode duplikat tanpa membedakan huruf besar/kecil; widget mempertahankan form invalid/offline."
+  },
+  {
+    "id": "AC-05",
+    "module": "flocks",
+    "requirement": "WHEN pengguna membuka kelompok kandang yang berizin, THE aplikasi SHALL memisahkan kelompok aktif dan selesai beserta rentang penempatannya.",
+    "verify": "API + widget: filter aktif/selesai, rentang penempatan; catatan kelompok lama tidak bercampur dengan kelompok baru."
+  },
+  {
+    "id": "AC-06",
+    "module": "flocks",
+    "requirement": "IF penempatan kelompok overlap atau populasi awal invalid, THEN THE sistem SHALL menolak perubahan dan mempertahankan isian lokal.",
+    "verify": "PostgreSQL/API concurrent: tanggal overlap, dua kelompok aktif, populasi nol/negatif, perubahan populasi awal sesudah transaksi pertama."
+  },
+  {
+    "id": "AC-07",
+    "module": "farm-access",
+    "requirement": "WHILE pengelola yang berizin membuka daftar pengguna, THE aplikasi SHALL menampilkan role dan penugasan akun farm tersebut.",
+    "verify": "API + widget: matriks owner/admin/operator, pengguna farm lain tidak terlihat; pagination/empty/error."
+  },
+  {
+    "id": "AC-08",
+    "module": "farm-access",
+    "requirement": "IF actor tidak memiliki izin mengubah role atau target owner pertama, THEN THE sistem SHALL menolak perubahan akses.",
+    "verify": "API: admin mengelola operator, admin mengubah admin/owner ditolak, owner membuat admin, pencabutan assignment."
+  },
+  {
+    "id": "AC-09",
+    "module": "insights",
+    "requirement": "WHEN ringkasan dimuat, THE aplikasi SHALL membedakan missing record, accepted record dan snapshot stale serta menyediakan link perhatian ke objek yang berizin.",
+    "verify": "API + widget: data sebagian/semua kosong dibanding accepted zero, refresh 500 mempertahankan snapshot dan waktu, link perhatian tepat."
+  },
+  {
+    "id": "AC-10",
+    "module": "daily-operations",
+    "requirement": "WHILE operator memiliki sesi offline yang berlaku dan cache penugasan, THE aplikasi SHALL menyediakan catatan/tugas cache yang ditugaskan pada Hari ini.",
+    "verify": "Flutter integration: mode pesawat dengan cache tujuh hari, assignment, cache kosong dan lease kedaluwarsa memiliki pemulihan."
+  },
+  {
+    "id": "AC-11",
+    "module": "daily-operations",
+    "requirement": "WHEN pengelola menyimpan tugas berjadwal dengan petugas berizin, THE sistem SHALL menyediakan occurrence sesuai tanggal dan SOP yang dimasukkan.",
+    "verify": "API/scheduler: once/daily/weekly, occurrence unik, petugas tidak berizin, zona waktu; tidak ada jadwal/dosis medis yang dihasilkan otomatis."
+  },
+  {
+    "id": "AC-12",
+    "module": "daily-operations",
+    "requirement": "WHEN petugas menyimpan kendala atau hasil tugas, THE aplikasi SHALL menyimpan intent lokal sebelum menunjukkan status menunggu kirim.",
+    "verify": "Flutter fault integration: disk gagal, relaunch, note tetap open, completed baru accepted sesudah ACK; cancelled/stale run menjadi konflik."
+  },
+  {
+    "id": "AC-13",
+    "module": "daily-operations",
+    "requirement": "WHEN pengguna menyimpan catatan harian lengkap, THE aplikasi SHALL mempertahankan total, tanggal, kelompok dan status penerimaannya sampai hasil server diketahui.",
+    "verify": "Flutter + API: draft belum lengkap, nol eksplisit, offline/relaunch, disk gagal, pending, accepted read-only dan revisi oleh pengelola."
+  },
+  {
+    "id": "AC-14",
+    "module": "daily-operations",
+    "requirement": "WHEN pengguna memfilter riwayat menurut tanggal/kandang, THE aplikasi SHALL menunjukkan catatan dalam cakupan beserta status lokal atau accepted yang berbeda.",
+    "verify": "API + widget: filter tanggal/kandang, pending tidak dihitung accepted, empty/error/offline, detail mengikuti izin."
+  },
+  {
+    "id": "AC-15",
+    "module": "feed-ledger",
+    "requirement": "WHEN pengelola membuka stok/ledger, THE aplikasi SHALL menampilkan saldo accepted, asal transaksi dan waktu pembaruan.",
+    "verify": "API + widget: receipt/daily/reversal/adjustment; saldo sama dengan penjumlahan ledger, waktu snapshot terlihat, tidak ada input pemakaian kedua."
+  },
+  {
+    "id": "AC-16",
+    "module": "feed-ledger",
+    "requirement": "WHEN transaksi pakan valid diterima, THE sistem SHALL memperbarui saldo sekali sesuai arah transaksi dan menyimpan asal/alasan yang diwajibkan.",
+    "verify": "PostgreSQL/API: opening sekali, receipt dengan harga/pemasok, adjustment beralasan, retry; saldo negatif dan overflow ditolak."
+  },
+  {
+    "id": "AC-17",
+    "module": "feed-ledger",
+    "requirement": "WHEN pengelola mengubah jenis pakan atau batas minimum, THE sistem SHALL mempertahankan referensi ledger historis.",
+    "verify": "API + widget: create, update version, jenis nonaktif dan histori; event ambang stok tidak berulang setiap refresh."
+  },
+  {
+    "id": "AC-18",
+    "module": "incidents",
+    "requirement": "WHEN pengguna memfilter temuan berdasarkan status/kandang, THE aplikasi SHALL menampilkan temuan dalam cakupan dengan status penugasan yang terlihat.",
+    "verify": "API + widget: filter status/kandang, unassigned/empty/error/offline; akses farm lain ditolak."
+  },
+  {
+    "id": "AC-19",
+    "module": "incidents",
+    "requirement": "IF jaringan atau upload foto gagal, THEN THE aplikasi SHALL mempertahankan pengamatan teks dan menunjukkan status foto secara terpisah.",
+    "verify": "Flutter + API fault: teks offline tahan relaunch, ACK teks lalu upload 500, foto tertunda tetap ada; file rusak/terlalu besar ditolak."
+  },
+  {
+    "id": "AC-20",
+    "module": "incidents",
+    "requirement": "WHEN actor berizin menetapkan petugas atau mencatat tindakan, THE sistem SHALL memperbarui versi/status temuan dengan actor dan histori tindakan.",
+    "verify": "API + widget: dua perubahan atas versi sama, petugas yang ditugaskan, actor tanpa izin; closing tanpa notes dan perubahan closed ditolak."
+  },
+  {
+    "id": "AC-21",
+    "module": "insights",
+    "requirement": "WHEN pengelola meminta laporan periode valid, THE sistem SHALL menyertakan accepted data, kelengkapan, zona waktu dan as_of pada laporan/CSV.",
+    "verify": "PostgreSQL/API + Flutter: rentang 183 hari, missing null/accepted zero, batas tengah malam farm, CSV escaping/injection dan ekspor gagal."
+  },
+  {
+    "id": "AC-22",
+    "module": "insights",
+    "requirement": "WHEN pengguna membuka pemberitahuan, THE aplikasi SHALL memeriksa akses objek dan menyediakan jalan kembali apabila objek tak tersedia.",
+    "verify": "API + widget: inbox milik sendiri, link setelah akses dicabut atau objek tidak ada; inbox tetap tersedia tanpa izin push."
+  },
+  {
+    "id": "AC-23",
+    "module": "farm-access",
+    "requirement": "IF pengiriman belum mendapat ACK atau ditolak, THEN THE aplikasi SHALL menunjukkan status item dan tindakan pemulihan tanpa menghapus payload.",
+    "verify": "Flutter fault integration: timeout setelah commit, 429/401/403/409/422/500; retry mempertahankan key/payload, reauth mempertahankan antrean."
+  },
+  {
+    "id": "AC-24",
+    "module": "farm-access",
+    "requirement": "WHEN pengguna keluar akun atau mengganti akun, THE aplikasi SHALL mengunci data lokal identitas sebelumnya setelah konfirmasi bila ada antrean.",
+    "verify": "Android integration: akun A pending lalu logout confirm/cancel, akun B tidak membaca A, A login kembali; ganti sandi pertama dan izin push ditolak."
+  },
+  {
+    "id": "AC-25",
+    "module": "all",
+    "requirement": "WHEN pengguna menavigasi atau kembali dengan isian belum tersimpan, THE aplikasi SHALL menyediakan tujuan sesuai role dan konfirmasi untuk mempertahankan isian.",
+    "verify": "Flutter widget/integration: seluruh 24 screen ID, back/deep link, batal membuang isian, link inbox/sync; toolbar preview tidak muncul pada app."
+  },
+  {
+    "id": "AC-26",
+    "module": "daily-operations",
+    "requirement": "WHEN server menerima catatan harian, THE sistem SHALL mengcommit daily, versi, efek ledger/populasi, receipt dan event sebagai satu unit.",
+    "verify": "PostgreSQL fault injection: exception pada setiap titik transaksi menghasilkan nol efek parsial; respons hilang setelah commit direplay sekali."
+  },
+  {
+    "id": "AC-27",
+    "module": "farm-access",
+    "requirement": "WHEN request dengan key dan isi identik dikirim ulang oleh actor yang masih berizin, THE sistem SHALL mengembalikan ACK asli tanpa efek bisnis tambahan.",
+    "verify": "API concurrency: 20 request sama, reauth actor sama, efek record/ledger/event satu; key sama dengan isi berbeda menghasilkan 409."
+  },
+  {
+    "id": "AC-28",
+    "module": "daily-operations",
+    "requirement": "IF catatan farm/kelompok/tanggal sudah ada, THEN THE sistem SHALL menolak create lain tanpa menjumlahkan total harian.",
+    "verify": "API concurrency: dua operator dengan resource ID/key berbeda pada kelompok/tanggal sama; satu accepted, total tidak dijumlahkan."
+  },
+  {
+    "id": "AC-29",
+    "module": "daily-operations",
+    "requirement": "IF base_version revisi berbeda dari versi terkini, THEN THE sistem SHALL menolak revisi tanpa mengubah catatan atau ledger.",
+    "verify": "API race: dua admin mengirim base_version=1, hanya satu versi 2; lainnya 409, snapshot/reason/actor lama tetap tersedia."
+  },
+  {
+    "id": "AC-30",
+    "module": "feed-ledger",
+    "requirement": "IF saldo setelah mutasi akan negatif atau overflow, THEN THE sistem SHALL menolak seluruh intent bisnis.",
+    "verify": "PostgreSQL concurrent: konsumsi 270+270 kg atas saldo 300 kg, revisi beda jenis pakan; seluruh tabel diperiksa setelah penolakan."
+  },
+  {
+    "id": "AC-31",
+    "module": "flocks",
+    "requirement": "IF perubahan catatan membuat populasi pada suatu tanggal negatif, THEN THE sistem SHALL menolak perubahan itu beserta efek harian lainnya.",
+    "verify": "API: populasi awal 100, catatan mundur masuk/keluar/mortalitas dan revisi; semua prefix tanggal nonnegatif, null tetap belum diperiksa."
+  },
+  {
+    "id": "AC-32",
+    "module": "daily-operations",
+    "requirement": "WHILE field jumlah belum diisi atau belum diperiksa, THE aplikasi SHALL menampilkan keadaan belum dicatat alih-alih nilai nol atau status sehat.",
+    "verify": "Widget/schema/API: pakan/telur kosong tidak masuk antrean, draft boleh kosong, mortality null, condition not_checked, nol eksplisit accepted."
+  },
+  {
+    "id": "AC-33",
+    "module": "farm-access",
+    "requirement": "WHEN delta sync diterapkan, THE aplikasi SHALL menyimpan perubahan cache dan cursor bersama.",
+    "verify": "Drift fault integration: crash saat menerapkan changes/cursor, relaunch dan replay; cache/cursor konsisten, akses yang dicabut ditangani."
+  },
+  {
+    "id": "AC-34",
+    "module": "farm-access",
+    "requirement": "IF cursor kedaluwarsa atau scope berubah, THEN THE aplikasi SHALL mengganti snapshot accepted melalui bootstrap tanpa menghapus draft/outbox.",
+    "verify": "API + mobile: mutasi selama bootstrap bertahap, transaksi commit berbeda urutan, snapshot/cursor kedaluwarsa, assignment berubah; draft/outbox tetap ada."
+  },
+  {
+    "id": "AC-35",
+    "module": "farm-access",
+    "requirement": "IF offline lease habis atau validasi online menolak sesi, THEN THE aplikasi SHALL menghentikan akses/penulisan farm dan mengirim pengguna ke autentikasi ulang.",
+    "verify": "Android clock/network: expiry 24 jam, restart, jam mundur, 401/403; payload pending bertahan dan cache terkunci sampai reauth."
+  },
+  {
+    "id": "AC-36",
+    "module": "farm-access",
+    "requirement": "WHEN pengguna meminta resource, replay, export atau file, THE sistem SHALL memeriksa izin farm/role/kandang terkini.",
+    "verify": "API negative matrix untuk seluruh 59 operasi: role yang tepat, forged resource/parent/cursor, replay dan download; tidak ada data silang farm/akun."
+  },
+  {
+    "id": "AC-37",
+    "module": "daily-operations",
+    "requirement": "IF foto melebihi batas, isi bukan JPEG/PNG atau parent tidak berizin, THEN THE sistem SHALL menolak upload tanpa membuat lampiran dapat diakses.",
+    "verify": "API: MIME palsu, ukuran 2 MiB+1 byte, foto keempat, hash berbeda, EXIF dihapus, download tanpa izin dan pembersihan orphan."
+  },
+  {
+    "id": "AC-38",
+    "module": "insights",
+    "requirement": "IF push gagal atau izin perangkat ditolak, THEN THE sistem SHALL tetap menyediakan inbox event yang diterima tepat sekali.",
+    "verify": "Worker/API: event diproses ulang, FCM 500/token mati dan izin ditolak; inbox unik per event/user, izin objek diperiksa saat dibuka."
+  },
+  {
+    "id": "AC-39",
+    "module": "all",
+    "requirement": "WHILE layar sedang empty, loading, refresh-error atau restricted, THE aplikasi SHALL menampilkan state inventory dengan jalan pemulihan yang relevan.",
+    "verify": "Widget fixtures seluruh 24 layar/132 state: empty/loading/error/restricted, retry relevan, isian dipertahankan, tanpa nol atau stacktrace palsu."
+  },
+  {
+    "id": "AC-40",
+    "module": "all",
+    "requirement": "WHILE pengguna memakai TalkBack atau teks 200%, THE aplikasi SHALL menjaga label, urutan baca, aksi penting dan target sentuh minimal48dp dapat digunakan.",
+    "verify": "Android manual + widget: lebar 320/414 dp, TalkBack pada flow kritis, teks 200%, reduced motion, target 48 dp dan kontras body minimal 4,5:1."
+  },
+  {
+    "id": "AC-41",
+    "module": "farm-access",
+    "requirement": "IF request melampaui rate/size/range yang dikontrak, THEN THE sistem SHALL menolak dengan error yang dapat dipulihkan tanpa efek bisnis.",
+    "verify": "API abuse: login 5/menit per username+IP, auth 120/menit, upload 10/menit, export 3/menit, JSON 64 KiB, limit 100, report 184 hari, Retry-After."
+  },
+  {
+    "id": "AC-42",
+    "module": "all",
+    "requirement": "WHEN versi pilot dirilis, THE sistem SHALL menyediakan artefak bertanda tangan, versi dependency yang terkunci dan hasil pemeriksaan keamanan/kontrak.",
+    "verify": "Release gate: verifikasi signed APK/image digest/SBOM/lockfiles, scanner staged/history, dependency audit, full validator dan DTO/API fixtures nyata."
+  },
+  {
+    "id": "AC-43",
+    "module": "all",
+    "requirement": "WHEN backup pilot direstore, THE sistem SHALL memulihkan data/izin sesuai snapshot dengan ledger konsisten dalam RTO 4jam dan kehilangan maksimal RPO 24jam.",
+    "verify": "Restore drill ke environment terpisah: jumlah record/FK/ledger/file ACL/login/deletion journal; ukur waktu restore dan umur backup terhadap RTO/RPO."
+  },
+  {
+    "id": "AC-44",
+    "module": "all",
+    "requirement": "WHILE API melayani benchmark yang ditetapkan, THE sistem SHALL memenuhi target latency/error tanpa duplicate business effect.",
+    "verify": "Load: 2 vCPU/4 GiB, 100 ribu daily records, 20 client selama 15 menit; p95 read<=500 ms/write<=1 detik, unexpected error<1%, efek duplikat=0."
+  },
+  {
+    "id": "AC-45",
+    "module": "all",
+    "requirement": "WHEN terjadi gangguan layanan, THE sistem SHALL menyediakan metrik/status yang membedakan kegagalan API, queue, backup dan push.",
+    "verify": "Ops: hentikan worker/API/FCM, periksa probe/heartbeat/threshold/log teredaksi/queue durable; ukur SLO bulanan 99,5% sesudah pilot berjalan."
+  },
+  {
+    "id": "AC-46",
+    "module": "farm-access",
+    "requirement": "WHEN retensi atau penghapusan berizin dijalankan, THE sistem SHALL menjaga integritas ledger dan dedup intent yang masih dapat direplay.",
+    "verify": "Retention: jendela 730/180/90/30/14 hari, replay key lama terhadap tombstone, orphan file, backup 30 hari dan deletion journal."
+  },
+  {
+    "id": "AC-47",
+    "module": "all",
+    "requirement": "WHEN peternakan nyata akan mulai pilot, THE project SHALL memiliki hasil validasi alur/perangkat, penanggung jawab, biaya/provider, restore dan penerimaan UAT yang tercatat.",
+    "verify": "Dokumen/UAT: farm nyata, perangkat dan alur tervalidasi, checks operations-security.md, penanggung jawab/provider/biaya/retensi, restore, sign-off owner."
+  }
+]

@@ -1,0 +1,82 @@
+{
+  "source": "/home/samid/Documents/Codex/2026-10-01/cuy/outputs/TERNAVA-planning-approved",
+  "destination": "/mnt/data/porto/ternava",
+  "copied_files": [
+    {
+      "path": "HANDOFF.candidate.md",
+      "action": "added",
+      "sha256": "76c134db742a47ed1323004503d07a11dc39d7a75351ae49d52556302405d02a"
+    },
+    {
+      "path": "README.md",
+      "action": "updated",
+      "sha256": "b23b283232115ad11681ffcb247fb8df9f545091364c1c3885d21c26fe24259f"
+    },
+    {
+      "path": "REVIEW.md",
+      "action": "updated",
+      "sha256": "7100caa0ee9a4c3457e08c9ca9435b8241a35af7f2f21169c5c0dc80d86769e3"
+    },
+    {
+      "path": "contracts/plan.json",
+      "action": "added",
+      "sha256": "82af8ace9219b7ff320c59c0057f630a6a43323df33256dcd2fd4bba378c0578"
+    },
+    {
+      "path": "docs/decisions.md",
+      "action": "updated",
+      "sha256": "1eb275481c27e907f84e5631ae7454bfa78aa2e90ab4aec03ce6ca2b70c706f4"
+    },
+    {
+      "path": "docs/evidence/planning-finalization.json",
+      "action": "added",
+      "sha256": "549b4a551ce8dc8f4bb396514429fe4d95e6a7e98f336c7305fb896ad339ce13"
+    },
+    {
+      "path": "docs/planning-status.md",
+      "action": "added",
+      "sha256": "5811f8b5c97f243691554c232c3878ec7791435ef41ac8451b19ef9727e48e01"
+    },
+    {
+      "path": "docs/preview-review.md",
+      "action": "updated",
+      "sha256": "9170f8dbe4d0b36457b85770e8b351138b0f26b10b8c1b804ec5ae2d8cc2cf74"
+    },
+    {
+      "path": "docs/spec-quality-review.md",
+      "action": "updated",
+      "sha256": "bee0dc80f4fa38607249f7817f3b0fe4bfb680526db30691e2418b4cdea3230c"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-01-ternava-mvp.md",
+      "action": "added",
+      "sha256": "6f16e8e6fc28d47326378e71ea8ff8322f81a7b18e5bafd59e14e6e72530f5ba"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-10-01-ternava-design.md",
+      "action": "updated",
+      "sha256": "3310e7d9f6e8f7d18c2078299da786c5ac17ccc295d9b2d86d79711df69cb1c0"
+    },
+    {
+      "path": "scripts/check_plan.py",
+      "action": "added",
+      "sha256": "05a62d76c0811e224a4edd8a03d5da780b39da6799ad28e9a54437aa5d7fe74e"
+    }
+  ],
+  "source_files_verified": 93,
+  "preserved_destination_only_file": "/mnt/data/porto/ternava/work/brainstorm-history.md",
+  "preserved_sha256": "461fd3a473b000004529652a0a83c5a2545d91c68cdbc1de4b9bf2a2aca82f1d",
+  "application_implementation_started": false,
+  "post_copy_status_updates": [
+    "README.md",
+    "docs/planning-status.md",
+    "HANDOFF.candidate.md",
+    "docs/decisions.md"
+  ],
+  "destination_checks": {
+    "check_plan": "PASS:46 tasks/47 AC/24 screens/59 operations",
+    "planning_ci": "PASS:contracts/8 diagram drift/secret working tree",
+    "app_native_tests": "NOT RUN",
+    "git_history": "UNAVAILABLE"
+  }
+}

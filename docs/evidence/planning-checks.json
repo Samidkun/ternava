@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-01",
+  "contract_checks": {
+    "operations": 59,
+    "schemas": 124,
+    "tables": 26,
+    "screens": 24,
+    "ears_criteria": 47,
+    "valid_examples": 4,
+    "rejected_invalid_examples": 5,
+    "scope": "Local references/schema-subset/traceability; no full OpenAPI validation, live API or native tests"
+  },
+  "diagram_check": "Diagrams consistent: 8",
+  "secret_scan": "Working tree gitleaks: PASS\nGit history UNAVAILABLE: project repository not initialized; not a history pass.",
+  "synthetic_secret_gate": {
+    "checks": {
+      "placeholder_passes_bundled_gate": true,
+      "placeholder_passes_hook": true,
+      "staged_secret_cleaned_on_disk_blocked_bundled": true,
+      "staged_secret_cleaned_on_disk_blocked_hook": true,
+      "deleted_secret_caught_by_history_gate": true,
+      "deleted_secret_caught_by_gitleaks": true
+    },
+    "all_pass": true,
+    "scope": "Synthetic scratch repository; project hooks not installed"
+  },
+  "full_app_gate": {
+    "exit_code": 1,
+    "reason": "mobile/pubspec.yaml missing; app gates NOT RUN"
+  },
+  "preview_source": {
+    "screens": 24,
+    "states": 132,
+    "script_syntax": "syntax parsed: 24",
+    "hashes": {
+      "login.html": "ff1b1996f6da85fe60a1e6efae50c8d9aa6c04c65fcef909d42cc319c717cf97",
+      "farm-setup.html": "3951999241f4198cc765cb9b8535ce816b751b89314e90d0398f9d961b2aa7f9",
+      "cage-list.html": "c3035c08640d44dedc20d27e6a6fafbe720132eb2599648a283669525de51f6b",
+      "cage-form.html": "e7cd5c4334d9d307088ff5d3d3620d238326b7619adec2b26b425a0fbe272209",
+      "flock-list.html": "3f3d1248c2722bd1f2df217cc5dc7c7d59bcf00e57b1d0668f926859eb2e4429",
+      "flock-form.html": "8cc4abf8a1d0b22352e7f8d2fc1dbc2f6baafa779709db750ca36da5d9f1674b",
+      "team-list.html": "2cde53baaa91d0d86776ea6ab8b9a64c8517a42825be7b43256886b83c0ae2d0",
+      "member-form.html": "49b6e00707bfa768b6815e2b70d00cab5584405ca0844e8466da5c74a7886bfd",
+      "home.html": "b1a387fab425cea15f05c327526bc4ccc0faedddd2f9b0183814aefca0707add",
+      "today.html": "218b9af1393aba0f170cb263f7f8dc89b7c3ad388d9e45b4cb6b848116234f42",
+      "task-form.html": "0c08f688185df14a3718efc915be902ce4dc92f1f85846ee9f76d0b4efc5a348",
+      "task-detail.html": "a3d5854333b35972ecea96fa365f1bdbca3ab09bc10c1b9463fe526cc50c4043",
+      "daily-form.html": "16816cd88a9384cad60131b55ef89157a7edf5d41d79cac43a1f10982305f70b",
+      "daily-history.html": "06299f4b6c987556405690121a6eb8d2708f362f862e8c7a68006e1badb2666b",
+      "feed-stock.html": "4af2e73f29262fd858bb48142b1521180eb7dd1a07597ed13aa85a5ed19e3ccf",
+      "feed-entry.html": "777186ab434ec6c430f9ce3bdcb4696af7d927f28845a43b78dbacee97aa64f1",
+      "feed-type-form.html": "92a2ba6c57ec2f507dcee201485332bab58cf9cccc413c01036dff56a74c04a2",
+      "incident-list.html": "7bef5561d4d9625a74bb7fcf5c8a8764743e63e8110d055c9cbaa08bc38489ab",
+      "incident-form.html": "882e2d39d96ad42b5ad4cf2dafd525fd6464101b2ab520655b7f0d1db9abc626",
+      "incident-detail.html": "0311bbb6bf28ad58ff87cc26638dcd45e029b84bea94a153f39d7044b8d04694",
+      "reports.html": "a5c7ba00090d52e7167f933e182e80cfd39840d6eda82571fce07539b849c345",
+      "inbox.html": "1b9ce8ab5735ef542331501ba145f8f5c2cefc5a60a64fdeaee48896665f239d",
+      "sync-center.html": "c72e63257feb08accf1d5e9cc98c67f515c313ff943e74adcbfa24690d0bb06d",
+      "account.html": "410cf9df3608b0790a63c10d327fe5320dd6addb59dcc7031d6184878cba58a5"
+    },
+    "limit": "AM-01/02 not rendered; baseline 260 combinations is historical; no native/accessibility/backend proof"
+  },
+  "spec_status": "P4 review pending; not implementation permission",
+  "limits": [
+    "No full OpenAPI semantic validator",
+    "No runnable Flutter/Laravel app",
+    "No active project Git hooks/remote CI",
+    "No native tests/load/restore/release/UAT"
+  ]
+}

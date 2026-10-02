@@ -1,0 +1,422 @@
+[
+  {
+    "id": "login",
+    "title": "Masuk ke TERNAVA",
+    "archetype": "Guided Flow",
+    "ac": "AC-01",
+    "states": [
+      "default",
+      "loading",
+      "error",
+      "offline-first",
+      "expired",
+      "success"
+    ],
+    "role": "owner",
+    "back": "",
+    "subtitle": "Gunakan akun dari pengelola peternakan.",
+    "empty": null
+  },
+  {
+    "id": "farm-setup",
+    "title": "Pengaturan peternakan",
+    "archetype": "Guided Flow",
+    "ac": "AC-02",
+    "states": [
+      "default",
+      "loading",
+      "error",
+      "offline",
+      "success"
+    ],
+    "role": "owner",
+    "back": "account",
+    "subtitle": "Nama dan zona waktu untuk catatan harian.",
+    "empty": null
+  },
+  {
+    "id": "cage-list",
+    "title": "Kandang",
+    "archetype": "List-Detail",
+    "ac": "AC-03",
+    "states": [
+      "default",
+      "empty",
+      "loading",
+      "error",
+      "stale",
+      "restricted"
+    ],
+    "role": "owner",
+    "back": "",
+    "subtitle": "Status pencatatan hari ini.",
+    "empty": null
+  },
+  {
+    "id": "cage-form",
+    "title": "Kandang baru",
+    "archetype": "Guided Flow",
+    "ac": "AC-04",
+    "states": [
+      "default",
+      "error",
+      "offline",
+      "success"
+    ],
+    "role": "owner",
+    "back": "cage-list",
+    "subtitle": "Siapkan referensi kandang sebelum mulai mencatat.",
+    "empty": null
+  },
+  {
+    "id": "flock-list",
+    "title": "Kelompok ayam",
+    "archetype": "List-Detail",
+    "ac": "AC-05",
+    "states": [
+      "default",
+      "empty",
+      "loading",
+      "error",
+      "finished"
+    ],
+    "role": "owner",
+    "back": "cage-list",
+    "subtitle": "Penempatan dan riwayat kelompok ayam.",
+    "empty": null
+  },
+  {
+    "id": "flock-form",
+    "title": "Kelompok ayam baru",
+    "archetype": "Guided Flow",
+    "ac": "AC-06",
+    "states": [
+      "default",
+      "edit",
+      "error",
+      "duplicate",
+      "offline",
+      "success"
+    ],
+    "role": "owner",
+    "back": "flock-list",
+    "subtitle": "Populasi awal menjadi dasar riwayat perubahan.",
+    "empty": null
+  },
+  {
+    "id": "team-list",
+    "title": "Pengguna dan penugasan",
+    "archetype": "List-Detail",
+    "ac": "AC-07",
+    "states": [
+      "default",
+      "empty",
+      "loading",
+      "error",
+      "restricted"
+    ],
+    "role": "owner",
+    "back": "account",
+    "subtitle": "Siapa yang mengelola dan mencatat kandang.",
+    "empty": null
+  },
+  {
+    "id": "member-form",
+    "title": "Atur pengguna",
+    "archetype": "Guided Flow",
+    "ac": "AC-08",
+    "states": [
+      "default",
+      "edit",
+      "error",
+      "offline",
+      "success",
+      "owner-protected"
+    ],
+    "role": "owner",
+    "back": "team-list",
+    "subtitle": "Tentukan role dan kandang yang dapat diakses.",
+    "empty": null
+  },
+  {
+    "id": "home",
+    "title": "Ringkasan peternakan",
+    "archetype": "Executive Dashboard",
+    "ac": "AC-09",
+    "states": [
+      "default",
+      "empty",
+      "loading",
+      "error",
+      "stale"
+    ],
+    "role": "owner",
+    "back": "",
+    "subtitle": "Kamis, 1 Oktober 2026",
+    "empty": null
+  },
+  {
+    "id": "today",
+    "title": "Hari ini",
+    "archetype": "List-Detail",
+    "ac": "AC-10",
+    "states": [
+      "default",
+      "empty",
+      "loading",
+      "error",
+      "offline"
+    ],
+    "role": "operator",
+    "back": "",
+    "subtitle": "Kamis, 1 Oktober 2026 · Kandang A dan C",
+    "empty": null
+  },
+  {
+    "id": "task-form",
+    "title": "Jadwalkan tugas",
+    "archetype": "Guided Flow",
+    "ac": "AC-11",
+    "states": [
+      "default",
+      "error",
+      "offline",
+      "success"
+    ],
+    "role": "owner",
+    "back": "today",
+    "subtitle": "SOP dan jadwal ditentukan pengelola.",
+    "empty": null
+  },
+  {
+    "id": "task-detail",
+    "title": "Periksa air minum",
+    "archetype": "Guided Flow",
+    "ac": "AC-12",
+    "states": [
+      "default",
+      "missing",
+      "error",
+      "pending",
+      "success"
+    ],
+    "role": "operator",
+    "back": "today",
+    "subtitle": "Kandang A · 1 Oktober 2026 · 08.00",
+    "empty": null
+  },
+  {
+    "id": "daily-form",
+    "title": "Catatan harian",
+    "archetype": "Guided Flow",
+    "ac": "AC-13",
+    "states": [
+      "default",
+      "error",
+      "offline",
+      "local-failure",
+      "pending",
+      "conflict",
+      "read-only",
+      "correction",
+      "success"
+    ],
+    "role": "operator",
+    "back": "today",
+    "subtitle": "Total per kelompok untuk tanggal yang dipilih.",
+    "empty": null
+  },
+  {
+    "id": "daily-history",
+    "title": "Riwayat catatan",
+    "archetype": "Dense Ledger",
+    "ac": "AC-14",
+    "states": [
+      "default",
+      "empty",
+      "loading",
+      "error",
+      "offline"
+    ],
+    "role": "operator",
+    "back": "",
+    "subtitle": "Catatan harian dan status pengiriman.",
+    "empty": null
+  },
+  {
+    "id": "feed-stock",
+    "title": "Pakan",
+    "archetype": "Dense Ledger",
+    "ac": "AC-15",
+    "states": [
+      "default",
+      "empty",
+      "loading",
+      "error",
+      "stale"
+    ],
+    "role": "owner",
+    "back": "",
+    "subtitle": "Saldo diterima dan asal perubahan stok.",
+    "empty": null
+  },
+  {
+    "id": "feed-entry",
+    "title": "Transaksi pakan",
+    "archetype": "Guided Flow",
+    "ac": "AC-16",
+    "states": [
+      "default",
+      "correction",
+      "error",
+      "offline",
+      "success",
+      "large-value"
+    ],
+    "role": "owner",
+    "back": "feed-stock",
+    "subtitle": "Penerimaan atau koreksi stok oleh pengelola.",
+    "empty": null
+  },
+  {
+    "id": "feed-type-form",
+    "title": "Jenis pakan",
+    "archetype": "Guided Flow",
+    "ac": "AC-17",
+    "states": [
+      "default",
+      "error",
+      "offline",
+      "success"
+    ],
+    "role": "owner",
+    "back": "feed-stock",
+    "subtitle": "Satuan kg dan batas minimum persediaan.",
+    "empty": null
+  },
+  {
+    "id": "incident-list",
+    "title": "Temuan",
+    "archetype": "List-Detail",
+    "ac": "AC-18",
+    "states": [
+      "default",
+      "empty",
+      "loading",
+      "error",
+      "offline"
+    ],
+    "role": "operator",
+    "back": "",
+    "subtitle": "Pengamatan dan tindak lanjut di kandang.",
+    "empty": null
+  },
+  {
+    "id": "incident-form",
+    "title": "Laporkan temuan",
+    "archetype": "Guided Flow",
+    "ac": "AC-19",
+    "states": [
+      "default",
+      "error",
+      "offline",
+      "photo-pending",
+      "pending",
+      "success"
+    ],
+    "role": "operator",
+    "back": "incident-list",
+    "subtitle": "Catat yang diamati, sertakan lokasi dan keterangan.",
+    "empty": null
+  },
+  {
+    "id": "incident-detail",
+    "title": "Tindak lanjut temuan",
+    "archetype": "Guided Flow",
+    "ac": "AC-20",
+    "states": [
+      "default",
+      "unassigned",
+      "missing",
+      "restricted",
+      "pending",
+      "success"
+    ],
+    "role": "admin",
+    "back": "incident-list",
+    "subtitle": "Kandang C · Dilaporkan Sari Wulandari",
+    "empty": null
+  },
+  {
+    "id": "reports",
+    "title": "Laporan operasional",
+    "archetype": "Executive Dashboard",
+    "ac": "AC-21",
+    "states": [
+      "default",
+      "empty",
+      "loading",
+      "error",
+      "export-failure",
+      "success"
+    ],
+    "role": "owner",
+    "back": "home",
+    "subtitle": "Data yang telah diterima sistem.",
+    "empty": null
+  },
+  {
+    "id": "inbox",
+    "title": "Pemberitahuan",
+    "archetype": "List-Detail",
+    "ac": "AC-22",
+    "states": [
+      "default",
+      "empty",
+      "loading",
+      "error",
+      "denied"
+    ],
+    "role": "owner",
+    "back": "home",
+    "subtitle": "Pembaruan tugas dan temuan yang terkait dengan Anda.",
+    "empty": null
+  },
+  {
+    "id": "sync-center",
+    "title": "Status pengiriman",
+    "archetype": "List-Detail",
+    "ac": "AC-23",
+    "states": [
+      "default",
+      "empty",
+      "loading",
+      "error",
+      "expired",
+      "conflict",
+      "success"
+    ],
+    "role": "operator",
+    "back": "today",
+    "subtitle": "Catatan perangkat yang belum diterima sistem.",
+    "empty": null
+  },
+  {
+    "id": "account",
+    "title": "Akun",
+    "archetype": "Guided Flow",
+    "ac": "AC-24",
+    "states": [
+      "default",
+      "password-required",
+      "error",
+      "notification-denied",
+      "logout-pending",
+      "success"
+    ],
+    "role": "operator",
+    "back": "",
+    "subtitle": "Sesi, pemberitahuan, dan pengaturan akun.",
+    "empty": null
+  }
+]

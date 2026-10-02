@@ -1,0 +1,1505 @@
+{
+  "version": "0.1.0-design",
+  "database": "PostgreSQL 18 family",
+  "physical_migrations": "not implemented",
+  "tables": {
+    "farms": {
+      "module": "farm-access",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "name": {
+          "type": "varchar100",
+          "nullable": false
+        },
+        "location": {
+          "type": "varchar200",
+          "nullable": false
+        },
+        "timezone": {
+          "type": "iana_timezone",
+          "nullable": false
+        },
+        "currency": {
+          "type": "IDR",
+          "nullable": false
+        },
+        "version": {
+          "type": "int",
+          "nullable": false
+        },
+        "updated_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [],
+      "checks": [],
+      "indexes": []
+    },
+    "users": {
+      "module": "farm-access",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "username": {
+          "type": "varchar80",
+          "nullable": false
+        },
+        "display_name": {
+          "type": "varchar100",
+          "nullable": false
+        },
+        "password_hash": {
+          "type": "text",
+          "nullable": false
+        },
+        "must_change_password": {
+          "type": "bool",
+          "nullable": false
+        },
+        "active": {
+          "type": "bool",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "username"
+        ]
+      ],
+      "checks": [],
+      "indexes": [],
+      "unique_expressions": [
+        "lower(username)"
+      ]
+    },
+    "memberships": {
+      "module": "farm-access",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "user_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "users.id"
+        },
+        "role": {
+          "type": "enum_owner_admin_operator",
+          "nullable": false
+        },
+        "scope_version": {
+          "type": "bigint",
+          "nullable": false
+        },
+        "version": {
+          "type": "int",
+          "nullable": false
+        },
+        "active": {
+          "type": "bool",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "farm_id",
+          "user_id"
+        ]
+      ],
+      "checks": [
+        "Exactly one active owner; privileged service prevents owner reassignment/deactivation"
+      ],
+      "indexes": [
+        [
+          "farm_id",
+          "active"
+        ]
+      ],
+      "partial_unique": [
+        {
+          "columns": [
+            "farm_id"
+          ],
+          "predicate": "role = 'owner' AND active = true"
+        }
+      ]
+    },
+    "device_sessions": {
+      "module": "farm-access",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "user_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "users.id"
+        },
+        "device_id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "token_hash": {
+          "type": "varchar64",
+          "nullable": false
+        },
+        "expires_at": {
+          "type": "timestamptz",
+          "nullable": false
+        },
+        "revoked_at": {
+          "type": "timestamptz",
+          "nullable": true
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "token_hash"
+        ]
+      ],
+      "checks": [
+        "Implement through Sanctum personal_access_tokens plus device metadata; no second token validator"
+      ],
+      "indexes": [
+        [
+          "user_id",
+          "device_id"
+        ]
+      ]
+    },
+    "cages": {
+      "module": "flocks",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "code": {
+          "type": "varchar32",
+          "nullable": false
+        },
+        "name": {
+          "type": "varchar100",
+          "nullable": false
+        },
+        "description": {
+          "type": "text",
+          "nullable": true
+        },
+        "active": {
+          "type": "bool",
+          "nullable": false
+        },
+        "version": {
+          "type": "int",
+          "nullable": false
+        },
+        "updated_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "farm_id",
+          "code"
+        ]
+      ],
+      "checks": [],
+      "indexes": [
+        [
+          "farm_id",
+          "active"
+        ]
+      ],
+      "unique_expressions": [
+        "farm_id, lower(code)"
+      ]
+    },
+    "cage_assignments": {
+      "module": "farm-access",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "membership_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "memberships.id"
+        },
+        "cage_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "cages.id"
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "membership_id",
+          "cage_id"
+        ]
+      ],
+      "checks": [
+        "Both references belong to farm_id"
+      ],
+      "indexes": []
+    },
+    "flocks": {
+      "module": "flocks",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "cage_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "cages.id"
+        },
+        "code": {
+          "type": "varchar32",
+          "nullable": false
+        },
+        "placed_on": {
+          "type": "date",
+          "nullable": false
+        },
+        "finished_on": {
+          "type": "date",
+          "nullable": true
+        },
+        "initial_population": {
+          "type": "int",
+          "nullable": false
+        },
+        "recorded_population": {
+          "type": "int",
+          "nullable": false
+        },
+        "version": {
+          "type": "int",
+          "nullable": false
+        },
+        "updated_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "farm_id",
+          "code"
+        ]
+      ],
+      "checks": [
+        "population >= 0",
+        "No overlap of inclusive date ranges for same farm/cage; partial unique active cage",
+        "Finished date >= placed date"
+      ],
+      "indexes": [
+        [
+          "farm_id",
+          "cage_id",
+          "placed_on"
+        ]
+      ],
+      "unique_expressions": [
+        "farm_id, lower(code)"
+      ],
+      "partial_unique": [
+        {
+          "columns": [
+            "farm_id",
+            "cage_id"
+          ],
+          "predicate": "finished_on IS NULL"
+        }
+      ]
+    },
+    "feed_types": {
+      "module": "feed-ledger",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "code": {
+          "type": "varchar32",
+          "nullable": false
+        },
+        "name": {
+          "type": "varchar100",
+          "nullable": false
+        },
+        "minimum_kg": {
+          "type": "decimal14_2",
+          "nullable": false
+        },
+        "active": {
+          "type": "bool",
+          "nullable": false
+        },
+        "version": {
+          "type": "int",
+          "nullable": false
+        },
+        "updated_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "farm_id",
+          "code"
+        ]
+      ],
+      "checks": [],
+      "indexes": [],
+      "unique_expressions": [
+        "farm_id, lower(code)"
+      ]
+    },
+    "feed_balances": {
+      "module": "feed-ledger",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "feed_type_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "feed_types.id"
+        },
+        "quantity_kg": {
+          "type": "decimal14_2",
+          "nullable": false
+        },
+        "updated_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "farm_id",
+          "feed_type_id"
+        ]
+      ],
+      "checks": [
+        "quantity_kg >= 0"
+      ],
+      "indexes": []
+    },
+    "daily_records": {
+      "module": "daily-operations",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "flock_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "flocks.id"
+        },
+        "business_date": {
+          "type": "date",
+          "nullable": false
+        },
+        "feed_type_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "feed_types.id"
+        },
+        "feed_kg": {
+          "type": "decimal14_2",
+          "nullable": false
+        },
+        "eggs_count": {
+          "type": "int",
+          "nullable": false
+        },
+        "mortality_count": {
+          "type": "int",
+          "nullable": true
+        },
+        "population_change": {
+          "type": "jsonb",
+          "nullable": true
+        },
+        "condition": {
+          "type": "enum_condition",
+          "nullable": false
+        },
+        "notes": {
+          "type": "text",
+          "nullable": true
+        },
+        "version": {
+          "type": "int",
+          "nullable": false
+        },
+        "recorded_by": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "users.id"
+        },
+        "accepted_at": {
+          "type": "timestamptz",
+          "nullable": false
+        },
+        "updated_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "farm_id",
+          "flock_id",
+          "business_date"
+        ]
+      ],
+      "checks": [
+        "nonnegative counts and feed",
+        "business_date in flock date range and not future",
+        "same-farm references"
+      ],
+      "indexes": [
+        [
+          "farm_id",
+          "business_date",
+          "flock_id"
+        ]
+      ]
+    },
+    "daily_revisions": {
+      "module": "daily-operations",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "daily_record_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "daily_records.id"
+        },
+        "version": {
+          "type": "int",
+          "nullable": false
+        },
+        "snapshot": {
+          "type": "jsonb",
+          "nullable": false
+        },
+        "reason": {
+          "type": "text",
+          "nullable": true
+        },
+        "actor_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "users.id"
+        },
+        "accepted_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "daily_record_id",
+          "version"
+        ]
+      ],
+      "checks": [
+        "append only; reason required after version 1"
+      ],
+      "indexes": []
+    },
+    "feed_entries": {
+      "module": "feed-ledger",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "feed_type_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "feed_types.id"
+        },
+        "business_date": {
+          "type": "date",
+          "nullable": false
+        },
+        "kind": {
+          "type": "enum_feed_entry",
+          "nullable": false
+        },
+        "delta_kg": {
+          "type": "decimal14_2",
+          "nullable": false
+        },
+        "unit_price_idr": {
+          "type": "decimal18_2",
+          "nullable": true
+        },
+        "purchase_total_idr": {
+          "type": "decimal18_2",
+          "nullable": true
+        },
+        "supplier": {
+          "type": "text",
+          "nullable": true
+        },
+        "reason": {
+          "type": "text",
+          "nullable": true
+        },
+        "daily_record_id": {
+          "type": "uuid",
+          "nullable": true,
+          "references": "daily_records.id"
+        },
+        "daily_version": {
+          "type": "int",
+          "nullable": true
+        },
+        "reverses_entry_id": {
+          "type": "uuid",
+          "nullable": true,
+          "references": "feed_entries.id"
+        },
+        "accepted_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "reverses_entry_id"
+        ]
+      ],
+      "checks": [
+        "append only; receipt price/supplier required; opening/adjustment reason required"
+      ],
+      "indexes": [
+        [
+          "farm_id",
+          "feed_type_id",
+          "accepted_at",
+          "id"
+        ]
+      ],
+      "partial_unique": [
+        {
+          "columns": [
+            "farm_id",
+            "feed_type_id"
+          ],
+          "predicate": "kind = 'opening'"
+        },
+        {
+          "columns": [
+            "daily_record_id",
+            "daily_version"
+          ],
+          "predicate": "kind = 'daily_usage'"
+        }
+      ]
+    },
+    "population_entries": {
+      "module": "flocks",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "flock_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "flocks.id"
+        },
+        "business_date": {
+          "type": "date",
+          "nullable": false
+        },
+        "delta_count": {
+          "type": "int",
+          "nullable": false
+        },
+        "daily_record_id": {
+          "type": "uuid",
+          "nullable": true,
+          "references": "daily_records.id"
+        },
+        "daily_version": {
+          "type": "int",
+          "nullable": true
+        },
+        "reverses_entry_id": {
+          "type": "uuid",
+          "nullable": true,
+          "references": "population_entries.id"
+        },
+        "reason": {
+          "type": "text",
+          "nullable": true
+        },
+        "accepted_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "reverses_entry_id"
+        ]
+      ],
+      "checks": [
+        "append only; date prefix population must remain >= 0"
+      ],
+      "indexes": [
+        [
+          "flock_id",
+          "business_date",
+          "id"
+        ]
+      ]
+    },
+    "task_templates": {
+      "module": "daily-operations",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "cage_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "cages.id"
+        },
+        "assignee_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "users.id"
+        },
+        "title": {
+          "type": "varchar120",
+          "nullable": false
+        },
+        "kind": {
+          "type": "enum_task_kind",
+          "nullable": false
+        },
+        "sop": {
+          "type": "text",
+          "nullable": false
+        },
+        "start_on": {
+          "type": "date",
+          "nullable": false
+        },
+        "end_on": {
+          "type": "date",
+          "nullable": true
+        },
+        "local_time": {
+          "type": "time",
+          "nullable": false
+        },
+        "recurrence": {
+          "type": "enum_recurrence",
+          "nullable": false
+        },
+        "active": {
+          "type": "bool",
+          "nullable": false
+        },
+        "version": {
+          "type": "int",
+          "nullable": false
+        },
+        "updated_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [],
+      "checks": [],
+      "indexes": []
+    },
+    "task_runs": {
+      "module": "daily-operations",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "template_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "task_templates.id"
+        },
+        "cage_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "cages.id"
+        },
+        "business_date": {
+          "type": "date",
+          "nullable": false
+        },
+        "assignee_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "users.id"
+        },
+        "snapshot": {
+          "type": "jsonb",
+          "nullable": false
+        },
+        "status": {
+          "type": "enum_task_status",
+          "nullable": false
+        },
+        "version": {
+          "type": "int",
+          "nullable": false
+        },
+        "updated_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "template_id",
+          "business_date"
+        ]
+      ],
+      "checks": [],
+      "indexes": [
+        [
+          "farm_id",
+          "assignee_id",
+          "business_date"
+        ]
+      ]
+    },
+    "task_results": {
+      "module": "daily-operations",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "task_run_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "task_runs.id"
+        },
+        "actor_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "users.id"
+        },
+        "status": {
+          "type": "enum_result_status",
+          "nullable": false
+        },
+        "notes": {
+          "type": "text",
+          "nullable": true
+        },
+        "checklist_values": {
+          "type": "jsonb",
+          "nullable": false
+        },
+        "accepted_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [],
+      "checks": [
+        "append only; optimistic version on task_run"
+      ],
+      "indexes": []
+    },
+    "incidents": {
+      "module": "incidents",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "cage_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "cages.id"
+        },
+        "flock_id": {
+          "type": "uuid",
+          "nullable": true,
+          "references": "flocks.id"
+        },
+        "source_daily_record_id": {
+          "type": "uuid",
+          "nullable": true,
+          "references": "daily_records.id"
+        },
+        "observed_at": {
+          "type": "timestamptz",
+          "nullable": false
+        },
+        "observation": {
+          "type": "text",
+          "nullable": false
+        },
+        "attention": {
+          "type": "enum_attention",
+          "nullable": false
+        },
+        "assignee_id": {
+          "type": "uuid",
+          "nullable": true,
+          "references": "users.id"
+        },
+        "status": {
+          "type": "enum_incident_status",
+          "nullable": false
+        },
+        "version": {
+          "type": "int",
+          "nullable": false
+        },
+        "recorded_by": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "users.id"
+        },
+        "accepted_at": {
+          "type": "timestamptz",
+          "nullable": false
+        },
+        "updated_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [],
+      "checks": [],
+      "indexes": [
+        [
+          "farm_id",
+          "cage_id",
+          "status",
+          "updated_at"
+        ]
+      ]
+    },
+    "incident_actions": {
+      "module": "incidents",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "incident_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "incidents.id"
+        },
+        "actor_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "users.id"
+        },
+        "action_kind": {
+          "type": "enum_assign_or_action",
+          "nullable": false
+        },
+        "notes": {
+          "type": "text",
+          "nullable": false
+        },
+        "status": {
+          "type": "enum_incident_status",
+          "nullable": false
+        },
+        "accepted_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [],
+      "checks": [
+        "append only; all changes have audit actor"
+      ],
+      "indexes": []
+    },
+    "attachments": {
+      "module": "daily-operations",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "parent_type": {
+          "type": "enum_attachment_parent",
+          "nullable": false
+        },
+        "parent_id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "storage_key": {
+          "type": "text",
+          "nullable": false
+        },
+        "source_sha256": {
+          "type": "varchar64",
+          "nullable": false
+        },
+        "media_type": {
+          "type": "varchar32",
+          "nullable": false
+        },
+        "byte_size": {
+          "type": "int",
+          "nullable": false
+        },
+        "uploaded_by": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "users.id"
+        },
+        "accepted_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [],
+      "checks": [
+        "parent ownership verified by service; private storage; <= 2MiB, <= 3 per parent"
+      ],
+      "indexes": [
+        [
+          "farm_id",
+          "parent_type",
+          "parent_id"
+        ]
+      ]
+    },
+    "inbox_items": {
+      "module": "insights",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "user_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "users.id"
+        },
+        "event_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "notification_outbox.id"
+        },
+        "payload": {
+          "type": "jsonb",
+          "nullable": false
+        },
+        "read_at": {
+          "type": "timestamptz",
+          "nullable": true
+        },
+        "version": {
+          "type": "int",
+          "nullable": false
+        },
+        "updated_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "event_id",
+          "user_id"
+        ]
+      ],
+      "checks": [],
+      "indexes": [
+        [
+          "user_id",
+          "updated_at",
+          "id"
+        ]
+      ]
+    },
+    "push_devices": {
+      "module": "farm-access",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "user_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "users.id"
+        },
+        "device_id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "fcm_token_encrypted": {
+          "type": "text",
+          "nullable": false
+        },
+        "enabled": {
+          "type": "bool",
+          "nullable": false
+        },
+        "updated_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "user_id",
+          "device_id"
+        ]
+      ],
+      "checks": [],
+      "indexes": []
+    },
+    "idempotency_receipts": {
+      "module": "farm-access",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "actor_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "users.id"
+        },
+        "operation_id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "request_hash": {
+          "type": "varchar64",
+          "nullable": false
+        },
+        "method": {
+          "type": "varchar10",
+          "nullable": false
+        },
+        "path": {
+          "type": "text",
+          "nullable": false
+        },
+        "ack": {
+          "type": "jsonb",
+          "nullable": false
+        },
+        "accepted_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "farm_id",
+          "actor_id",
+          "operation_id"
+        ]
+      ],
+      "checks": [
+        "receipt commits with business effect; retain dedup tombstone when payload archived"
+      ],
+      "indexes": []
+    },
+    "sync_changes": {
+      "module": "farm-access",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "sequence": {
+          "type": "bigint",
+          "nullable": false
+        },
+        "resource_type": {
+          "type": "varchar40",
+          "nullable": false
+        },
+        "resource_id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "action": {
+          "type": "enum_upsert_remove",
+          "nullable": false
+        },
+        "snapshot": {
+          "type": "jsonb",
+          "nullable": true
+        },
+        "accepted_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "farm_id",
+          "sequence"
+        ]
+      ],
+      "checks": [
+        "monotonic committed ordering through locked per-farm counter; not unguarded BIGSERIAL"
+      ],
+      "indexes": [
+        [
+          "farm_id",
+          "sequence"
+        ]
+      ]
+    },
+    "sync_counters": {
+      "module": "farm-access",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "last_sequence": {
+          "type": "bigint",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [
+        [
+          "farm_id"
+        ]
+      ],
+      "checks": [],
+      "indexes": []
+    },
+    "audit_events": {
+      "module": "farm-access",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "actor_id": {
+          "type": "uuid",
+          "nullable": true,
+          "references": "users.id"
+        },
+        "action": {
+          "type": "varchar80",
+          "nullable": false
+        },
+        "resource_type": {
+          "type": "varchar40",
+          "nullable": false
+        },
+        "resource_id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "metadata": {
+          "type": "jsonb",
+          "nullable": false
+        },
+        "accepted_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [],
+      "checks": [
+        "append only; no credentials/raw bodies"
+      ],
+      "indexes": [
+        [
+          "farm_id",
+          "accepted_at",
+          "id"
+        ]
+      ]
+    },
+    "notification_outbox": {
+      "module": "insights",
+      "fields": {
+        "id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "farm_id": {
+          "type": "uuid",
+          "nullable": false,
+          "references": "farms.id"
+        },
+        "event_kind": {
+          "type": "varchar40",
+          "nullable": false
+        },
+        "resource_id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "payload": {
+          "type": "jsonb",
+          "nullable": false
+        },
+        "attempts": {
+          "type": "int",
+          "nullable": false
+        },
+        "processed_at": {
+          "type": "timestamptz",
+          "nullable": true
+        },
+        "created_at": {
+          "type": "timestamptz",
+          "nullable": false
+        }
+      },
+      "primary_key": [
+        "id"
+      ],
+      "unique": [],
+      "checks": [],
+      "indexes": [
+        [
+          "processed_at",
+          "created_at"
+        ]
+      ]
+    }
+  },
+  "local_store": {
+    "partition": "actor_id + farm_id",
+    "tables": [
+      "encrypted_cache",
+      "encrypted_drafts",
+      "immutable_outbox",
+      "encrypted_attachments",
+      "sync_checkpoint"
+    ],
+    "transactions": [
+      "draft + outbox",
+      "ack + accepted cache + outbox state",
+      "delta changes + cursor"
+    ],
+    "payload_protection": "AES-256-GCM via maintained library; random nonce per write; actor/farm/object/schema version as associated data; key in platform secure storage"
+  },
+  "global_constraints": [
+    "Every referenced business object is in the current farm; validate polymorphic references too",
+    "No hard delete of accepted ledgers/operational records during pilot",
+    "Global lock order: farm sync counter -> flock(s sorted UUID) -> daily/task/incident row -> feed balance(s sorted UUID) -> receipt; bounded transaction retry",
+    "All instants UTC timestamptz; business_date is farm local DATE",
+    "Append-only snapshots retained for bootstrap as-of watermark; cache queries exclude other users inbox"
+  ]
+}

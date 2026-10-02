@@ -1,0 +1,15 @@
+{
+  "screens": 24,
+  "auditedStates": 260,
+  "widths": [
+    320,
+    414
+  ],
+  "failures": [],
+  "scriptErrors": [],
+  "limitations": [
+    "Visual/alur HTML saja; bukan uji Flutter atau API.",
+    "Tidak membuktikan durability/idempotensi/offline native.",
+    "Axe dan TalkBack belum dijalankan pada tahap ini."
+  ]
+}

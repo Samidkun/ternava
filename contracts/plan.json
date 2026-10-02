@@ -1,0 +1,1381 @@
+{
+  "version": 1,
+  "status": "planning_only",
+  "source_spec": "docs/superpowers/specs/2026-10-01-ternava-design.md",
+  "tasks": [
+    {
+      "id": "T01",
+      "title": "Kesiapan metadata dan versi terkunci",
+      "deps": [],
+      "ac": [
+        "AC-42"
+      ],
+      "files": [
+        "toolchain/manifest.json",
+        "toolchain/flutter-version.txt",
+        "docs/evidence/toolchain.md"
+      ],
+      "consumes": "Keluarga versi pada docs/architecture.md dan SDK archive resmi Flutter; tidak ada app.",
+      "produces": "Manifest berisi versi Flutter/Dart/PHP/Composer/PostgreSQL, checksum SDK, image digest; repository .git writable dan secret hooks aktif.",
+      "acceptance": "Catat patch yang benar-benar tersedia, lisensi/dependency dan checksum; jangan menebak versi atau digest. Pilih lingkungan kerja dengan metadata Git writable, pertahankan seluruh dokumen. Kegagalan Git/SDK menghalangi T02.",
+      "verify": "flutter --version --machine; php --version; composer --version; git rev-parse --is-inside-work-tree; python3 scripts/check_secrets.py",
+      "language": "bash",
+      "operations": [],
+      "screens": [],
+      "manual": true
+    },
+    {
+      "id": "T02",
+      "title": "Aplikasi lokal dan health probes",
+      "deps": [
+        "T01"
+      ],
+      "ac": [
+        "AC-42",
+        "AC-45"
+      ],
+      "files": [
+        "compose.yaml",
+        "backend/Dockerfile",
+        "backend/routes/api.php",
+        "backend/app/Http/Controllers/HealthController.php",
+        "backend/tests/Feature/HealthTest.php"
+      ],
+      "consumes": "toolchain/manifest.json; Laravel 13/PHP 8.4/PostgreSQL 18; scaffold framework generated.",
+      "produces": "GET /health/live tanpa DB; GET /health/ready memeriksa DB/schema/private storage; service api/worker/scheduler memakai satu image.",
+      "acceptance": "flutter create mobile, Laravel scaffold backend, pasang Sanctum dan queue database dengan lockfiles. Docker port API hanya 127.0.0.1:8080; Postgres tidak expose host. Worker/scheduler terpisah. /api/v1 untuk bisnis, health di root.",
+      "verify": "docker compose config --quiet; docker compose run --rm api php artisan test --filter=HealthTest",
+      "language": "php",
+      "operations": [
+        "liveness",
+        "readiness"
+      ],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T03",
+      "title": "Batas kontrak dan fixtures integrasi",
+      "deps": [
+        "T02"
+      ],
+      "ac": [
+        "AC-32",
+        "AC-36",
+        "AC-41",
+        "AC-42"
+      ],
+      "files": [
+        "scripts/validate_openapi.py",
+        "scripts/generate_dto.py",
+        "backend/tests/Support/Scenario.php",
+        "backend/tests/Feature/ContractTest.php",
+        "mobile/test/support/scenario.dart"
+      ],
+      "consumes": "contracts/openapi.json, examples.json, schema.json; fixture PostgreSQL memakai schema terpisah per worker.",
+      "produces": "PHP generated App\\Contracts\\Dto\\<Schema>::fromArray(array $data): self dan toArray(): array; Dart generated <Schema>.fromJson(JsonObject json), toJson(): JsonObject. Scenario::layerFarm(): array{owner:User,operator:User,other:User,cage:Cage,flock:Flock,feed:FeedType,daily:array,incident:array}. Future<MobileScenario> makeMobileScenario() dengan real Drift, fake transport controllable, injectable clock/storage fault.",
+      "acceptance": "Validator penuh OpenAPI 3.1 dan JSON Schema 2020-12; tool Python dipin sesudah kompatibilitas diperiksa. DTO generated hanya wire data, snake_case dipertahankan di JSON; null tetap null. Scenario menggunakan factory nyata, 100 ayam, saldo pakan 300.00 kg, operator assigned dan tanggal relatif waktu farm.",
+      "verify": "python3 scripts/validate_openapi.py; python3 scripts/generate_dto.py --check; docker compose run --rm api php artisan test --filter=ContractTest",
+      "language": "php",
+      "operations": [],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T04",
+      "title": "Schema akses dan sync counter",
+      "deps": [
+        "T03"
+      ],
+      "ac": [
+        "AC-08",
+        "AC-27",
+        "AC-33",
+        "AC-35",
+        "AC-36",
+        "AC-46"
+      ],
+      "files": [
+        "backend/database/migrations/2026_10_01_000001_access.php",
+        "backend/database/migrations/2026_10_01_000002_sync.php",
+        "backend/tests/Feature/AccessSchemaTest.php"
+      ],
+      "consumes": "contracts/schema.json: farms/users/memberships/device_sessions/cage_assignments/idempotency_receipts/sync_changes/sync_counters/audit_events.",
+      "produces": "Migrasi semua tabel di daftar, composite farm FK bila relevan; device_sessions merupakan metadata token Sanctum.",
+      "acceptance": "lower(username) unik, satu owner aktif per farm, receipt namespace farm/actor/key unik. Counter farm satu row, versi monotonic; soft deletion/pseudonymization menjaga referensi dan dedup. FK cage_assignments diaktifkan sesudah tabel cages pada T05.",
+      "verify": "docker compose run --rm api php artisan test --filter=AccessSchemaTest",
+      "language": "php",
+      "operations": [],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T05",
+      "title": "Schema kandang, kelompok, stok",
+      "deps": [
+        "T04"
+      ],
+      "ac": [
+        "AC-04",
+        "AC-06",
+        "AC-15",
+        "AC-16",
+        "AC-30",
+        "AC-31"
+      ],
+      "files": [
+        "backend/database/migrations/2026_10_01_000003_flocks_feed.php",
+        "backend/tests/Feature/FlockFeedSchemaTest.php"
+      ],
+      "consumes": "contracts/schema.json: cages/flocks/feed_types/feed_balances/feed_entries/population_entries; access schema T04.",
+      "produces": "DECIMAL(14,2) kg, DECIMAL(18,2) IDR, farm FK/index/partial uniqueness; migrations framework tidak dihitung dalam 26 tabel logis.",
+      "acceptance": "Case-fold cage/feed/flock code unik dalam farm; opening sekali/feedtype; active flock satu/cage; stok >=0. Tanggal overlap dan prefix populasi juga dijaga service/lock; test PostgreSQL, bukan SQLite backend.",
+      "verify": "docker compose run --rm api php artisan test --filter=FlockFeedSchemaTest",
+      "language": "php",
+      "operations": [],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T06",
+      "title": "Schema operasional, foto dan event",
+      "deps": [
+        "T05"
+      ],
+      "ac": [
+        "AC-11",
+        "AC-20",
+        "AC-26",
+        "AC-28",
+        "AC-37",
+        "AC-38"
+      ],
+      "files": [
+        "backend/database/migrations/2026_10_01_000004_operations.php",
+        "backend/database/migrations/2026_10_01_000005_delivery.php",
+        "backend/tests/Feature/OperationsSchemaTest.php"
+      ],
+      "consumes": "contracts/schema.json: daily_records/daily_revisions/task_templates/task_runs/task_results/incidents/incident_actions/attachments/inbox_items/push_devices/notification_outbox.",
+      "produces": "Daily unique farm+flock+date, taskrun unique template+date, inbox unique event+user; private file metadata.",
+      "acceptance": "Snapshot/revision/version dan indeks filter mengikuti schema; task/incident hasil tidak menimpa histori. notification_outbox merupakan event bisnis, queue Laravel merupakan pengiriman framework terpisah.",
+      "verify": "docker compose run --rm api php artisan test --filter=OperationsSchemaTest",
+      "language": "php",
+      "operations": [],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T07",
+      "title": "Mutation executor: auth, receipt dan urutan commit",
+      "deps": [
+        "T06"
+      ],
+      "ac": [
+        "AC-26",
+        "AC-27",
+        "AC-36"
+      ],
+      "files": [
+        "backend/app/Support/ActorScope.php",
+        "backend/app/Support/CanonicalJson.php",
+        "backend/app/Support/MutationExecutor.php",
+        "backend/app/Support/ChangeWriter.php",
+        "backend/tests/Feature/MutationExecutorTest.php"
+      ],
+      "consumes": "ActorScope readonly(actorId:string,farmId:string,role:string,cageIds:array); generated Ack; schema T04–06.",
+      "produces": "MutationExecutor::run(ActorScope $actor,string $key,string $method,string $path,array $payload,Closure $authorize,Closure $write): Ack. ChangeWriter::append(ActorScope $actor,string $kind,string $id,int $version,array $data): int; CanonicalJson::encode(array $value): string.",
+      "acceptance": "Authorize sebelum lookup/replay. DB transaction mengunci sync_counter farm dulu, kemudian flock UUID, resource, feedbalance UUID, receipt; deadlock max3 ->503. Hash method+canonical path+canonical JSON; replay hash beda ->409; reject tidak membuat receipt. ACK hanya sesudah transaction commit.",
+      "verify": "docker compose run --rm api php artisan test --filter=MutationExecutorTest",
+      "language": "php",
+      "operations": [],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T08",
+      "title": "Login, password change dan sesi perangkat",
+      "deps": [
+        "T07"
+      ],
+      "ac": [
+        "AC-01",
+        "AC-24",
+        "AC-35",
+        "AC-36",
+        "AC-41"
+      ],
+      "files": [
+        "backend/app/FarmAccess/SessionService.php",
+        "backend/app/Http/Controllers/SessionController.php",
+        "backend/app/Http/Middleware/RequirePasswordChange.php",
+        "backend/routes/api.php",
+        "backend/tests/Feature/SessionTest.php"
+      ],
+      "consumes": "Sanctum token metadata; LoginInput/PasswordInput/Session/SessionInfo; ActorScope dari membership aktif.",
+      "produces": "SessionService::login(LoginInput $input): Session; session(User $user): SessionInfo; changePassword(User $user,PasswordInput $input): void; logout(User $user,string $tokenId): void.",
+      "acceptance": "Token expires7hari; tidak ada refresh OAuth. First-change hanya session/change/logout; change/reset revoke semua token dan login kembali. Lease24jam diterbitkan hanya setelah validasi online. Password never log/cache/receipt plaintext; login limiter per username+IP dan IP.",
+      "verify": "docker compose run --rm api php artisan test --filter=SessionTest",
+      "language": "php",
+      "operations": [
+        "login",
+        "session",
+        "changePassword",
+        "logout"
+      ],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T09",
+      "title": "Farm dan kandang berizin",
+      "deps": [
+        "T08"
+      ],
+      "ac": [
+        "AC-02",
+        "AC-03",
+        "AC-04",
+        "AC-36"
+      ],
+      "files": [
+        "backend/app/FarmAccess/FarmService.php",
+        "backend/app/Flocks/CageService.php",
+        "backend/app/Http/Controllers/FarmController.php",
+        "backend/app/Http/Controllers/CageController.php",
+        "backend/tests/Feature/FarmCageTest.php"
+      ],
+      "consumes": "ActorScope; MutationExecutor; FarmInput/CageInput/CageUpdate; timezone IANA dan opaque keyset Query.",
+      "produces": "FarmService::get(ActorScope $actor): Farm; update(ActorScope $actor,FarmInput $input,string $key): Ack. CageService::list(ActorScope $actor,array $query): array; get(ActorScope $actor,string $id): Cage; create/update menerima DTO matching operation dan mengembalikan Ack.",
+      "acceptance": "Operator hanya assignment aktif; missing/out-of-scope ->404. Zona farm immutable sesudah operasi/jadwal pertama. Code case-fold conflict tidak overwrite. Semua response mengikuti wrappers kontrak dan as_of server.",
+      "verify": "docker compose run --rm api php artisan test --filter=FarmCageTest",
+      "language": "php",
+      "operations": [
+        "getFarm",
+        "updateFarm",
+        "listCage",
+        "createCage",
+        "getCage",
+        "updateCage"
+      ],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T10",
+      "title": "Kelompok dan rentang populasi",
+      "deps": [
+        "T09"
+      ],
+      "ac": [
+        "AC-05",
+        "AC-06",
+        "AC-31"
+      ],
+      "files": [
+        "backend/app/Flocks/FlockService.php",
+        "backend/app/Flocks/PopulationProjection.php",
+        "backend/app/Http/Controllers/FlockController.php",
+        "backend/tests/Feature/FlockTest.php"
+      ],
+      "consumes": "ActorScope; MutationExecutor; FlockInput/FlockUpdate; population_entries dan date farm.",
+      "produces": "FlockService::list(ActorScope $actor,array $query): array; get(ActorScope $actor,string $id): Flock; create(ActorScope $actor,FlockInput $input,string $key): Ack; update(ActorScope $actor,string $id,FlockUpdate $input,string $key): Ack. PopulationProjection::assertPrefixes(string $flockId,array $replacement): void.",
+      "acceptance": "Inclusive overlap ditolak dalam lock kandang/flock; kelompok aktif atau selesai difilter. Finished tanpa tanggal ->tanggal farm saat ini dengan konfirmasi UI. Sesudah operasi, initial population/placed/cage immutable; edit lain alasan+base_version. Semua prefix populasi berdasarkan tanggal nonnegatif.",
+      "verify": "docker compose run --rm api php artisan test --filter=FlockTest",
+      "language": "php",
+      "operations": [
+        "listFlock",
+        "createFlock",
+        "getFlock",
+        "updateFlock"
+      ],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T11",
+      "title": "Akun dan assignment farm",
+      "deps": [
+        "T09"
+      ],
+      "ac": [
+        "AC-07",
+        "AC-08",
+        "AC-24",
+        "AC-36"
+      ],
+      "files": [
+        "backend/app/FarmAccess/MemberService.php",
+        "backend/app/FarmAccess/MemberPolicy.php",
+        "backend/app/Http/Controllers/MemberController.php",
+        "backend/tests/Feature/MemberTest.php"
+      ],
+      "consumes": "ActorScope; MutationExecutor; MemberInput/MemberUpdate/ResetPasswordInput; lease/session T08.",
+      "produces": "MemberService::list/get sesuai DTO; create(ActorScope $actor,MemberInput $input,string $key): Ack; update(ActorScope $actor,string $id,MemberUpdate $input,string $key): Ack; resetPassword(ActorScope $actor,string $id,ResetPasswordInput $input): void.",
+      "acceptance": "Admin hanya mengelola operator; owner pertama dilindungi. Temporary password min12, edit tidak membawa password; hash sebelum database. Assignment hanya kandang farm; revoke/reset memutus sesi/push aktif; scopeVersion berubah untuk bootstrap reset.",
+      "verify": "docker compose run --rm api php artisan test --filter=MemberTest",
+      "language": "php",
+      "operations": [
+        "listMember",
+        "createMember",
+        "getMember",
+        "updateMember",
+        "resetMemberPassword"
+      ],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T12",
+      "title": "Referensi pakan dan ledger immutable",
+      "deps": [
+        "T10",
+        "T11"
+      ],
+      "ac": [
+        "AC-15",
+        "AC-16",
+        "AC-17",
+        "AC-30"
+      ],
+      "files": [
+        "backend/app/Feed/FeedService.php",
+        "backend/app/Feed/FeedProjection.php",
+        "backend/app/Http/Controllers/FeedController.php",
+        "backend/tests/Feature/FeedTest.php"
+      ],
+      "consumes": "ActorScope; MutationExecutor; FeedTypeInput/FeedTypeUpdate/FeedEntryInput; kg string fixed2.",
+      "produces": "FeedService::createType/updateType/createEntry menerima ActorScope, DTO matching operation, key:string dan return Ack; listTypes/getType/listBalances/listEntries -> matching DTO/wrapper. FeedProjection::apply(string $feedTypeId,string $signedKg,string $sourceKind,string $sourceId,int $version): void.",
+      "acceptance": "Opening sekali dan sebelum pemakaian; receipt kg/harga>0+pemasok; adjustment kg>0+reason tanpa harga/pemasok. Operator boleh referensi/saldo, tidak ledger pembelian. SQL decimal atau integer-string arithmetic; saldo tidak negatif/overflow, zero daily tidak membuat entry penggunaan.",
+      "verify": "docker compose run --rm api php artisan test --filter=FeedTest",
+      "language": "php",
+      "operations": [
+        "listFeedType",
+        "createFeedType",
+        "getFeedType",
+        "updateFeedType",
+        "listBalances",
+        "listEntries",
+        "createEntry"
+      ],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T13",
+      "title": "Create harian atomik",
+      "deps": [
+        "T12"
+      ],
+      "ac": [
+        "AC-13",
+        "AC-26",
+        "AC-27",
+        "AC-28",
+        "AC-30",
+        "AC-31",
+        "AC-32"
+      ],
+      "files": [
+        "backend/app/Daily/CreateDaily.php",
+        "backend/app/Daily/DailyPolicy.php",
+        "backend/app/Http/Controllers/DailyController.php",
+        "backend/tests/Feature/CreateDailyTest.php"
+      ],
+      "consumes": "MutationExecutor::run; FeedProjection::apply; PopulationProjection::assertPrefixes; generated DailyInput/Ack.",
+      "produces": "CreateDaily::handle(ActorScope $actor,DailyInput $input,string $key): Ack; DailyController list/get sesuai OpenAPI. DomainFailure readonly(code:string,status:int,fields:array=[],currentVersion:?int=null).",
+      "acceptance": "Satu full total farm/flock/date; unique lain ->DAILY_ALREADY_EXISTS. Date tidak future, max30hari dan dalam flock; valid referensi meski feed0. Daily/version/feed/population/audit/receipt/change/event satu transaction. null mortalitas tidak dianggap pemeriksaan sehat.",
+      "verify": "docker compose run --rm api php artisan test --filter=CreateDailyTest",
+      "language": "php",
+      "operations": [
+        "listDaily",
+        "createDaily",
+        "getDaily"
+      ],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T14",
+      "title": "Revisi harian dengan kompensasi ledger",
+      "deps": [
+        "T13"
+      ],
+      "ac": [
+        "AC-29",
+        "AC-30",
+        "AC-31",
+        "AC-32"
+      ],
+      "files": [
+        "backend/app/Daily/ReviseDaily.php",
+        "backend/app/Http/Controllers/DailyRevisionController.php",
+        "backend/tests/Feature/ReviseDailyTest.php"
+      ],
+      "consumes": "MutationExecutor; FeedProjection; PopulationProjection; DailyRevisionInput full replacement; generated Ack.",
+      "produces": "ReviseDaily::handle(ActorScope $actor,string $dailyId,DailyRevisionInput $input,string $key): Ack; controller listDailyRevisions ->DailyRevisionPage.",
+      "acceptance": "Owner/admin saja; baseversion compare, reason wajib, flock/date tidak pindah. Lock dua feed UUID order, reverse lama+apply baru immutable, null preservation, prefix historical valid, seluruh efek rollback bila gagal. Versi 2 tidak menimpa snapshot v1.",
+      "verify": "docker compose run --rm api php artisan test --filter=ReviseDailyTest",
+      "language": "php",
+      "operations": [
+        "reviseDaily",
+        "listDailyRevisions"
+      ],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T15",
+      "title": "Bootstrap dan delta ber-watermark",
+      "deps": [
+        "T14"
+      ],
+      "ac": [
+        "AC-33",
+        "AC-34",
+        "AC-36"
+      ],
+      "files": [
+        "backend/app/Sync/SyncService.php",
+        "backend/app/Sync/CursorCodec.php",
+        "backend/app/Http/Controllers/SyncController.php",
+        "backend/tests/Feature/SyncTest.php"
+      ],
+      "consumes": "ChangeWriter commit-ordered seq; ActorScope dan scopeVersion; SyncPage, cursor opaque/signature.",
+      "produces": "SyncService::bootstrap(ActorScope $actor,?string $cursor): SyncPage; changes(ActorScope $actor,?string $cursor): SyncPage; CursorCodec::encode(array $claims): string; decode(string $cursor): array.",
+      "acceptance": "Fixed snapshot watermark, scope/asof, lease15menit, delta dariwatermark sama. Tidak mempage live rows seolah snapshot: versioned change payload/asof reconstruction. Delta30hari; cursor expired/scopechange ->CURSOR_RESET_REQUIRED. Inbox ownuser; feedbalance idfeedtype.",
+      "verify": "docker compose run --rm api php artisan test --filter=SyncTest",
+      "language": "php",
+      "operations": [
+        "bootstrapSync",
+        "pullChanges"
+      ],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T16",
+      "title": "Client HTTP typed dan kuantitas presisi",
+      "deps": [
+        "T03",
+        "T15"
+      ],
+      "ac": [
+        "AC-23",
+        "AC-32",
+        "AC-42"
+      ],
+      "files": [
+        "mobile/lib/core/api/api_client.dart",
+        "mobile/lib/core/api/api_failure.dart",
+        "mobile/lib/core/quantity/kg.dart",
+        "mobile/test/core/api_quantity_test.dart"
+      ],
+      "consumes": "Generated DTO T03; typedef JsonObject=Map<String,Object?>; Ack.fromJson; canonical key UUID dari outbox.",
+      "produces": "ApiClient.request(String operationId,{JsonObject? body,String? idempotencyKey}): Future<JsonObject>; ApiFailure(code,status,fields,retryable,currentVersion,retryAfter); Kg.parse(String text), wire():String, units:BigInt.",
+      "acceptance": "Timeout20detik, endpoint resolver dari operationId, Idempotency-Key dan auth header. Field integer/null tidak float. Replay tidak membuat UUID baru; error uniform tidak stacktrace. Jangan retry blind otomatis POST di HTTP layer.",
+      "verify": "cd mobile && flutter test test/core/api_quantity_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T17",
+      "title": "Store terenkripsi dan lease akun",
+      "deps": [
+        "T16"
+      ],
+      "ac": [
+        "AC-24",
+        "AC-35",
+        "AC-37"
+      ],
+      "files": [
+        "mobile/lib/core/local/partition_store.dart",
+        "mobile/lib/core/local/payload_cipher.dart",
+        "mobile/lib/core/session/offline_lease.dart",
+        "mobile/test/core/partition_lease_test.dart"
+      ],
+      "consumes": "Drift tables pada contracts/schema.json local_store; cryptography AES256GCM + platform secure store; injectable Clock.",
+      "produces": "PartitionId(actorId:String,farmId:String); PartitionStore.unlock(PartitionId id):Future<void>, lock():Future<void>, transaction<T>(Future<T> Function() action):Future<T>; PayloadCipher.encrypt/decrypt(Uint8List bytes,String aad):Future<Uint8List>; OfflineLease.canWrite(DateTime wall,Duration monotonic):bool.",
+      "acceptance": "AAD actor/farm/object/schema, random nonce setiapwrite; key perpartition tidak ada diSQLite/backup. Encrypt payload, cache, foto. Lease24jam; rollbackclock locks; logout/gantiidentity online+confirm, preservesqueue namun keylocked. Reboot/unknownmonotonic memerlukan validasi ulang bila rollback tidak bisa dibuktikan.",
+      "verify": "cd mobile && flutter test test/core/partition_lease_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T18",
+      "title": "Outbox immutable dan pemulihan retry",
+      "deps": [
+        "T17"
+      ],
+      "ac": [
+        "AC-12",
+        "AC-13",
+        "AC-19",
+        "AC-23",
+        "AC-27",
+        "AC-35"
+      ],
+      "files": [
+        "mobile/lib/core/sync/outbox_repository.dart",
+        "mobile/lib/core/sync/sync_worker.dart",
+        "mobile/lib/core/sync/retry_policy.dart",
+        "mobile/test/core/outbox_fault_test.dart"
+      ],
+      "consumes": "PartitionStore.transaction, ApiClient.request; typedef OperationId=String; Intent(operationId,resourceId,endpoint,payload,dependencies,state).",
+      "produces": "OutboxRepository.enqueue(Intent intent):Future<void>; accept(OperationId id,Ack ack):Future<void>; recoverSending():Future<void>; SyncWorker.runOnce():Future<void>; RetryPolicy.next(ApiFailure failure,int attempt):RetryDecision.",
+      "acceptance": "Persist draft+frozenpayload+stablekey transaction sebelum pending UI; fail disk preservesform. Single worker foreground depsorder, sendingrelaunch->pending. ACK localatomic clearsoutbox state onlyafterACK. 429RetryAfter, timeout/5xx jitter2s–5min max5/session,401/403stopblockedauth,409/422needsreview,manualretry noTTL.",
+      "verify": "cd mobile && flutter test test/core/outbox_fault_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T19",
+      "title": "Cache delta dan reset yang aman",
+      "deps": [
+        "T18"
+      ],
+      "ac": [
+        "AC-10",
+        "AC-33",
+        "AC-34"
+      ],
+      "files": [
+        "mobile/lib/core/sync/cache_repository.dart",
+        "mobile/lib/core/sync/bootstrap_coordinator.dart",
+        "mobile/test/core/cache_fault_test.dart"
+      ],
+      "consumes": "PartitionStore; ApiClient; SyncPage; SyncCheckpoint(cursor,scopeVersion,asOf).",
+      "produces": "CacheRepository.applyPage(SyncPage page):Future<void>; replaceAcceptedSnapshot(List<SyncPage> pages):Future<void>; BootstrapCoordinator.refresh():Future<void>.",
+      "acceptance": "Delta payload+cursor atomic; fault leavesoldcheckpoint. Reset reconstructacceptedcache atomically afterallbootstrap pages, preservesdraft+outbox. Scope revocation removesacceptedoutofscope, queueitemneedsreview; dates/as_of stayvisible. References seven-daytaskwindow tidak diasumsikan ada saatcacheempty.",
+      "verify": "cd mobile && flutter test test/core/cache_fault_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T20",
+      "title": "Design native, router dan back behavior",
+      "deps": [
+        "T19"
+      ],
+      "ac": [
+        "AC-25",
+        "AC-39",
+        "AC-40"
+      ],
+      "files": [
+        "mobile/lib/ui/theme/ternava_theme.dart",
+        "mobile/lib/ui/components/status_panel.dart",
+        "mobile/lib/ui/navigation/app_router.dart",
+        "mobile/lib/ui/navigation/role_shell.dart",
+        "mobile/test/ui/navigation_test.dart"
+      ],
+      "consumes": "DESIGN.md;24ids manifest; Session role; native Navigator routes, PopScope untukdirtyform.",
+      "produces": "AppRouter.open(String screenId,{JsonObject? args}):Future<void>; StatusPanel(kind,label,asOf,onRetry); RoleShell(role,child).",
+      "acceptance": "FiraSansfontbundledlicense;48dp target, textscale200%,320/414, statuslabel bukanwarnasaja, reducedmotion. Semua24routeguardrole/object, noAC900previewtoolbar; backdirtycancel/save. Nativecomponents standard bukan HTML embedded.",
+      "verify": "cd mobile && flutter test test/ui/navigation_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T21",
+      "title": "Login dan akun",
+      "deps": [
+        "T20"
+      ],
+      "ac": [
+        "AC-01",
+        "AC-24",
+        "AC-35",
+        "AC-39"
+      ],
+      "files": [
+        "mobile/lib/features/access/login_screen.dart",
+        "mobile/lib/features/access/login_view_model.dart",
+        "mobile/lib/features/access/account_screen.dart",
+        "mobile/lib/features/access/account_view_model.dart",
+        "mobile/test/features/t21_test.dart"
+      ],
+      "consumes": "ApiClient, BootstrapCoordinator, PartitionStore; LoginInput/PasswordInput; role/session responses.",
+      "produces": "LoginViewModel.submit(LoginInput input):Future<void>; AccountViewModel.logout({required bool confirmed}):Future<void>; changePassword(PasswordInput input):Future<void>.",
+      "acceptance": "Loginonlinebootstrapbaruworkspace; firstchangeinline loginstate, logoutpendingconfirm/cancel, sesiexpiredreauthpreservesqueue. Pushpermission optional. Janganpresetusername/password. Passwordfield tidakpersistence; logoutonline locks partition.",
+      "verify": "cd mobile && flutter test test/features/t21_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [
+        "login",
+        "account"
+      ],
+      "manual": false
+    },
+    {
+      "id": "T22",
+      "title": "Hari ini dan formulir harian",
+      "deps": [
+        "T21"
+      ],
+      "ac": [
+        "AC-10",
+        "AC-13",
+        "AC-32",
+        "AC-39"
+      ],
+      "files": [
+        "mobile/lib/features/daily/today_screen.dart",
+        "mobile/lib/features/daily/today_view_model.dart",
+        "mobile/lib/features/daily/daily_form_screen.dart",
+        "mobile/lib/features/daily/daily_form_view_model.dart",
+        "mobile/test/features/t22_test.dart"
+      ],
+      "consumes": "CacheRepository, OutboxRepository; DailyInput/DailyRevisionInput; UUIDgeneratedresourceidonce.",
+      "produces": "TodayViewModel.load():Future<void>; DailyFormViewModel.saveDraft():Future<void>, submit():Future<void>, revise():Future<void>.",
+      "acceptance": "Hariini assignedcache+datedstatus; formblank, explicit0, nullmortality/notchecked, incomplete draftboleh. Sendcomplete freezesintent denganUUID; acceptedreadonly, revisionowneradminbaseversion+reason, diskfailuretidakhapusisian. Buka temuan darifinding bukanauto duplicate.",
+      "verify": "cd mobile && flutter test test/features/t22_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [
+        "today",
+        "daily-form"
+      ],
+      "manual": false
+    },
+    {
+      "id": "T23",
+      "title": "Riwayat dan pusat sinkronisasi",
+      "deps": [
+        "T22"
+      ],
+      "ac": [
+        "AC-14",
+        "AC-23",
+        "AC-39"
+      ],
+      "files": [
+        "mobile/lib/features/daily/daily_history_screen.dart",
+        "mobile/lib/features/daily/daily_history_view_model.dart",
+        "mobile/lib/features/sync/sync_center_screen.dart",
+        "mobile/lib/features/sync/sync_center_view_model.dart",
+        "mobile/test/features/t23_test.dart"
+      ],
+      "consumes": "OutboxRepository,SyncWorker,CacheRepository; historyquery cageId/dateRange/status.",
+      "produces": "DailyHistoryViewModel.filter(JsonObject query):Future<void>; SyncCenterViewModel.retry(String operationId):Future<void>, reauthenticate():Future<void>.",
+      "acceptance": "Historyfilterscage/date mergeslocal+accepted tanpaacceptedtotalscampurpending. Syncitemdetailkey/payloadtidakeditsilent, retryrespectsblockedauth/needsreview, canceldraftconfirmed. ACKreadresource/delta; importedAPIpageopaque.",
+      "verify": "cd mobile && flutter test test/features/t23_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [
+        "daily-history",
+        "sync-center"
+      ],
+      "manual": false
+    },
+    {
+      "id": "T24",
+      "title": "Setup farm",
+      "deps": [
+        "T21"
+      ],
+      "ac": [
+        "AC-02",
+        "AC-39"
+      ],
+      "files": [
+        "mobile/lib/features/access/farm_setup_screen.dart",
+        "mobile/lib/features/access/farm_setup_view_model.dart",
+        "mobile/test/features/t24_test.dart"
+      ],
+      "consumes": "ApiClient,OutboxRepository,SyncWorker; FarmInput/Farm.",
+      "produces": "FarmSetupViewModel.save(FarmInput input):Future<void>.",
+      "acceptance": "Farmnama/lokasi/zona tersimpan server; zonasetelahoperasiimmutable. Masteractions online denganpersistkey/payloadbilaresponseunknown; formawal bukanfiktifprefill. Setup route owner/admin.",
+      "verify": "cd mobile && flutter test test/features/t24_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [
+        "farm-setup"
+      ],
+      "manual": false
+    },
+    {
+      "id": "T25",
+      "title": "Kandang dan form kandang",
+      "deps": [
+        "T24"
+      ],
+      "ac": [
+        "AC-03",
+        "AC-04",
+        "AC-39"
+      ],
+      "files": [
+        "mobile/lib/features/flocks/cage_list_screen.dart",
+        "mobile/lib/features/flocks/cage_list_view_model.dart",
+        "mobile/lib/features/flocks/cage_form_screen.dart",
+        "mobile/lib/features/flocks/cage_form_view_model.dart",
+        "mobile/test/features/t25_test.dart"
+      ],
+      "consumes": "CacheRepository,ApiClient,OutboxRepository; CageInput/CageUpdate/Cage.",
+      "produces": "CageListViewModel.load():Future<void>; CageFormViewModel.save(JsonObject input):Future<void>.",
+      "acceptance": "Assignedlist operator; owner/admincreateeditonline. Code/lokasi/keteranganfieldmatchesDTO; duplicateshowsfieldrecovery. Datedmissing/accepted/stale tidakindikatorproduksisehat.",
+      "verify": "cd mobile && flutter test test/features/t25_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [
+        "cage-list",
+        "cage-form"
+      ],
+      "manual": false
+    },
+    {
+      "id": "T26",
+      "title": "Kelompok aktif dan selesai",
+      "deps": [
+        "T25"
+      ],
+      "ac": [
+        "AC-05",
+        "AC-06",
+        "AC-31",
+        "AC-39"
+      ],
+      "files": [
+        "mobile/lib/features/flocks/flock_list_screen.dart",
+        "mobile/lib/features/flocks/flock_list_view_model.dart",
+        "mobile/lib/features/flocks/flock_form_screen.dart",
+        "mobile/lib/features/flocks/flock_form_view_model.dart",
+        "mobile/test/features/t26_test.dart"
+      ],
+      "consumes": "CacheRepository,OutboxRepository; FlockInput/FlockUpdate; acceptedresourceversion.",
+      "produces": "FlockListViewModel.filter(String status):Future<void>; FlockFormViewModel.save():Future<void>.",
+      "acceptance": "Flockrange/statusfilters; AM02editreason, referensiawaldisabledafteroperations. finisheddateconfirm; invalid/overlaprecovery preservesform; recordhistoricaltidakcampurkelompokbaru.",
+      "verify": "cd mobile && flutter test test/features/t26_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [
+        "flock-list",
+        "flock-form"
+      ],
+      "manual": false
+    },
+    {
+      "id": "T27",
+      "title": "Tim dan membuat akun",
+      "deps": [
+        "T25",
+        "T11"
+      ],
+      "ac": [
+        "AC-07",
+        "AC-08",
+        "AC-24",
+        "AC-39"
+      ],
+      "files": [
+        "mobile/lib/features/access/team_list_screen.dart",
+        "mobile/lib/features/access/team_list_view_model.dart",
+        "mobile/lib/features/access/member_form_screen.dart",
+        "mobile/lib/features/access/member_form_view_model.dart",
+        "mobile/test/features/t27_test.dart"
+      ],
+      "consumes": "ApiClient,MemberInput/MemberUpdate; backendidemreceiptmusthashsecretbutnotstoreplaintext.",
+      "produces": "TeamListViewModel.load():Future<void>; MemberFormViewModel.create(MemberInput input):Future<void>, update(MemberUpdate input):Future<void>.",
+      "acceptance": "AM01createpasswordblank min12; editsandihidden; ownerprotected; adminrolechoiceoperatoronly. No publicsignup; assignmentselectionfarmonly. Password payload onlineexceptionnever persistedlocal; unknowncreate outcome resolvebyusername/serverstatus sebelum retrynewintent.",
+      "verify": "cd mobile && flutter test test/features/t27_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [
+        "team-list",
+        "member-form"
+      ],
+      "manual": false
+    },
+    {
+      "id": "T28",
+      "title": "Saldo dan transaksi pakan",
+      "deps": [
+        "T26",
+        "T12"
+      ],
+      "ac": [
+        "AC-15",
+        "AC-16",
+        "AC-30",
+        "AC-39"
+      ],
+      "files": [
+        "mobile/lib/features/feed/feed_stock_screen.dart",
+        "mobile/lib/features/feed/feed_stock_view_model.dart",
+        "mobile/lib/features/feed/feed_entry_screen.dart",
+        "mobile/lib/features/feed/feed_entry_view_model.dart",
+        "mobile/test/features/t28_test.dart"
+      ],
+      "consumes": "ApiClient,CacheRepository,OutboxRepository; FeedEntryInput/FeedBalance/FeedEntry.",
+      "produces": "FeedStockViewModel.load():Future<void>; FeedEntryViewModel.save(FeedEntryInput input):Future<void>.",
+      "acceptance": "Saldoaccepted+asof+originledger, offlinecachedreadonly. Receiptopeningadjustmentjenisfielddifferent, nosecondusageform; transientonlinekeypreservedforunknownresponse exceptsensitivepassword. Serverrejectnegative preservesform.",
+      "verify": "cd mobile && flutter test test/features/t28_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [
+        "feed-stock",
+        "feed-entry"
+      ],
+      "manual": false
+    },
+    {
+      "id": "T29",
+      "title": "Jenis pakan dan ambang minimum",
+      "deps": [
+        "T28"
+      ],
+      "ac": [
+        "AC-17",
+        "AC-39"
+      ],
+      "files": [
+        "mobile/lib/features/feed/feed_type_form_screen.dart",
+        "mobile/lib/features/feed/feed_type_form_view_model.dart",
+        "mobile/test/features/t29_test.dart"
+      ],
+      "consumes": "OutboxRepository,FeedTypeInput/FeedTypeUpdate; FeedStockViewModel navigation.",
+      "produces": "FeedTypeFormViewModel.save(JsonObject input):Future<void>.",
+      "acceptance": "Inactivejenis tetapreferensihistori; minthreshold kgpresisi, reason/version padaedit; stocks alerttransition bukanrefresh. Noautomatic purchasingrecommendations.",
+      "verify": "cd mobile && flutter test test/features/t29_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [
+        "feed-type-form"
+      ],
+      "manual": false
+    },
+    {
+      "id": "T30",
+      "title": "Tugas SOP, scheduler dan hasil versi",
+      "deps": [
+        "T14",
+        "T11"
+      ],
+      "ac": [
+        "AC-10",
+        "AC-11",
+        "AC-12",
+        "AC-27",
+        "AC-36"
+      ],
+      "files": [
+        "backend/app/Tasks/TaskService.php",
+        "backend/app/Tasks/MaterializeRuns.php",
+        "backend/app/Http/Controllers/TaskController.php",
+        "backend/tests/Feature/TaskTest.php"
+      ],
+      "consumes": "MutationExecutor; TaskTemplateInput/TaskTemplateUpdate/TaskResultInput; assignedcage; farmtimezone.",
+      "produces": "TaskService::createTemplate/updateTemplate/result menerima ActorScope+matchingDTO+key ->Ack; list/get sesuai routes. MaterializeRuns::handle(string $farmId,DateTimeImmutable $start): int.",
+      "acceptance": "once/daily/weekly seven-daywindow; checklist literalmax20stableitemidsnapshot; rununique template/date. Canceled/stale reassignment ->409; hasilnote tidakcompleted, checkbox false tidakauto menjadi true. Tidakgenerated diagnosis/vaccine dosage.",
+      "verify": "docker compose run --rm api php artisan test --filter=TaskTest",
+      "language": "php",
+      "operations": [
+        "listTaskTemplate",
+        "createTaskTemplate",
+        "getTaskTemplate",
+        "updateTaskTemplate",
+        "listTaskRuns",
+        "getTaskRun",
+        "createTaskResult",
+        "listTaskResults"
+      ],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T31",
+      "title": "Tugas dan hasil operator",
+      "deps": [
+        "T30",
+        "T22"
+      ],
+      "ac": [
+        "AC-11",
+        "AC-12",
+        "AC-39"
+      ],
+      "files": [
+        "mobile/lib/features/tasks/task_form_screen.dart",
+        "mobile/lib/features/tasks/task_form_view_model.dart",
+        "mobile/lib/features/tasks/task_detail_screen.dart",
+        "mobile/lib/features/tasks/task_detail_view_model.dart",
+        "mobile/test/features/t31_test.dart"
+      ],
+      "consumes": "CacheRepository,OutboxRepository; TaskTemplateInput/TaskResultInput/TaskRun.",
+      "produces": "TaskFormViewModel.save():Future<void>; TaskDetailViewModel.submit(TaskResultInput input):Future<void>.",
+      "acceptance": "Templateonline; operatorresultofflinepersist, note/completedpisah, SOPcheckboxliteral. Hariini taskcache7days, canceledrunneedsreview. Batchsubmit checkbox tidaktoggleothers; acceptedread-onlyhistory.",
+      "verify": "cd mobile && flutter test test/features/t31_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [
+        "task-form",
+        "task-detail"
+      ],
+      "manual": false
+    },
+    {
+      "id": "T32",
+      "title": "Temuan, assignment dan histori tindakan",
+      "deps": [
+        "T14",
+        "T11"
+      ],
+      "ac": [
+        "AC-18",
+        "AC-19",
+        "AC-20",
+        "AC-27",
+        "AC-36"
+      ],
+      "files": [
+        "backend/app/Incidents/IncidentService.php",
+        "backend/app/Incidents/IncidentPolicy.php",
+        "backend/app/Http/Controllers/IncidentController.php",
+        "backend/tests/Feature/IncidentTest.php"
+      ],
+      "consumes": "ActorScope,MutationExecutor; IncidentInput/IncidentAssignmentInput/IncidentActionInput.",
+      "produces": "IncidentService::create/assign/action menerimaActorScope+matchingDTO+key ->Ack; list/get/listActions ->matchingwrapper; versionsbasecompare.",
+      "acceptance": "Open->in_progress->closed; close noteswajib; closedimmutable. Operatorassigned atau MA actions; observationmanualno medicalrecommendation. Textaccept tidakdependentfoto; source_dailyrecordhanya validacceptedobject dalamfarm.",
+      "verify": "docker compose run --rm api php artisan test --filter=IncidentTest",
+      "language": "php",
+      "operations": [
+        "listIncidents",
+        "createIncident",
+        "getIncident",
+        "assignIncident",
+        "createIncidentAction",
+        "listIncidentActions"
+      ],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T33",
+      "title": "Daftar dan catatan temuan",
+      "deps": [
+        "T32",
+        "T23"
+      ],
+      "ac": [
+        "AC-18",
+        "AC-19",
+        "AC-39"
+      ],
+      "files": [
+        "mobile/lib/features/incidents/incident_list_screen.dart",
+        "mobile/lib/features/incidents/incident_list_view_model.dart",
+        "mobile/lib/features/incidents/incident_form_screen.dart",
+        "mobile/lib/features/incidents/incident_form_view_model.dart",
+        "mobile/test/features/t33_test.dart"
+      ],
+      "consumes": "OutboxRepository,CacheRepository; IncidentInput,photoqueueparentdependency.",
+      "produces": "IncidentListViewModel.filter(JsonObject query):Future<void>; IncidentFormViewModel.saveDraft():Future<void>, submit():Future<void>.",
+      "acceptance": "Filterscope/status/assignment; textdraftoffline tahanrelaunch; optionalphoto statusseparate; timestampobservationUTCwithfarmdisplay. Observefindingnotautosaysdisease; newformblank, damagedphoto error actionable.",
+      "verify": "cd mobile && flutter test test/features/t33_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [
+        "incident-list",
+        "incident-form"
+      ],
+      "manual": false
+    },
+    {
+      "id": "T34",
+      "title": "Detail dan tindakan temuan",
+      "deps": [
+        "T33"
+      ],
+      "ac": [
+        "AC-20",
+        "AC-22",
+        "AC-39"
+      ],
+      "files": [
+        "mobile/lib/features/incidents/incident_detail_screen.dart",
+        "mobile/lib/features/incidents/incident_detail_view_model.dart",
+        "mobile/test/features/t34_test.dart"
+      ],
+      "consumes": "OutboxRepository,ApiClient; Incident/IncidentActionInput/IncidentAssignmentInput.",
+      "produces": "IncidentDetailViewModel.assign(IncidentAssignmentInput input):Future<void>, act(IncidentActionInput input):Future<void>.",
+      "acceptance": "Role/assignedactionbuttons; versionconflict reloadpreservesnotes; closedreadonly; closewithnotes; inaccessibledeeplinkrecoverybacktoinbox/list. Actionhistoryactor+timestamp.",
+      "verify": "cd mobile && flutter test test/features/t34_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [
+        "incident-detail"
+      ],
+      "manual": false
+    },
+    {
+      "id": "T35",
+      "title": "Foto privat sesudah parent ACK",
+      "deps": [
+        "T32"
+      ],
+      "ac": [
+        "AC-19",
+        "AC-36",
+        "AC-37"
+      ],
+      "files": [
+        "backend/app/Attachments/AttachmentService.php",
+        "backend/app/Attachments/PhotoSanitizer.php",
+        "backend/app/Http/Controllers/AttachmentController.php",
+        "backend/tests/Feature/AttachmentTest.php"
+      ],
+      "consumes": "ActorScope,MutationExecutor; AttachmentInput multipart+rawbyteshash; accepted daily/incident parent.",
+      "produces": "AttachmentService::upload(ActorScope $actor,AttachmentInput $input,string $key,UploadedFile $file): Ack; list(ActorScope $actor,array $query):array; download(ActorScope $actor,string $id):BinaryFileResponse; PhotoSanitizer::sanitize(UploadedFile $file):string.",
+      "acceptance": "JPEG/PNG realdecode<=2MiB,max3parent lock; hash originalbytes beforeEXIFstrip, private storageACL everydownload. RejectfakeMIME/corrupt/decompressionoversize; stagingfile cleanup aftertransactionfailure. Filecommitcrash reconciler orphan cleanup; textneverrollback.",
+      "verify": "docker compose run --rm api php artisan test --filter=AttachmentTest",
+      "language": "php",
+      "operations": [
+        "uploadAttachment",
+        "listAttachments",
+        "downloadAttachment"
+      ],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T36",
+      "title": "Antrean foto terenkripsi di perangkat",
+      "deps": [
+        "T35",
+        "T33"
+      ],
+      "ac": [
+        "AC-19",
+        "AC-23",
+        "AC-37"
+      ],
+      "files": [
+        "mobile/lib/core/attachments/photo_repository.dart",
+        "mobile/lib/core/attachments/photo_worker.dart",
+        "mobile/test/core/photo_fault_test.dart"
+      ],
+      "consumes": "PayloadCipher,PartitionStore,OutboxRepository; parentAck, originalhash,validatedfilemetadata.",
+      "produces": "PhotoRepository.add(String parentKind,String parentId,Uint8List bytes):Future<String>; PhotoWorker.runOnce():Future<void>.",
+      "acceptance": "Enqueueencryptpersistbeforestatus; max3/MIMEsize local dan server. Parent acceptedfirst, failedimage keepsrecovery/status, stablekey/hashbytesretry; permission/cameradenied formtextnotlost. Relogin correctpartitionunlock.",
+      "verify": "cd mobile && flutter test test/core/photo_fault_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T37",
+      "title": "Inbox durable, event worker dan push optional",
+      "deps": [
+        "T32",
+        "T35"
+      ],
+      "ac": [
+        "AC-17",
+        "AC-22",
+        "AC-38",
+        "AC-45"
+      ],
+      "files": [
+        "backend/app/Notifications/DeliverEvent.php",
+        "backend/app/Notifications/PushService.php",
+        "backend/app/Http/Controllers/InboxController.php",
+        "backend/app/Http/Controllers/PushController.php",
+        "backend/tests/Feature/NotificationTest.php"
+      ],
+      "consumes": "notification_outbox,inboxuniqueevent/user; ActorScope; PushDeviceInput; workerDBqueue.",
+      "produces": "DeliverEvent::handle(string $eventId):void; PushService::send(string $userId,string $eventId):void; inboxlist/read and pushregister/unregister matchingwireDTO.",
+      "acceptance": "Inboxpersistfirst; FCMgenericIDpayloadnophysicalobservations. Stockthresholdonlycrossingdedup; retrymax5<=15min, tokeninvaliddeactivate, failuredoesnotrollbackinbox/business. Pushpermissiondenied normalstate; workerheartbeat.",
+      "verify": "docker compose run --rm api php artisan test --filter=NotificationTest",
+      "language": "php",
+      "operations": [
+        "listInbox",
+        "readInbox",
+        "registerPush",
+        "unregisterPush"
+      ],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T38",
+      "title": "Ringkasan accepted dan laporan CSV",
+      "deps": [
+        "T37"
+      ],
+      "ac": [
+        "AC-09",
+        "AC-14",
+        "AC-21",
+        "AC-32",
+        "AC-36",
+        "AC-41"
+      ],
+      "files": [
+        "backend/app/Insights/ReportService.php",
+        "backend/app/Insights/CsvWriter.php",
+        "backend/app/Http/Controllers/InsightsController.php",
+        "backend/tests/Feature/ReportTest.php"
+      ],
+      "consumes": "ActorScope,acceptedDBsnapshot; Dashboard/Report; activeflockdaterangehistorical; farmtimezone.",
+      "produces": "ReportService::dashboard(ActorScope $actor):Dashboard; operations(ActorScope $actor,string $from,string $to):Report; CsvWriter::write(Report $report,resource $stream):void.",
+      "acceptance": "MAreports only; max183hari; expectedflockdates termasuk historicalfinished. Pendingtidakdihitung, missingnull/zeroacceptedbeda, allmissingtotalnull; repeatablereadsnapshotasof. CSV UTF8 RFC4180 quote+formulaescaped, timezoneexplicit; no profitFCRclaim.",
+      "verify": "docker compose run --rm api php artisan test --filter=ReportTest",
+      "language": "php",
+      "operations": [
+        "dashboard",
+        "operationsReport",
+        "exportOperationsReport"
+      ],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T39",
+      "title": "Dashboard pemilik dan laporan",
+      "deps": [
+        "T38",
+        "T29"
+      ],
+      "ac": [
+        "AC-09",
+        "AC-21",
+        "AC-32",
+        "AC-39"
+      ],
+      "files": [
+        "mobile/lib/features/insights/home_screen.dart",
+        "mobile/lib/features/insights/home_view_model.dart",
+        "mobile/lib/features/insights/reports_screen.dart",
+        "mobile/lib/features/insights/reports_view_model.dart",
+        "mobile/test/features/t39_test.dart"
+      ],
+      "consumes": "ApiClient,CacheRepository; Dashboard/Report.",
+      "produces": "HomeViewModel.refresh():Future<void>; ReportsViewModel.load(String from,String to):Future<void>, exportCsv():Future<void>.",
+      "acceptance": "Statuskelengkapan/date first; attentionlinksACL, accepted/stalesnapshot/asof. Reportperiodvalidation183hari, exportloading/failure preservesfilters, formulaescapedserverfile. Cachedsnapshotoffline jelas, missingtidakrender0.",
+      "verify": "cd mobile && flutter test test/features/t39_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [
+        "home",
+        "reports"
+      ],
+      "manual": false
+    },
+    {
+      "id": "T40",
+      "title": "Inbox dan pembukaan link berizin",
+      "deps": [
+        "T39",
+        "T34",
+        "T37"
+      ],
+      "ac": [
+        "AC-22",
+        "AC-24",
+        "AC-38",
+        "AC-39"
+      ],
+      "files": [
+        "mobile/lib/features/insights/inbox_screen.dart",
+        "mobile/lib/features/insights/inbox_view_model.dart",
+        "mobile/test/features/t40_test.dart"
+      ],
+      "consumes": "ApiClient,AppRouter,CacheRepository; Inbox; pushregistrationsettingonAccount.",
+      "produces": "InboxViewModel.load():Future<void>, open(String itemId):Future<void>, markRead(String itemId):Future<void>.",
+      "acceptance": "Inboxownuser unread/readidempotent, allowedtargetresolvedserver beforeopen; deleted/revokedtargetshowsbackrecovery, FCMdisabledinboxworks. Deep linksrouteids only, noarbitraryURLfetch.",
+      "verify": "cd mobile && flutter test test/features/t40_test.dart",
+      "language": "dart",
+      "operations": [],
+      "screens": [
+        "inbox"
+      ],
+      "manual": false
+    },
+    {
+      "id": "T41",
+      "title": "Abuse limits, retensi dan deletion journal",
+      "deps": [
+        "T40"
+      ],
+      "ac": [
+        "AC-36",
+        "AC-41",
+        "AC-46"
+      ],
+      "files": [
+        "backend/app/Http/Middleware/RequestLimits.php",
+        "backend/app/Console/Commands/ApplyRetention.php",
+        "backend/app/Console/Commands/CloseFarm.php",
+        "backend/tests/Feature/HardeningRetentionTest.php",
+        "docs/runbook/retention.md"
+      ],
+      "consumes": "operations-security.md limits/retention; everyrouteserverACL; receiptminimalhashACKtombstone.",
+      "produces": "ApplyRetention::handle():int; CloseFarm::handle():int; RequestLimits::handle(Request $request,Closure $next):Response.",
+      "acceptance": "Login5/minusernameIP+30/minIP/auth120/upload10/export3; JSON64KiB/query5s/tx10s/DB30max50. Business730d/photos180/inbox90/delta30/log14/backup30; ledgerconsistent archive ratherthanreferentialbreak. Receiptactivefarmminimaldedup retained; closefarmexport/pseudonymization+journalreapplyonrestore. No remote URLfetch API.",
+      "verify": "docker compose run --rm api php artisan test --filter=HardeningRetentionTest",
+      "language": "php",
+      "operations": [],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T42",
+      "title": "Uji native seluruh state dan flow offline",
+      "deps": [
+        "T41",
+        "T36",
+        "T31"
+      ],
+      "ac": [
+        "AC-01",
+        "AC-10",
+        "AC-12",
+        "AC-13",
+        "AC-19",
+        "AC-23",
+        "AC-24",
+        "AC-25",
+        "AC-33",
+        "AC-34",
+        "AC-35",
+        "AC-39",
+        "AC-40"
+      ],
+      "files": [
+        "mobile/integration_test/operator_flow_test.dart",
+        "mobile/integration_test/account_isolation_test.dart",
+        "mobile/test/ui/screen_states_test.dart",
+        "docs/evidence/android-uat.md",
+        "docs/user-guide/README.md"
+      ],
+      "consumes": "24screen/132state source manifest; compiledFlutter Android device; fakefixture builddebugseparatefromrelease.",
+      "produces": "Evidence withdeviceOS/ABI/buildcommit/screenshots/AC/outcome; everymanifeststate recovery; nativeTalkBackmanualchecklist.",
+      "acceptance": "320/414dp text200%,48dp,reducedmotion,contrast4.5:1. Modepesawat/relaunch/storagefault/timeoutaftercommit/accountswitch/deniedpush/camera. Unit widgettidakmenggantikan TalkBackperangkat nyata. Userguide role/task/stock/sync recovery memakai realapplabels.",
+      "verify": "cd mobile && flutter test test/ui/screen_states_test.dart; flutter test integration_test -d DEVICE_ID",
+      "language": "dart",
+      "operations": [],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T43",
+      "title": "Backup, restore dan metrik gangguan",
+      "deps": [
+        "T41"
+      ],
+      "ac": [
+        "AC-43",
+        "AC-45",
+        "AC-46"
+      ],
+      "files": [
+        "ops/backup.sh",
+        "ops/restore.sh",
+        "ops/health-monitor.py",
+        "backend/app/Console/Commands/Heartbeat.php",
+        "docs/runbook/restore.md"
+      ],
+      "consumes": "Private uploads+Postgres+encryptionkeyssecuredseparately; deletionjournal; functionalprojectowner/farmadmincontacts dariAC47.",
+      "produces": "Backup encrypted(snapshot+uploads+manifest+checksum); restore isolatedDB+privatefiles+reapplyjournal; worker/schedulerheartbeatJSON/metrics.",
+      "acceptance": "Dailybackupoffhost30d untukpilot,RPO24hRTO4h nyata diukur. Restore counts/FK/ledger/fileACL/logins. queueoldest5min/heartbeat3min/backup26h/disk80%/5xx5%5min alerts; FCMdegradedpisahdariAPI. SLO99.5%bulanan termasukmaintenance baru diukur sesudahservicejalan.",
+      "verify": "bash ops/backup.sh --dry-run; bash ops/restore.sh --verify-isolated; python3 ops/health-monitor.py --self-check",
+      "language": "bash",
+      "operations": [],
+      "screens": [],
+      "manual": true
+    },
+    {
+      "id": "T44",
+      "title": "Concurrency dan benchmark kapasitas",
+      "deps": [
+        "T42",
+        "T43"
+      ],
+      "ac": [
+        "AC-26",
+        "AC-27",
+        "AC-28",
+        "AC-29",
+        "AC-30",
+        "AC-31",
+        "AC-34",
+        "AC-44"
+      ],
+      "files": [
+        "ops/load/seed.php",
+        "ops/load/benchmark.js",
+        "backend/tests/Feature/ConcurrentMutationTest.php",
+        "docs/evidence/load.md"
+      ],
+      "consumes": "Postgresreal,HTTP20clients,2vCPU4GiBresourcecap; generated100kdailyfixtures, no productiondataset.",
+      "produces": "Concurrencyevidence duplicateeffects0, transaction rollback atallfaultpoints; k6summary p95read500ms/write1s,error<1%,15min.",
+      "acceptance": "20identicalsamekey, twooperatorsdailydiffkeys, consumptions270+270against300, twoadminbasev1, twofeedtyperevision, bootstrapwritesinterleaved. Assertions seluruhledger/popu/event/receipts; latencyclaims harus dariHTTPbenchmark.",
+      "verify": "docker compose run --rm api php artisan test --filter=ConcurrentMutationTest; k6 run ops/load/benchmark.js",
+      "language": "javascript",
+      "operations": [],
+      "screens": [],
+      "manual": false
+    },
+    {
+      "id": "T45",
+      "title": "CI, audit dan artefak release",
+      "deps": [
+        "T44"
+      ],
+      "ac": [
+        "AC-42"
+      ],
+      "files": [
+        "scripts/audit_mobile_dependencies.py",
+        ".github/workflows/ci.yml",
+        "mobile/android/app/build.gradle.kts",
+        "ops/release.sh",
+        "docs/evidence/release.md"
+      ],
+      "consumes": "T01versionmanifest; composer.lock/pubspec.lock,allrealAPI/DTOfixtures; signingkeyoutsideGit; cleanGitmetadata.",
+      "produces": "SignedAPK checksum/certificate,backendimagedigest,SPDXorCycloneDXSBOM; passingremotecI commitandlockeddependencyprovenance.",
+      "acceptance": "Fullvalidator/genDTOdiff/Pint/PHPStan/tests/pub&Composeraudit+gitleaksstaged/history/branchprotectrequiredchecks. Debugfixtures excludedrelease; nosigningpasswordinrepo. Forwardmigration/rollbackbackupdrill; releasefailuredoesnotpublishautomatically.",
+      "verify": "bash scripts/local-ci.sh --full; bash ops/release.sh --verify-only",
+      "language": "bash",
+      "operations": [],
+      "screens": [],
+      "manual": true
+    },
+    {
+      "id": "T46",
+      "title": "Validasi farm dan penerimaan pilot",
+      "deps": [
+        "T45"
+      ],
+      "ac": [
+        "AC-47"
+      ],
+      "files": [
+        "docs/pilot/farm-validation.md",
+        "docs/pilot/device-matrix.md",
+        "docs/pilot/operations-agreement.md",
+        "docs/pilot/uat-signoff.md"
+      ],
+      "consumes": "Spec47AC; all release/restore/native/loadevidence; farmer/operatorparticipationbaruadaketikapilotdisiapkan.",
+      "produces": "Recordedfactsfarm/workflow/devices/provider/budget/contacts/retention; ownerUATsignoff sebelum deploymentdata nyata.",
+      "acceptance": "Temukanfarmnyata, validasitotalharian vsputaran,gudang,roles,corrections,timezone/perangkat; bandingkanwaktuinput/kelengkapandenganbaselinefarm tanpa klaimmeningkatanproduksi. Pilihprovider+costapproved; functionalownersactualcontacts; training/recoverydrilldanUATowner. Perubahanrulingmaterial kembaliamendmentspec/plan sebelumbuild/deploy.",
+      "verify": "Review docs/pilot/uat-signoff.md terhadap AC-47; hasil PASS hanya bila bukti farm nyata dan persetujuan owner ada.",
+      "language": "text",
+      "operations": [],
+      "screens": [],
+      "manual": true
+    }
+  ]
+}
