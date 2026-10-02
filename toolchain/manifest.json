@@ -1,0 +1,36 @@
+{
+  "project": "TERNAVA",
+  "generated_at": "2026-10-01T08:00:00Z",
+  "toolchain": {
+    "flutter": {
+      "framework_version": "3.47.4",
+      "channel": "stable",
+      "dart_sdk_version": "3.13.3",
+      "engine_revision": "06a2e2a110089dff50fe635cffd2a61e1b24fbcd",
+      "framework_revision": "9584c6713b324636289d067944a46fd6b49df14b"
+    },
+    "php": {
+      "cli_version": "8.5.10",
+      "target_compat": "8.4+"
+    },
+    "composer": {
+      "version": "2.10.3"
+    },
+    "postgresql": {
+      "target_version": "18",
+      "image": "postgres:18-alpine"
+    },
+    "docker": {
+      "version": "29.8.1"
+    },
+    "git": {
+      "repository_initialized": true,
+      "hooks_path": ".githooks"
+    }
+  },
+  "constraints": {
+    "ac": "AC-42",
+    "offline_lease_hours": 24,
+    "max_export_days": 183
+  }
+}
