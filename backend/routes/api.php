@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CageController;
+use App\Http\Controllers\DailyController;
 use App\Http\Controllers\FarmController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\FlockController;
@@ -8,8 +9,6 @@ use App\Http\Controllers\HealthController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\SessionController;
 use App\Http\Middleware\RequirePasswordChange;
-use App\Support\WireValidator;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health/live', [HealthController::class, 'live'])->name('api.health.live');
@@ -62,15 +61,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/feed-entries', [FeedController::class, 'listEntries'])->name('feed_entries.index');
         Route::post('/feed-entries', [FeedController::class, 'storeEntry'])->name('feed_entries.store');
 
-        Route::post('/daily-records', function (Request $request) {
-            $feedKg = $request->input('feed_kg');
-            WireValidator::requireKg($feedKg, 'feed_kg');
-
-            return response()->json([
-                'data' => [
-                    'status' => 'accepted',
-                ],
-            ]);
-        });
+        // Daily records endpoints
+        Route::get('/daily-records', [DailyController::class, 'index'])->name('daily_records.index');
+        Route::post('/daily-records', [DailyController::class, 'store'])->name('daily_records.store');
+        Route::get('/daily-records/{id}', [DailyController::class, 'show'])->name('daily_records.show');
     });
 });

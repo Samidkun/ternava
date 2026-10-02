@@ -3,29 +3,37 @@
 namespace Tests\Feature;
 
 use App\Contracts\Dto\DailyInput;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\Support\Scenario;
 use Tests\TestCase;
 
 class ContractTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_wire_quantity_rejects_float(): void
     {
-        $f = Scenario::layerFarm();
-        $response = $this->actingAs($f['operator'])->postJson(
-            '/api/v1/daily-records',
-            array_merge($f['daily'], ['feed_kg' => 12.5])
-        );
+        $f = Scenario::persist(Scenario::layerFarm());
+        $response = $this->actingAs($f['operator'])
+            ->withHeader('Idempotency-Key', (string) Str::uuid())
+            ->postJson(
+                '/api/v1/daily-records',
+                array_merge($f['daily'], ['feed_kg' => 12.5])
+            );
 
         $response->assertStatus(422);
     }
 
     public function test_wire_quantity_accepts_valid_two_decimal_string(): void
     {
-        $f = Scenario::layerFarm();
-        $response = $this->actingAs($f['operator'])->postJson(
-            '/api/v1/daily-records',
-            array_merge($f['daily'], ['feed_kg' => '12.50'])
-        );
+        $f = Scenario::persist(Scenario::layerFarm());
+        $response = $this->actingAs($f['operator'])
+            ->withHeader('Idempotency-Key', (string) Str::uuid())
+            ->postJson(
+                '/api/v1/daily-records',
+                array_merge($f['daily'], ['feed_kg' => '12.50'])
+            );
 
         $response->assertStatus(200);
     }
