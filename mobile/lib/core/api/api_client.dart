@@ -60,6 +60,15 @@ class ApiClient {
     'getTaskRun': (method: 'GET', path: '/api/v1/task-runs/{id}'),
     'createTaskResult': (method: 'POST', path: '/api/v1/task-runs/{id}/results'),
     'listTaskResults': (method: 'GET', path: '/api/v1/task-runs/{id}/results'),
+    'listIncidents': (method: 'GET', path: '/api/v1/incidents'),
+    'createIncident': (method: 'POST', path: '/api/v1/incidents'),
+    'getIncident': (method: 'GET', path: '/api/v1/incidents/{id}'),
+    'assignIncident': (method: 'POST', path: '/api/v1/incidents/{id}/assignment'),
+    'createIncidentAction': (method: 'POST', path: '/api/v1/incidents/{id}/actions'),
+    'listIncidentActions': (method: 'GET', path: '/api/v1/incidents/{id}/actions'),
+    'uploadAttachment': (method: 'POST', path: '/api/v1/attachments'),
+    'listAttachments': (method: 'GET', path: '/api/v1/attachments'),
+    'downloadAttachment': (method: 'GET', path: '/api/v1/attachments/{id}/download'),
   };
 
   Future<JsonObject> request(

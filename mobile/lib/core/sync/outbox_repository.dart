@@ -76,6 +76,32 @@ class Intent {
     );
   }
 
+  factory Intent.incident(
+    JsonObject payload,
+    String idempotencyKey,
+  ) {
+    final resourceId = (payload['id'] as String?) ?? idempotencyKey;
+    return Intent(
+      id: idempotencyKey,
+      resourceId: resourceId,
+      operationId: 'createIncident',
+      payload: payload,
+    );
+  }
+
+  factory Intent.incidentAction(
+    String incidentId,
+    JsonObject payload,
+    String idempotencyKey,
+  ) {
+    return Intent(
+      id: idempotencyKey,
+      resourceId: incidentId,
+      operationId: 'createIncidentAction',
+      payload: payload,
+    );
+  }
+
   Intent copyWith({
     IntentState? state,
     int? attempts,
@@ -183,4 +209,10 @@ class OutboxRepository {
   }
 
   JsonObject? getDraft(String resourceId) => _drafts[resourceId];
+
+  Future<void> saveDraft(String resourceId, JsonObject payload) async {
+    await store.transaction(() async {
+      _drafts[resourceId] = payload;
+    });
+  }
 }
