@@ -5,6 +5,8 @@ namespace Tests\Support;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Testing\TestResponse;
+use Tests\TestCase;
 
 class Scenario
 {
@@ -379,5 +381,69 @@ class Scenario
             'role' => 'owner',
             'active' => true,
         ];
+    }
+
+    /**
+     * Submit a daily record through the API as the farm owner and return the
+     * replayable intent (key + payload + accepted record id).
+     *
+     * @param  array<string, mixed>  $f  persisted scenario
+     * @return array{key: string, payload: array<string, mixed>, record_id: string}
+     */
+    public static function acceptedDailyIntent(array $f, TestCase $test): array
+    {
+        $key = (string) str()->uuid();
+        $payload = $f['daily'];
+
+        $res = $test->actingAs($f['owner'])
+            ->withHeader('Idempotency-Key', $key)
+            ->postJson('/api/v1/daily-records', $payload);
+
+        $res->assertOk();
+
+        return [
+            'key' => $key,
+            'payload' => $payload,
+            'record_id' => (string) $res->json('data.id'),
+        ];
+    }
+
+    /**
+     * Replay a previously accepted intent with the same idempotency key.
+     *
+     * @param  array<string, mixed>  $f
+     * @param  array{key: string, payload: array<string, mixed>, record_id: string}  $intent
+     */
+    public static function replayIntent(TestCase $test, array $f, array $intent): TestResponse
+    {
+        return $test->actingAs($f['owner'])
+            ->withHeader('Idempotency-Key', $intent['key'])
+            ->postJson('/api/v1/daily-records', $intent['payload']);
+    }
+
+    /**
+     * Age every operational row backwards by N days so retention windows apply.
+     */
+    public static function ageOperationalRows(int $days): void
+    {
+        $ts = now()->subDays($days);
+
+        foreach (['daily_records', 'feed_entries', 'population_entries', 'daily_revisions',
+            'attachments', 'inbox_items', 'sync_changes', 'audit_events', 'idempotency_receipts'] as $table) {
+            if ($table === 'daily_records') {
+                DB::table($table)->update(['accepted_at' => $ts, 'updated_at' => $ts]);
+            } elseif ($table === 'inbox_items') {
+                DB::table($table)->update(['updated_at' => $ts]);
+            } elseif ($table === 'sync_changes' || $table === 'audit_events' || $table === 'idempotency_receipts') {
+                DB::table($table)->update(['accepted_at' => $ts]);
+            } else {
+                DB::table($table)->update(['accepted_at' => $ts]);
+            }
+        }
+
+        // Business dates for daily records shift with the aged timestamp.
+        DB::table('daily_records')->update(['business_date' => $ts->format('Y-m-d')]);
+        DB::table('feed_entries')->update(['business_date' => $ts->format('Y-m-d')]);
+        DB::table('population_entries')->update(['business_date' => $ts->format('Y-m-d')]);
     }
 }

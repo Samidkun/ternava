@@ -16,6 +16,7 @@ use App\Http\Controllers\PushController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\SyncController;
 use App\Http\Controllers\TaskController;
+use App\Http\Middleware\RequestLimits;
 use App\Http\Middleware\RequirePasswordChange;
 use Illuminate\Support\Facades\Route;
 
@@ -28,7 +29,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/auth/login', [SessionController::class, 'login'])->name('auth.login');
 
     // Authenticated session & business endpoints
-    Route::middleware(['auth:sanctum', RequirePasswordChange::class])->group(function () {
+    Route::middleware(['auth:sanctum', RequirePasswordChange::class, RequestLimits::class])->group(function () {
         Route::get('/session', [SessionController::class, 'session'])->name('session.show');
         Route::get('/auth/session', [SessionController::class, 'session'])->name('auth.session');
 
@@ -99,7 +100,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/incidents/{id}/actions', [IncidentController::class, 'listActions'])->name('incidents.actions.index');
 
         // Attachment endpoints (private photos)
-        Route::post('/attachments', [AttachmentController::class, 'store'])->name('attachments.store');
+        Route::post('/attachments', [AttachmentController::class, 'store'])
+            ->middleware('throttle:uploads')
+            ->name('attachments.store');
         Route::get('/attachments', [AttachmentController::class, 'index'])->name('attachments.index');
         Route::get('/attachments/{id}/download', [AttachmentController::class, 'download'])->name('attachments.download');
 
@@ -112,6 +115,8 @@ Route::prefix('v1')->group(function () {
         // Insights endpoints
         Route::get('/dashboard', [InsightsController::class, 'dashboard'])->name('insights.dashboard');
         Route::get('/reports/operations', [InsightsController::class, 'operations'])->name('insights.operations');
-        Route::get('/reports/operations.csv', [InsightsController::class, 'export'])->name('insights.operations.export');
+        Route::get('/reports/operations.csv', [InsightsController::class, 'export'])
+            ->middleware('throttle:exports')
+            ->name('insights.operations.export');
     });
 });
