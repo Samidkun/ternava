@@ -50,23 +50,45 @@ final class MutationExecutor
         }
 
         // 3. Execute write in transaction
-        return DB::transaction(function () use ($actor, $key, $method, $path, $hash, $write) {
-            /** @var Ack $ack */
-            $ack = $write();
+        try {
+            return DB::transaction(function () use ($actor, $key, $method, $path, $hash, $write) {
+                /** @var Ack $ack */
+                $ack = $write();
 
-            DB::table('idempotency_receipts')->insert([
-                'id' => (string) Str::uuid(),
-                'farm_id' => $actor->farmId,
-                'actor_id' => $actor->actorId,
-                'operation_id' => $key,
-                'request_hash' => $hash,
-                'method' => strtoupper($method),
-                'path' => $path,
-                'ack' => json_encode($ack->toArray()),
-                'accepted_at' => now(),
-            ]);
+                DB::table('idempotency_receipts')->insert([
+                    'id' => (string) Str::uuid(),
+                    'farm_id' => $actor->farmId,
+                    'actor_id' => $actor->actorId,
+                    'operation_id' => $key,
+                    'request_hash' => $hash,
+                    'method' => strtoupper($method),
+                    'path' => $path,
+                    'ack' => json_encode($ack->toArray()),
+                    'accepted_at' => now(),
+                ]);
 
-            return $ack;
-        }, 3);
+                return $ack;
+            }, 3);
+        } catch (\Throwable $e) {
+            // A concurrent request carrying the SAME key may have committed
+            // between our receipt lookup (step 2) and now. If its receipt is
+            // visible, this request is a replay: return the ORIGINAL ACK
+            // rather than leaking the unique-constraint / business conflict
+            // that the race produced. (AC-27: replays always yield the ACK.)
+            $existing = DB::table('idempotency_receipts')
+                ->where('farm_id', $actor->farmId)
+                ->where('actor_id', $actor->actorId)
+                ->where('operation_id', $key)
+                ->first();
+
+            if ($existing !== null && $existing->request_hash === $hash) {
+                /** @var array<string, mixed> $rawAck */
+                $rawAck = json_decode((string) $existing->ack, true);
+
+                return Ack::fromArray($rawAck);
+            }
+
+            throw $e;
+        }
     }
 }

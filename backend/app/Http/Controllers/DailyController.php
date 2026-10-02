@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Daily\CreateDaily;
 use App\Support\ActorScope;
+use App\Sync\CursorCodec;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -55,6 +56,26 @@ class DailyController extends Controller
     {
         $actor = $this->getActor($request);
 
+        // Contract (openapi listDaily): limit 1..100 (default 50), opaque
+        // cursor, and from/to date filters. Without these the endpoint returned
+        // every row in the farm (the T44 load benchmark caught it).
+        $validated = $request->validate([
+            'limit' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'cursor' => ['nullable', 'string', 'min:1', 'max:2048'],
+            'from' => ['nullable', 'date'],
+            'to' => ['nullable', 'date'],
+            'flock_id' => ['nullable', 'string', 'uuid'],
+            'cage_id' => ['nullable', 'string', 'uuid'],
+        ]);
+
+        $limit = (int) ($validated['limit'] ?? 50);
+
+        // Cursor binds the query shape so a page cannot silently change scope.
+        $from = $validated['from'] ?? null;
+        $to = $validated['to'] ?? null;
+        $flockId = $validated['flock_id'] ?? null;
+        $cageId = $validated['cage_id'] ?? null;
+
         $q = DB::table('daily_records')
             ->join('flocks', 'daily_records.flock_id', '=', 'flocks.id')
             ->where('daily_records.farm_id', $actor->farmId);
@@ -63,25 +84,78 @@ class DailyController extends Controller
             $q->whereIn('flocks.cage_id', $actor->cageIds);
         }
 
-        if ($request->has('flock_id')) {
-            $q->where('daily_records.flock_id', $request->query('flock_id'));
+        if ($cageId !== null) {
+            $q->where('flocks.cage_id', $cageId);
         }
 
-        if ($request->has('from_date')) {
-            $q->where('daily_records.business_date', '>=', $request->query('from_date'));
+        if ($flockId !== null) {
+            $q->where('daily_records.flock_id', $flockId);
         }
 
-        if ($request->has('to_date')) {
-            $q->where('daily_records.business_date', '<=', $request->query('to_date'));
+        if ($from !== null) {
+            $q->where('daily_records.business_date', '>=', $from);
         }
 
-        $records = $q->select('daily_records.*')
-            ->orderByDesc('daily_records.business_date')
-            ->get()
-            ->map(fn ($r) => (array) $r)
-            ->toArray();
+        if ($to !== null) {
+            $q->where('daily_records.business_date', '<=', $to);
+        }
 
-        return response()->json(['data' => $records]);
+        // Keyset pagination on the (business_date DESC, id DESC) ordering, which
+        // is stable and matches the index on (farm_id, business_date).
+        $scope = [
+            'farm_id' => $actor->farmId,
+            'actor_id' => $actor->actorId,
+            'from' => $from,
+            'to' => $to,
+            'flock_id' => $flockId,
+            'cage_id' => $cageId,
+        ];
+
+        if (! empty($validated['cursor'])) {
+            $claims = CursorCodec::decode((string) $validated['cursor']);
+            if (($claims['scope'] ?? null) !== $scope) {
+                throw new ConflictHttpException('CURSOR_RESET_REQUIRED: Filter berubah sejak cursor dibuat.');
+            }
+            $afterDate = (string) $claims['after_date'];
+            $afterId = (string) $claims['after_id'];
+            $q->where(function ($w) use ($afterDate, $afterId) {
+                $w->where('daily_records.business_date', '<', $afterDate)
+                    ->orWhere(function ($w2) use ($afterDate, $afterId) {
+                        $w2->where('daily_records.business_date', '=', $afterDate)
+                            ->where('daily_records.id', '<', $afterId);
+                    });
+            });
+        }
+
+        // Fetch one extra row to learn whether a further page exists.
+        $rows = $q->orderByDesc('daily_records.business_date')
+            ->orderByDesc('daily_records.id')
+            ->limit($limit + 1)
+            ->select('daily_records.*')
+            ->get();
+
+        $hasMore = $rows->count() > $limit;
+        $page = $rows->take($limit)->map(fn ($r) => (array) $r)->values()->toArray();
+
+        $nextCursor = null;
+        if ($hasMore && $page !== []) {
+            $last = $page[array_key_last($page)];
+            $nextCursor = CursorCodec::encode([
+                'scope' => $scope,
+                'after_date' => $last['business_date'],
+                'after_id' => $last['id'],
+                'expires_at' => now()->addMinutes(15)->timestamp,
+            ]);
+        }
+
+        return response()->json([
+            'data' => $page,
+            'meta' => [
+                'next_cursor' => $nextCursor,
+                'has_more' => $hasMore,
+                'as_of' => now()->toISOString(),
+            ],
+        ]);
     }
 
     public function show(Request $request, string $id): JsonResponse
