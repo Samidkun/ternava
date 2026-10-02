@@ -4,6 +4,7 @@ namespace Tests\Support;
 
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class Scenario
 {
@@ -189,6 +190,30 @@ class Scenario
             'updated_at' => now(),
         ]);
 
+        // A separate farm that 'other' belongs to, so cross-farm access checks
+        // exercise a real, unauthorized membership rather than a missing one.
+        $otherFarmId = (string) str()->uuid();
+        DB::table('farms')->insert([
+            'id' => $otherFarmId,
+            'name' => 'Farm Lain',
+            'location' => 'Surabaya',
+            'timezone' => 'Asia/Jakarta',
+            'currency' => 'IDR',
+            'version' => 1,
+            'updated_at' => now(),
+        ]);
+
+        $f['other']->save();
+        DB::table('memberships')->insert([
+            'id' => (string) str()->uuid(),
+            'farm_id' => $otherFarmId,
+            'user_id' => $f['other']->id,
+            'role' => 'owner',
+            'scope_version' => 1,
+            'version' => 1,
+            'active' => true,
+        ]);
+
         return $f;
     }
 
@@ -255,6 +280,53 @@ class Scenario
             'notes' => 'Menutup temuan',
             'status' => 'closed',
         ];
+    }
+
+    /**
+     * Persist an accepted photo for the given farm scenario.
+     *
+     * @param  array<string, mixed>  $f
+     */
+    public static function acceptedPhoto(array $f): object
+    {
+        $id = (string) str()->uuid();
+        $parentId = (string) str()->uuid();
+        $storageKey = 'attachments/'.$id.'.jpg';
+
+        // A real accepted daily record so the parent scope check passes.
+        DB::table('daily_records')->insert([
+            'id' => $parentId,
+            'farm_id' => $f['farm_id'],
+            'flock_id' => $f['flock']['id'],
+            'business_date' => now()->format('Y-m-d'),
+            'feed_type_id' => $f['feed']['id'],
+            'feed_kg' => '12.50',
+            'eggs_count' => 85,
+            'mortality_count' => 0,
+            'condition' => 'normal',
+            'version' => 1,
+            'recorded_by' => $f['owner']->id,
+            'accepted_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        Storage::disk('private')
+            ->put($storageKey, 'photo-bytes');
+
+        DB::table('attachments')->insert([
+            'id' => $id,
+            'farm_id' => $f['farm_id'],
+            'parent_type' => 'daily',
+            'parent_id' => $parentId,
+            'storage_key' => $storageKey,
+            'source_sha256' => hash('sha256', 'photo-bytes'),
+            'media_type' => 'image/jpeg',
+            'byte_size' => 11,
+            'uploaded_by' => $f['owner']->id,
+            'accepted_at' => now(),
+        ]);
+
+        return (object) ['id' => $id, 'storage_key' => $storageKey];
     }
 
     /**

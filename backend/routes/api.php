@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\CageController;
 use App\Http\Controllers\DailyController;
 use App\Http\Controllers\DailyRevisionController;
@@ -93,5 +94,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/incidents/{id}/assignment', [IncidentController::class, 'assign'])->name('incidents.assign');
         Route::post('/incidents/{id}/actions', [IncidentController::class, 'storeAction'])->name('incidents.actions.store');
         Route::get('/incidents/{id}/actions', [IncidentController::class, 'listActions'])->name('incidents.actions.index');
+
+        // Attachment endpoints (private photos)
+        Route::post('/attachments', [AttachmentController::class, 'store'])->name('attachments.store');
+        Route::get('/attachments', [AttachmentController::class, 'index'])->name('attachments.index');
+        Route::get('/attachments/{id}/download', [AttachmentController::class, 'download'])->name('attachments.download');
     });
 });
