@@ -9,6 +9,7 @@ use App\Http\Controllers\FlockController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\SyncController;
 use App\Http\Middleware\RequirePasswordChange;
 use Illuminate\Support\Facades\Route;
 
@@ -68,5 +69,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/daily-records/{id}', [DailyController::class, 'show'])->name('daily_records.show');
         Route::get('/daily-records/{id}/revisions', [DailyRevisionController::class, 'index'])->name('daily_records.revisions.index');
         Route::post('/daily-records/{id}/revisions', [DailyRevisionController::class, 'store'])->name('daily_records.revisions.store');
+
+        // Sync endpoints
+        Route::get('/sync/bootstrap', [SyncController::class, 'bootstrap'])->name('sync.bootstrap');
+        Route::get('/sync/changes', [SyncController::class, 'changes'])->name('sync.changes');
     });
 });
