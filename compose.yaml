@@ -1,12 +1,14 @@
 services:
   postgres:
     image: postgres:18-alpine
+    ports:
+      - "127.0.0.1:5432:5432"
     environment:
       POSTGRES_DB: ${DB_DATABASE:-ternava}
       POSTGRES_USER: ${DB_USERNAME:-ternava}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-ternava_secret}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-ternava} -d ${DB_DATABASE:-ternava}"]
       interval: 5s
