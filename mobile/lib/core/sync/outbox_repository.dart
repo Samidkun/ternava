@@ -37,6 +37,45 @@ class Intent {
   })  : createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now();
 
+  factory Intent.onlineMaster(
+    String operationId,
+    JsonObject payload,
+    String idempotencyKey,
+  ) {
+    final resourceId = (payload['id'] as String?) ??
+        '${operationId}-${DateTime.now().microsecondsSinceEpoch}';
+    return Intent(
+      id: idempotencyKey,
+      resourceId: resourceId,
+      operationId: operationId,
+      payload: payload,
+    );
+  }
+
+  factory Intent.daily(JsonObject payload, {required String operationId}) {
+    final resourceId = (payload['id'] as String?) ??
+        'daily-${DateTime.now().microsecondsSinceEpoch}';
+    return Intent(
+      id: 'daily-${DateTime.now().microsecondsSinceEpoch}',
+      resourceId: resourceId,
+      operationId: operationId,
+      payload: payload,
+    );
+  }
+
+  factory Intent.taskResult(
+    String runId,
+    JsonObject payload,
+    String idempotencyKey,
+  ) {
+    return Intent(
+      id: idempotencyKey,
+      resourceId: runId,
+      operationId: 'createTaskResult',
+      payload: payload,
+    );
+  }
+
   Intent copyWith({
     IntentState? state,
     int? attempts,
