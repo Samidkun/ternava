@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CageController;
 use App\Http\Controllers\DailyController;
+use App\Http\Controllers\DailyRevisionController;
 use App\Http\Controllers\FarmController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\FlockController;
@@ -65,5 +66,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/daily-records', [DailyController::class, 'index'])->name('daily_records.index');
         Route::post('/daily-records', [DailyController::class, 'store'])->name('daily_records.store');
         Route::get('/daily-records/{id}', [DailyController::class, 'show'])->name('daily_records.show');
+        Route::get('/daily-records/{id}/revisions', [DailyRevisionController::class, 'index'])->name('daily_records.revisions.index');
+        Route::post('/daily-records/{id}/revisions', [DailyRevisionController::class, 'store'])->name('daily_records.revisions.store');
     });
 });
