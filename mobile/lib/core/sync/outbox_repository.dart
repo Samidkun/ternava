@@ -81,6 +81,29 @@ class OutboxRepository {
     }
   }
 
+  Future<List<Intent>> allIntents() async {
+    return _queue.values.toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+
+  Future<void> retryIntent(String id) async {
+    final intent = _queue[id];
+    if (intent != null) {
+      intent.state = IntentState.pending;
+      intent.lastError = null;
+      intent.updatedAt = DateTime.now();
+    }
+  }
+
+  Future<void> cancelIntent(String id) async {
+    await store.transaction(() async {
+      final intent = _queue.remove(id);
+      if (intent != null) {
+        _drafts.remove(intent.resourceId);
+      }
+    });
+  }
+
   Future<List<Intent>> pendingIntents() async {
     final pending = _queue.values
         .where((i) => i.state == IntentState.pending)
