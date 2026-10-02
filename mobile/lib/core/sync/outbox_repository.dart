@@ -43,7 +43,7 @@ class Intent {
     String idempotencyKey,
   ) {
     final resourceId = (payload['id'] as String?) ??
-        '${operationId}-${DateTime.now().microsecondsSinceEpoch}';
+        '$operationId-${DateTime.now().microsecondsSinceEpoch}';
     return Intent(
       id: idempotencyKey,
       resourceId: resourceId,

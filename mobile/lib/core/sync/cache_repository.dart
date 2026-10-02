@@ -91,4 +91,14 @@ class CacheRepository {
   Future<List<JsonObject>> list(String resourceType) async {
     return _acceptedCaches[resourceType]?.values.toList() ?? [];
   }
+
+  /// Only cages currently assigned to the signed-in operator.
+  /// Revoked/unassigned cages are filtered out.
+  Future<List<JsonObject>> listAssignedCages({Set<String>? assignedIds}) async {
+    final all = await list('cage');
+    if (assignedIds == null) return all;
+    return all
+        .where((c) => assignedIds.contains(c['id'] as String?))
+        .toList();
+  }
 }
