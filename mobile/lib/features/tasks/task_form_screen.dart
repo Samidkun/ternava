@@ -63,6 +63,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
               ),
               const SizedBox(height: 14),
               DropdownButtonFormField<String>(
+                isExpanded: true,
                 key: const Key('task-kind'),
                 initialValue: _kind,
                 decoration: const InputDecoration(labelText: 'Jenis'),
@@ -84,6 +85,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
               ),
               const SizedBox(height: 14),
               DropdownButtonFormField<String>(
+                isExpanded: true,
                 key: const Key('task-recurrence'),
                 initialValue: _recurrence,
                 decoration: const InputDecoration(labelText: 'Pengulangan'),

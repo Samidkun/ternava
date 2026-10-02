@@ -112,6 +112,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
               ),
               const SizedBox(height: 14),
               DropdownButtonFormField<String>(
+                isExpanded: true,
                 key: const Key('role'),
                 initialValue: _selectedRole,
                 decoration: const InputDecoration(labelText: 'Peran'),

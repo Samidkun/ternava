@@ -103,31 +103,49 @@ class _FeedStockScreenState extends State<FeedStockScreen> {
                               borderRadius: BorderRadius.circular(10),
                               side: const BorderSide(color: TernavaTheme.border),
                             ),
-                            child: ListTile(
-                              leading: const CircleAvatar(
-                                backgroundColor: Color(0xFFE8F0ED),
-                                child: Icon(Icons.grain,
-                                    color: TernavaTheme.primary),
-                              ),
-                              title: Text(
-                                item.feedTypeName,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: TernavaTheme.textDark,
-                                ),
-                              ),
-                              subtitle: Text(
-                                'Terakhir diperbarui ${_formatAsOf(item.asOf ?? vm.asOf)}',
-                                style: const TextStyle(
-                                    color: TernavaTheme.textMuted, fontSize: 12),
-                              ),
-                              trailing: Text(
-                                '${item.balanceKg} kg',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: TernavaTheme.primary,
-                                ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 12),
+                              child: Row(
+                                children: [
+                                  const CircleAvatar(
+                                    backgroundColor: Color(0xFFE8F0ED),
+                                    child: Icon(Icons.grain,
+                                        color: TernavaTheme.primary),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item.feedTypeName,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: TernavaTheme.textDark,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          'Terakhir diperbarui ${_formatAsOf(item.asOf ?? vm.asOf)}',
+                                          style: const TextStyle(
+                                              color: TernavaTheme.textMuted,
+                                              fontSize: 12),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          '${item.balanceKg} kg',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: TernavaTheme.primary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           );

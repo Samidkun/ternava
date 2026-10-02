@@ -98,6 +98,7 @@ class _FeedTypeFormScreenState extends State<FeedTypeFormScreen> {
               if (vm.edit) ...[
                 const SizedBox(height: 14),
                 DropdownButtonFormField<String>(
+                  isExpanded: true,
                   key: const Key('feed-type-status'),
                   initialValue: _status,
                   decoration: const InputDecoration(labelText: 'Status'),

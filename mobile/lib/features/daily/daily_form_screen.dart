@@ -121,6 +121,7 @@ class _DailyFormScreenState extends State<DailyFormScreen> {
               ),
               const SizedBox(height: 14),
               DropdownButtonFormField<String>(
+                isExpanded: true,
                 key: const Key('condition-input'),
                 initialValue: _condition,
                 decoration: const InputDecoration(

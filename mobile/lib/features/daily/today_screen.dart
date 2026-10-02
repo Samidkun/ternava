@@ -87,50 +87,8 @@ class _TodayScreenState extends State<TodayScreen> {
                       borderRadius: BorderRadius.circular(10),
                       side: const BorderSide(color: TernavaTheme.border),
                     ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      title: Text(
-                        cage.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: TernavaTheme.textDark,
-                        ),
-                      ),
-                      subtitle: Text(
-                        'Kode: ${cage.code}',
-                        style: const TextStyle(color: TernavaTheme.textMuted),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: cage.hasRecordedToday
-                                  ? TernavaTheme.success.withValues(alpha: 0.1)
-                                  : TernavaTheme.warning.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              cage.hasRecordedToday
-                                  ? 'Sudah dicatat'
-                                  : 'Belum dicatat',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: cage.hasRecordedToday
-                                    ? TernavaTheme.success
-                                    : TernavaTheme.warning,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          const Icon(Icons.chevron_right,
-                              color: TernavaTheme.textMuted),
-                        ],
-                      ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(10),
                       onTap: () {
                         Navigator.of(context).pushNamed(
                           '/daily-form',
@@ -140,6 +98,62 @@ class _TodayScreenState extends State<TodayScreen> {
                           },
                         );
                       },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              cage.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: TernavaTheme.textDark,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Kode: ${cage.code}',
+                              style: const TextStyle(
+                                  color: TernavaTheme.textMuted),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Flexible(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: cage.hasRecordedToday
+                                          ? TernavaTheme.success
+                                              .withValues(alpha: 0.1)
+                                          : TernavaTheme.warning
+                                              .withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      cage.hasRecordedToday
+                                          ? 'Sudah dicatat'
+                                          : 'Belum dicatat',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: cage.hasRecordedToday
+                                            ? TernavaTheme.success
+                                            : TernavaTheme.warning,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const Spacer(),
+                                const Icon(Icons.chevron_right,
+                                    color: TernavaTheme.textMuted),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 }),

@@ -45,6 +45,7 @@ class _IncidentListScreenState extends State<IncidentListScreen> {
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<String>(
+                        isExpanded: true,
                         key: const Key('incident-filter-status'),
                         initialValue: _statusFilter,
                         decoration: const InputDecoration(labelText: 'Status'),
@@ -64,6 +65,7 @@ class _IncidentListScreenState extends State<IncidentListScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: DropdownButtonFormField<String>(
+                        isExpanded: true,
                         key: const Key('incident-filter-assignment'),
                         initialValue: _assignmentFilter,
                         decoration: const InputDecoration(labelText: 'Penugasan'),
