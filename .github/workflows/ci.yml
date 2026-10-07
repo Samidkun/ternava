@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: { python-version: '3.12' }
       - run: bash scripts/local-ci.sh --planning
   application-gates:
@@ -33,7 +33,7 @@ jobs:
           test -f mobile/pubspec.lock
           test -f backend/composer.lock
           test -f toolchain/flutter-version.txt
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: { python-version: '3.12' }
       - uses: shivammathur/setup-php@v2
         with: { php-version: '8.4', tools: composer, extensions: pdo_pgsql }
@@ -68,7 +68,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: { python-version: '3.12' }
       - uses: actions/setup-java@v4
         with: { distribution: 'temurin', java-version: '17' }
