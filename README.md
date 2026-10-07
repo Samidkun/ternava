@@ -1,5 +1,11 @@
 # TERNAVA — Planning MVP Ayam Petelur
 
+
+
+<p align="center">
+  <img src="docs/screenshots/preview.png" alt="Application Preview" width="100%" style="border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);" />
+</p>
+
 **Planning saja, 1 Oktober 2026.** Spesifikasi beserta AM-01/02 diterima melalui D-011. Pengguna meminta cukup sampai planning melalui D-012. Aplikasi, scaffold dan deployment belum dimulai.
 
 - [Ringkasan hasil dan urutan kerja](docs/planning-status.md)
