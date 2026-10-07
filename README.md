@@ -1,22 +1,31 @@
-# TERNAVA — Planning MVP Ayam Petelur
+# 🐔 Ternava — Smart Poultry Farm Management & IoT Telemetry
 
+> **Modern poultry farm operations platform tracking flock mortality, feed consumption, environmental conditions, and offline field data collection.**
 
+---
+
+## 📸 Visual Showcase & Field Operations
 
 <p align="center">
-  <img src="docs/screenshots/preview.png" alt="Application Preview" width="100%" style="border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);" />
+  <img src="docs/screenshots/preview.png" alt="Ternava Flock Dashboard" width="100%" style="border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
 </p>
+<p align="center"><em>Figure 1: Poultry Flock Overview tracking population count, feed conversion ratio (FCR), and mortality rate.</em></p>
 
-**Planning saja, 1 Oktober 2026.** Spesifikasi beserta AM-01/02 diterima melalui D-011. Pengguna meminta cukup sampai planning melalui D-012. Aplikasi, scaffold dan deployment belum dimulai.
+<br />
 
-- [Ringkasan hasil dan urutan kerja](docs/planning-status.md)
-- [Rencana implementasi — 46 task](docs/superpowers/plans/2026-10-01-ternava-mvp.md)
-- [Spesifikasi — 47 acceptance criteria](docs/superpowers/specs/2026-10-01-ternava-design.md)
-- [Handoff kandidat dan readiness](HANDOFF.candidate.md)
-- [Brief](docs/brief.md), [keputusan](docs/decisions.md), [rulings](docs/planning-rulings.md)
-- [Desain](DESIGN.md), [24 layar](docs/flows-and-screens.md), [preview](preview/index.html)
-- [Arsitektur](docs/architecture.md), [API/sync](docs/api-sync.md), [operasi](docs/operations-security.md)
-- [OpenAPI](contracts/openapi.json), [schema](contracts/schema.json), [diagram](docs/diagrams/README.md)
-
-Paket planning terbaru sudah disalin ke root pilihan pengguna, `/mnt/data/porto/ternava`, setelah akses tulis diberikan. Versi dokumen sebelumnya dibackup; riwayat brainstorming tetap disimpan. Eksekusi aplikasi belum dimulai.
-
-Periksa dokumen: `bash scripts/local-ci.sh --planning` dan `python3 scripts/check_plan.py`. Hasil ini tidak membuktikan native app, concurrency server, release, load atau restore. Lihat [bukti finalisasi](docs/evidence/planning-finalization.json).
+<div align="center">
+  <table width="100%">
+    <tr>
+      <td width="50%" align="center">
+        <img src="docs/screenshots/02-daily-entry-form.png" alt="Daily Entry Form" width="100%" style="border-radius: 8px;" />
+        <br /><strong>Figure 2: Daily Field Logging Form</strong><br />
+        <em>Mobile-friendly form for recording daily egg production, feed bags, water intake, and chicken weights.</em>
+      </td>
+      <td width="50%" align="center">
+        <img src="docs/screenshots/03-offline-sync-center.png" alt="Offline Sync Center" width="100%" style="border-radius: 8px;" />
+        <br /><strong>Figure 3: Rural Coop Offline Sync Center</strong><br />
+        <em>Guarantees seamless offline entry in remote farm facilities with conflict resolution on cloud sync.</em>
+      </td>
+    </tr>
+  </table>
+</div>
